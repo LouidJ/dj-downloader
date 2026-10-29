@@ -1,0 +1,22 @@
+{
+  "name": "sound-cloud-downloader",
+  "displayName": "Sound Cloud Downloader",
+  "version": "1.0.0",
+  "description": "Pour les DJ : Claude télécharge les sons gratuits de tes likes ou playlists SoundCloud (téléchargement direct, gates Hypeddit et Droploud), les range dans ton dossier sans doublons et fait le bilan. Mac et Windows, avec Claude in Chrome.",
+  "author": {
+    "name": "Luigi Hayek"
+  },
+  "homepage": "https://github.com/LouidJ/dj-downloader",
+  "repository": "https://github.com/LouidJ/dj-downloader",
+  "license": "MIT",
+  "keywords": [
+    "dj",
+    "soundcloud",
+    "hypeddit",
+    "droploud",
+    "free download",
+    "likes",
+    "mac",
+    "windows"
+  ]
+}

@@ -1,0 +1,50 @@
+# Règles DJ Downloader
+
+Les valeurs personnelles (e-mail, compte, dossiers…) sont dans `<home>/config.json` (créé par l'installation), jamais ici. Le détail des sites est dans `playbook.md`, et les changements constatés depuis dans `<home>/site-notes.md`.
+
+---
+
+## 1. Sécurité, avant toute action
+
+- **Un seul navigateur.** Utiliser uniquement le navigateur indiqué dans la config (`soundcloud.chrome_device_id`). Ne jamais sélectionner, ouvrir ou toucher un autre navigateur, même « pour vérifier ». S'il n'est pas disponible : s'arrêter et demander.
+- **Vérifier le compte avant chaque gate.** Sur une page soundcloud.com, le compte connecté doit être `soundcloud.account`. Sinon : s'arrêter et demander.
+- **Couper le son** dès qu'une page de gate s'ouvre, dans la même action que la navigation : **retirer** les lecteurs intégrés (iframes SoundCloud / YouTube / Spotify → `src='about:blank'` puis suppression), remplacer `HTMLMediaElement.prototype.play` par une version muette, et relancer ce nettoyage toutes les 500 ms (`setInterval`), parce que Hypeddit relance le lecteur au clic sur « Download ». Une simple pause ne suffit pas (le 2026-10-28, le son est ressorti sur le #159). Quitter la page une fois fini.
+- **Jamais de mot de passe tapé par l'IA**, jamais de création de compte. Le DJ se connecte lui-même pendant l'installation.
+- **Ne jamais supprimer le dossier de destination** (`dest_folder`). Ne supprimer que le zip téléchargé et le dossier extrait. Toujours la Corbeille, jamais de suppression définitive.
+- **Fermer les onglets** devenus inutiles.
+
+## 2. Quels sons télécharger
+
+- Ignorer les **longs sets** (durée ≥ `skip_longer_than_minutes`).
+- Ignorer les **sons du DJ lui-même** (`own_artist_names` dans le titre ou l'artiste).
+- Ne pas retélécharger ce qui est **déjà sur l'ordi** : juste après la sélection, `djdl dedupe --last` compare les sons choisis avec le dossier de destination **et** les dossiers de sons du DJ (`library_folders` : Musique, rekordbox, clé USB…), sous-dossiers compris. Seule la **même version** (même titre, même version, même artiste) compte comme présente ; une autre version ou un autre artiste est téléchargé quand même et signalé « à vérifier ». Si un fichier téléchargé est identique octet pour octet à un son déjà présent, il part à la Corbeille.
+- Ne jamais reproposer un son **retiré par le DJ** (statut `removed`).
+
+## 3. Comment télécharger (SoundCloud, Hypeddit, Droploud)
+
+- **Avant chaque clic de téléchargement** : `djdl.py snapshot`. **Après** : `djdl.py collect <id> --via <source>`. Un seul clic, puis attendre (jusqu'à 60 s) : ne jamais recliquer avant que `collect` ait fini.
+- **Aucune limite de l'outil** : ni nombre de sons par run, ni nombre par jour. On télécharge tout ce que la sélection couvre.
+- **SoundCloud** : bouton de téléchargement natif de la page du son. Si SoundCloud répond « limite de téléchargement atteinte » (limite de SoundCloud, pas de l'outil), ne pas attendre : passer tout de suite par le gate Hypeddit / Droploud du lien `buy`, sinon par les pools (édition perso). Seulement si rien ne marche : `djdl set retry <id> --days 1` ; le son est repris tout seul au run suivant.
+- **Hypeddit** : Download → étapes Follow / Like / Comment / Repost / Subscribe → e-mail `gate.email` (prénom `gate.first_name`) → Spotify Connect → Download. Ne jamais retaper un champ déjà rempli.
+- **Droploud** : Free download → e-mail (déjà rempli) + cocher « I agree to receive this track and occasional artist updates » (obligatoire ; seulement si `gate.droploud_optin_ok` est vrai, sinon demander au DJ) → étapes → commentaire → Connect SoundCloud (Authorize) → repost → « I reposted, verify » → Download.
+- **Un seul feu vert par run** : le DJ approuve une fois, au début, toutes les actions des gates de la sélection (follow, like, repost, commentaire, e-mail, autorisation SoundCloud). Ensuite le run va jusqu'au bilan sans autre question, sauf mot de passe, paiement, CAPTCHA ou problème de sécurité (§1).
+- **Toujours « Skip »** les étapes optionnelles.
+- **Commentaires** courts, pris dans `gate.comments`.
+- **Instagram, YouTube, TikTok, Spotify (liens)** : ouvrir, ne pas suivre, fermer.
+- Seuls Hypeddit et Droploud sont acceptés comme gates. Autre site (Beatport, Bandcamp, lnk.to, Gumroad, pumpyoursound…) → statut `missing` avec une note.
+- Cliquer sur les boutons **par leur nom** (find/ref), pas à des coordonnées fixes.
+- Pas d'acharnement : si un gate échoue deux fois, passer au suivant (`set missing <id> --note "…"`) et le dire dans le bilan.
+
+## 4. Rangement des fichiers (fait par `djdl.py collect`)
+
+- Le fichier va **directement** dans `dest_folder` dès qu'il arrive (Téléchargements doit rester vide de musique).
+- **Zip d'un seul son** : garder un seul fichier, version **Extended avant Radio**, puis **WAV / AIF avant MP3** ; jeter le zip et le dossier extrait. Si le DJ a choisi de garder les deux (`keep_radio_and_extended`) : garder la Radio **et** l'Extended (chacune dans son meilleur format).
+- **Pack de plusieurs sons** : garder le dossier tel quel dans `dest_folder`.
+- **Zip sans audio** (instructions, PDF « payant », DM Instagram…) : ne rien jeter, le signaler.
+- **Doublon** (contenu identique à un fichier déjà présent) : le nouveau va à la Corbeille.
+- **Origine vérifiée** : un fichier n'est attribué à un son que s'il vient du bon site (adresse d'origine que Chrome attache au fichier : métadonnée macOS, ou « marque du web » Windows). Un fichier venu d'ailleurs (Telegram, autre téléchargement du DJ) n'est jamais attribué automatiquement.
+
+## 5. Bilan
+
+- Le bilan vient **toujours** de `djdl.py report`, recompté à partir du disque, jamais de mémoire.
+- Catégories : téléchargés, ajoutés par le DJ, déjà présents, retirés, ignorés (longs sets, packs, propres sons, doublons), à relancer, manquants.
