@@ -2,7 +2,7 @@
 """DJ Downloader: suivi des likes SoundCloud, rangement des téléchargements, bilan recompté sur disque.
 
 Usage: python3 -I djdl.py [--home DOSSIER] <commande> ...   (Windows : py -3 -I djdl.py …)
-Commandes : init, scan, check, import, snapshot, collect, adopt, set, remove, find, todo, sweep, report, show
+Commandes : init, scan, perms, check, import, snapshot, collect, adopt, set, remove, find, todo, sweep, report, show
 
 Réglages et suivi : <home>/config.json et <home>/state.json (home par défaut : $DJDL_HOME ou ~/.dj-downloader).
 """
@@ -432,6 +432,54 @@ def cmd_scan(a):
         print(f"  {short(r)}\t{n}{'' if full else '+'} sons")
 
 
+def claude_settings_path():
+    return os.path.join(os.path.expanduser(os.environ.get("CLAUDE_CONFIG_DIR") or "~/.claude"), "settings.json")
+
+
+def rule_path(path):
+    """Chemin au format des règles d'autorisation de Claude Code (~/… sous le dossier perso, //… sinon)."""
+    home = os.path.expanduser("~")
+    if path == home or path.startswith(home + os.sep):
+        return "~/" + os.path.relpath(path, home).replace(os.sep, "/")
+    return "//" + path.replace("\\", "/").replace(":", "").lstrip("/")
+
+
+def perm_rules(home):
+    """Règles d'autorisation durables du plugin : ses propres commandes, Chrome, ses fichiers. Rien d'autre."""
+    root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    if os.sep.join(("plugins", "cache")) in root:  # installé depuis une marketplace : …/<plugin>/<version>
+        root = os.path.join(os.path.dirname(root), "*")  # reste valable après chaque mise à jour
+    script = os.path.join(root, "scripts", "djdl.py")
+    rules = []
+    for py in (("py -3", "python", "python3") if WINDOWS else ("python3",)):
+        rules += [f'Bash({py} -I "{script}" *)', f"Bash({py} -I {script} *)"]
+        if WINDOWS:
+            rules.append(f'PowerShell({py} -I "{script}" *)')
+    data = rule_path(os.path.abspath(os.path.expanduser(home)))
+    rules += ["mcp__claude-in-chrome__*", f"Read({rule_path(root)}/**)", f"Read({data}/**)", f"Edit({data}/**)"]
+    return rules
+
+
+def missing_rules(home):
+    try:
+        with open(claude_settings_path(), encoding="utf-8") as f:
+            have = set(json.load(f).get("permissions", {}).get("allow", []))
+    except (OSError, ValueError):
+        have = set()
+    return [r for r in perm_rules(home) if r not in have]
+
+
+def cmd_perms(a):
+    """Affiche les règles à ajouter une fois dans permissions.allow des réglages de Claude (l'ajout est fait par Claude, avec l'accord du DJ)."""
+    todo = missing_rules(a.home)
+    print(f"Réglages de Claude : {claude_settings_path()}")
+    if not todo:
+        print("Autorisation unique : déjà donnée.")
+        return
+    print("Règles à ajouter dans permissions.allow :")
+    print(json.dumps(todo, ensure_ascii=False, indent=2))
+
+
 def cmd_library(a):
     """Liste / ajoute / retire les dossiers où le DJ a déjà des sons."""
     with open(a.config, encoding="utf-8") as f:
@@ -495,6 +543,8 @@ def cmd_check(c, st, a):
           f" | pools : {', '.join(p['name'] for p in c['sources'].get('pools', [])) or 'aucun'}")
     if sc.get("download_playlist"):
         print(f"Playlist à télécharger : {sc['download_playlist']}")
+    print("Autorisation unique : " + ("donnée" if not missing_rules(a.home) else
+                                       "pas encore donnée (voir « perms »), Claude demandera la permission à chaque étape"))
     for b in bad:
         print("  À CORRIGER : " + b)
     print("OK" if not bad else "INCOMPLET")
@@ -865,6 +915,7 @@ def main():
     p = sp.add_parser("scan", help="installation : trouver les dossiers où le DJ a déjà des sons")
     p.add_argument("--min", type=int, default=10, help="nombre minimal de sons pour proposer un dossier")
     p.add_argument("--top", type=int, default=12); p.add_argument("--seconds", type=float, default=4.0)
+    sp.add_parser("perms", help="installation : règles pour n'autoriser le plugin qu'une seule fois")
     p = sp.add_parser("library", help="dossiers de sons déjà sur l'ordi : list | add <dossier> | remove <dossier>")
     p.add_argument("action", nargs="?", default="list", choices=("list", "add", "remove")); p.add_argument("path", nargs="?")
     p = sp.add_parser("import", help="ajouter les sons choisis (jsonl du plus récent au plus ancien : t,u,p,d,dl,buy,liked)")
@@ -903,6 +954,8 @@ def main():
         return cmd_init(a)
     if a.cmd == "scan":
         return cmd_scan(a)
+    if a.cmd == "perms":
+        return cmd_perms(a)
     if not os.path.exists(a.config):
         sys.exit(f"Pas encore installé : {a.config} introuvable (lancer « init »).")
     if a.cmd == "config":

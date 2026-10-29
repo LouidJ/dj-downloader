@@ -26,6 +26,7 @@ Guide pas à pas pour débutants : [louidj.github.io/dj-downloader](https://loui
 
 **Sur ton ordinateur**, avec `scripts/djdl.py` (Python, sans aucun accès réseau) :
 - Il range les fichiers arrivés dans Téléchargements. Il vérifie leur adresse d'origine (métadonnée posée par Chrome : macOS `kMDItemWhereFroms` via `xattr` / `mdls`, Windows flux `Zone.Identifier`). Il décompresse les zip (`ditto` sur Mac, Python ailleurs) et envoie les doublons à la Corbeille (PowerShell sous Windows). Rien n'est jamais supprimé définitivement.
+- **Une seule autorisation.** Au réglage, avec ton accord (une fenêtre : tu cliques Autoriser), Claude ajoute à tes réglages de Claude Code (`~/.claude/settings.json`, liste `permissions.allow`) quelques règles. Elles autorisent uniquement l'outil `djdl.py` du plugin, l'extension Claude in Chrome, et les fichiers du plugin. `djdl perms` les affiche. Tu peux les retirer de ce fichier quand tu veux : Claude redemandera alors la permission à chaque étape.
 - Il lit, sans les modifier, les dossiers de musique que tu indiques, pour ne pas télécharger un son que tu as déjà.
 - Il garde tes réglages et ton suivi dans le dossier de données du plugin (`config.json`, `state.json`). On y trouve : les profils SoundCloud, l'identifiant du navigateur choisi, ton prénom et ton e-mail pour les gates, tes dossiers, et la liste des sons suivis. Ce dossier est supprimé quand tu désinstalles le plugin. Tes fichiers audio restent dans ton dossier.
 

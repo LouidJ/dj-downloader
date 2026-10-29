@@ -57,7 +57,7 @@ Next, Claude **figures out on its own** which SoundCloud account is logged in to
 
 The only thing to type: **your email and your first name** for the gates. A secondary address is recommended.
 
-> **Permissions, once and for all.** The plugin's commands are already allowed: no pop-up at every step. During setup, the Chrome extension asks for access to soundcloud.com, hypeddit.com and droploud.com: each time, pick the option that **always** allows the site. On Mac, if the system asks for access to Downloads or Music, accept. After that, no more pop-ups during downloads.
+> **Just one permission.** At the start of setup, Claude warns you, then shows **a single** pop-up: click **Allow**. It covers the plugin for good, even after updates. Then the Chrome extension asks for access to soundcloud.com, hypeddit.com and droploud.com: each time, pick the option that **always** allows the site. On a Mac, if the system asks for access to Downloads or Music, allow it. After that, no more pop-ups while downloading.
 
 ## 5. First test
 

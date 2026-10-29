@@ -57,7 +57,7 @@ Ensuite Claude **devine tout seul** le compte SoundCloud connecté dans Chrome, 
 
 La seule chose à écrire : **ton e-mail et ton prénom** pour les gates. Une adresse secondaire est conseillée.
 
-> **Les autorisations, une fois pour toutes.** Les commandes du plugin sont déjà autorisées : pas de fenêtre à chaque étape. Pendant le réglage, l'extension Chrome demande l'accès à soundcloud.com, hypeddit.com et droploud.com : choisis à chaque fois l'option qui autorise **toujours** le site. Sur Mac, si le système demande l'accès à Téléchargements ou Musique, accepte. Ensuite, plus aucune fenêtre pendant les téléchargements.
+> **Une seule autorisation.** Au début du réglage, Claude te prévient puis affiche **une seule** fenêtre : clique **Autoriser**. Elle couvre le plugin pour toujours, même après ses mises à jour. Ensuite, l'extension Chrome demande l'accès à soundcloud.com, hypeddit.com et droploud.com : choisis à chaque fois l'option qui autorise **toujours** le site. Sur Mac, si le système demande l'accès à Téléchargements ou Musique, accepte. Après ça, plus aucune fenêtre pendant les téléchargements.
 
 ## 5. Premier test
 

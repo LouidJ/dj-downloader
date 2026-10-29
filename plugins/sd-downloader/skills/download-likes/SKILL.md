@@ -12,6 +12,7 @@ allowed-tools:
   - 'PowerShell(py -3 -I "${CLAUDE_PLUGIN_ROOT}/scripts/djdl.py" *)'
   - 'PowerShell(python -I "${CLAUDE_PLUGIN_ROOT}/scripts/djdl.py" *)'
   - 'mcp__claude-in-chrome__*'
+  - 'Read(~/.claude/settings.json)'
 ---
 
 # Télécharger des sons SoundCloud
@@ -22,6 +23,7 @@ Sous **Windows**, si `python3` ne répond pas, remplace-le par `py -3` (ou `pyth
 ## Avant de commencer
 
 1. `djdl check`. Si « Pas encore installé » ou INCOMPLET : propose `/sd-downloader:setup` et arrête-toi.
+   Si `check` dit « Autorisation unique : pas encore donnée », fais d'abord l'étape « Une seule autorisation » : `djdl perms`, préviens le DJ en une phrase qu'une seule fenêtre va s'afficher et qu'il clique **Autoriser**, puis ajoute exactement les règles affichées à `permissions.allow` du fichier indiqué, en un seul Edit, sans rien changer d'autre.
 2. Lis, dans cet ordre, et respecte-les tout au long du run :
    - `${CLAUDE_SKILL_DIR}/rules.md` — les règles (sécurité, quels sons, rangement, bilan). Elles priment sur tout le reste.
    - `${CLAUDE_SKILL_DIR}/selection.md` — comment traduire la demande du DJ en sélection de sons.
