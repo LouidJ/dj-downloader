@@ -396,13 +396,13 @@ footer { margin-top: 28px; color: var(--muted); font-size: 14px; }
             '<li>la case obligatoire de certains gates Droploud (recevoir les nouvelles de l\'artiste). Si tu dis non, ces sons seront marqués manquants ;</li>' +
             '<li>Radio et Extended : seulement l\'Extended, ou les deux ;</li>' +
             '<li>où ranger les sons, et dans quels dossiers tu en as déjà, pour ne jamais télécharger en double.</li></ul>' +
-            '<p>La seule chose à écrire : ton <strong>e-mail</strong> et ton <strong>prénom</strong> pour les gates.</p>',
+            '<p>La seule chose à écrire : ton <strong>e-mail</strong> et ton <strong>prénom</strong> pour les gates. À la fin, Claude te propose, sans obligation, de suivre l\'auteur du plugin sur SoundCloud.</p>',
             '<p>The command shows up as soon as you type <code>/</code> then “sd”. Claude guesses your SoundCloud account, your artist name and your music folders. It offers them as <strong>clickable choices</strong>:</p>' +
             '<ul><li>the gates account and the profile whose likes it downloads;</li>' +
             '<li>the mandatory box on some Droploud gates (get news from the artist). If you say no, those tracks will be marked missing;</li>' +
             '<li>Radio and Extended: only the Extended, or both;</li>' +
             '<li>where to file the tracks, and which folders already hold some, so nothing is ever downloaded twice.</li></ul>' +
-            '<p>The only thing to type: your <strong>email</strong> and <strong>first name</strong> for the gates.</p>') +
+            '<p>The only thing to type: your <strong>email</strong> and <strong>first name</strong> for the gates. At the end, Claude offers, with no obligation, to follow the plugin\'s author on SoundCloud.</p>') +
           (S.os !== 'mac' ? tip(T('<strong>Windows :</strong> si Claude te demande d\'installer Python, va sur ' + a('https://www.python.org/downloads/', 'python.org') + ', clique Download Python, lance l\'installateur et <strong>coche « Add python.exe to PATH »</strong> avant Install. Ouvre ensuite une nouvelle session et retape la commande.',
                                   '<strong>Windows:</strong> if Claude asks you to install Python, go to ' + a('https://www.python.org/downloads/', 'python.org') + ', click Download Python, run the installer and <strong>tick “Add python.exe to PATH”</strong> before Install. Then open a new session and type the command again.')) : '') +
           tip(T('<strong>Une seule autorisation.</strong> Au début du réglage, Claude te prévient puis affiche <strong>une seule</strong> fenêtre : clique <strong>Autoriser</strong>. Elle couvre le plugin pour toujours. Ensuite, l\'extension Chrome demande l\'accès à soundcloud.com, hypeddit.com et droploud.com : choisis à chaque fois l\'option qui autorise <strong>toujours</strong> le site.' + (S.os !== 'win' ? ' Sur Mac, accepte aussi l\'accès à Téléchargements et Musique.' : '') + ' Ensuite, plus aucune fenêtre pendant les téléchargements.',

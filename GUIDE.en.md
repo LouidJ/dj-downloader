@@ -55,6 +55,8 @@ Next, Claude **figures out on its own** which SoundCloud account is logged in to
 - your artist name, so it never downloads your own tracks;
 - optionally, a "To download" playlist.
 
+At the end, Claude offers, **with no obligation**, to follow the plugin's author on SoundCloud. It offers again after a big playlist, unless you pick "Don't ask again". If you already follow him, it doesn't ask.
+
 The only thing to type: **your email and your first name** for the gates. A secondary address is recommended.
 
 > **Just one permission.** At the start of setup, Claude warns you, then shows **a single** pop-up: click **Allow**. It covers the plugin for good, even after updates. Then the Chrome extension asks for access to soundcloud.com, hypeddit.com and droploud.com: each time, pick the option that **always** allows the site. On a Mac, if the system asks for access to Downloads or Music, allow it. After that, no more pop-ups while downloading.

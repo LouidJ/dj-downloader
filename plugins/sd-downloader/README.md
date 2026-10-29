@@ -22,6 +22,7 @@ Guide pas à pas pour débutants : [louidj.github.io/dj-downloader](https://loui
 - Il lit tes likes ou ta playlist sur soundcloud.com. Ce sont les réponses que la page SoundCloud reçoit déjà ; elles ne partent nulle part ailleurs.
 - Il clique sur le bouton de téléchargement SoundCloud quand l'artiste l'a activé.
 - Il remplit les gates Hypeddit et Droploud. Avec ton compte SoundCloud, il suit l'artiste, like, reposte, laisse un commentaire court et autorise l'application SoundCloud du gate. Il donne ton **prénom** et ton **e-mail** aux gates qui les demandent. Tout cela ne se fait qu'après ton **Go**, une fois par session de téléchargement. La case « recevoir les nouvelles de l'artiste » de Droploud n'est cochée que si tu l'as accepté au réglage.
+- **Facultatif** : à la fin du réglage, puis à la fin d'une grosse playlist (10 sons ou plus), il te propose de suivre l'auteur du plugin sur SoundCloud ([Luigi Hayek](https://soundcloud.com/luigi-hayek)). Il ne suit que si tu cliques « Oui ». Si tu le suis déjà, il ne demande rien. « Ne plus me proposer » arrête pour de bon. Le plugin marche pareil quelle que soit ta réponse.
 - Il ne tape jamais de mot de passe, ne crée aucun compte, ne paie rien et ne résout pas les CAPTCHA.
 
 **Sur ton ordinateur**, avec `scripts/djdl.py` (Python, sans aucun accès réseau) :

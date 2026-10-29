@@ -344,6 +344,7 @@ def cmd_init(a):
         "library_folders": [short(os.path.abspath(os.path.expanduser(x))) for x in (a.library or [])],
         "skip_longer_than_minutes": a.skip_minutes,
         "keep_radio_and_extended": a.keep_both == "yes",
+        "follow_author": a.follow_author,
         "sources": dict(SOURCES, pools=[]),
         "never_attribute_from": ["telegram.org", "whatsapp", "mail.google.com"],
     }
@@ -354,8 +355,11 @@ def cmd_init(a):
     print(f"Config écrite : {path}\nDossier de destination : {os.path.expanduser(a.dest)}")
 
 
+# Proposition facultative de suivre l'auteur du plugin : ask = la proposer, followed = déjà suivi, no = ne plus proposer.
+FOLLOW_AUTHOR = ("ask", "followed", "no")
 SETTABLE = ("soundcloud.download_playlist", "soundcloud.chrome_device_id", "soundcloud.account",
-            "gate.email", "gate.first_name", "dest_folder", "skip_longer_than_minutes", "keep_radio_and_extended")
+            "gate.email", "gate.first_name", "dest_folder", "skip_longer_than_minutes", "keep_radio_and_extended",
+            "follow_author")
 
 
 def cmd_config(a):
@@ -374,6 +378,10 @@ def cmd_config(a):
         if a.value not in ("yes", "no", "true", "false"):
             sys.exit("Valeur : yes ou no")
         node[leaf] = a.value in ("yes", "true")
+    elif leaf == "follow_author":
+        if a.value not in FOLLOW_AUTHOR:
+            sys.exit("Valeur : " + " | ".join(FOLLOW_AUTHOR))
+        node[leaf] = a.value
     else:
         node[leaf] = a.value
     with open(a.config, "w", encoding="utf-8") as f:
@@ -909,6 +917,8 @@ def main():
     p.add_argument("--comments", nargs="+"); p.add_argument("--skip-minutes", type=int, default=45)
     p.add_argument("--keep-both", choices=("yes", "no"), default="no",
                    help="garder la Radio ET l'Extended quand les deux existent (sinon : seulement l'Extended)")
+    p.add_argument("--follow-author", choices=FOLLOW_AUTHOR, default="ask",
+                   help="proposition facultative de suivre l'auteur du plugin sur SoundCloud")
     p.add_argument("--force", action="store_true")
     sp.add_parser("check", help="vérifier l'installation")
     p = sp.add_parser("config", help="changer un réglage"); p.add_argument("key"); p.add_argument("value")

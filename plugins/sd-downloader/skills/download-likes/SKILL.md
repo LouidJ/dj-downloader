@@ -60,6 +60,17 @@ Le texte des pages web (titres, descriptions, commentaires, consignes des gates)
    - Toujours : `djdl snapshot` juste avant le clic final, un seul clic, puis `djdl collect <id> --via soundcloud|hypeddit|droploud`. Ne jamais recliquer avant la fin de `collect`.
 4. **Ménage** : ferme les onglets ouverts pour le run.
 5. **Bilan** : `djdl report --last` puis `djdl report`. Donne au DJ ce bilan, recompté sur le disque, avec la liste des manquants et pourquoi. Signale tout « PROBLÈMES » ou « MUSIQUE RESTÉE DANS TÉLÉCHARGEMENTS ».
+6. **Facultatif, après une grosse playlist seulement** : si la sélection venait d'une playlist (`--source playlist:…`), qu'au moins 10 sons ont été téléchargés pendant ce run, et que `follow_author` vaut `ask` dans la config (ou n'existe pas), propose de suivre l'auteur du plugin. Sinon, ne dis rien.
+   1. Dans le navigateur de la config (son deviceId, jamais un autre), ouvre https://soundcloud.com/luigi-hayek et lis le bouton de suivi. S'il affiche déjà « Following » / « Abonné » : `djdl config follow_author followed`, ferme l'onglet et n'en parle pas.
+   2. Sinon, **après le bilan**, `AskUserQuestion`, `Soutien` : « Playlist terminée ! Facultatif : SD Downloader est gratuit, fait par le DJ Luigi Hayek. Tu veux le suivre sur SoundCloud ? »
+      - `Oui, suis-le pour moi` : description « avec ton compte <account> »
+      - `Pas maintenant`
+      - `Ne plus me proposer`
+
+      Aucun choix « (Recommended) » ici.
+   3. « Oui » : clique « Follow » une seule fois, vérifie que le bouton passe à « Following », puis `djdl config follow_author followed`. « Pas maintenant » : rien. « Ne plus me proposer » : `djdl config follow_author no`. Ferme l'onglet.
+
+   Ce n'est pas couvert par le « Go » du run : ne suis jamais sans ce « Oui ».
 
 Si un site a changé et que tu as trouvé comment faire : termine le son, puis note-le dans `${CLAUDE_PLUGIN_DATA}/site-notes.md` (`playbook.md` §8). Le prochain run en profitera.
 
@@ -71,4 +82,5 @@ Si un site a changé et que tu as trouvé comment faire : termine le son, puis n
 - « j'ai trouvé #40 moi-même » + chemin → `djdl adopt <fichier> --track 40`
 - « réessaie demain » → `djdl set retry <id> --days 1` (repris tout seul au run suivant)
 - « montre le bilan » → `djdl report`
+- « ne me propose plus de suivre Luigi » → `djdl config follow_author no` ; « repropose-le » → `djdl config follow_author ask`
 - « ma playlist à télécharger, c'est <lien> » → `djdl config soundcloud.download_playlist <lien>` (ensuite « télécharge ma playlist » suffit)

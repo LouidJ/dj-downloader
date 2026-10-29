@@ -75,6 +75,7 @@ Ensuite :
 ## Bon à savoir
 
 - Les gates Droploud exigent parfois de s'inscrire aux nouvelles de l'artiste. Claude te demande une fois à l'installation si tu es d'accord. Si tu refuses, ces sons sont marqués manquants.
+- Facultatif : Claude te propose de suivre l'auteur du plugin sur SoundCloud, à la fin du réglage et après une grosse playlist. Il ne suit que si tu dis oui, ne demande rien si tu le suis déjà, et « Ne plus me proposer » arrête pour de bon.
 - Aucune limite : prends 5 sons ou 500, Claude va jusqu'au bout. Si SoundCloud bloque un téléchargement direct (limite de SoundCloud), Claude passe tout de suite par le gate Hypeddit / Droploud quand il existe.
 - Beatport, Bandcamp et les autres sites payants ne sont pas touchés : ces sons sont listés comme manquants.
 - Tes réglages et ton suivi restent sur ton Mac (`~/.claude/plugins/data/`). Ils sont supprimés si tu désinstalles le plugin. Tes fichiers audio, eux, restent dans ton dossier.

@@ -55,6 +55,8 @@ Ensuite Claude **devine tout seul** le compte SoundCloud connecté dans Chrome, 
 - ton nom d'artiste, pour ne jamais télécharger tes propres sons ;
 - en option, une playlist « À télécharger ».
 
+À la fin, Claude te propose, **sans obligation**, de suivre l'auteur du plugin sur SoundCloud. Il te le reproposera après une grosse playlist, sauf si tu choisis « Ne plus me proposer ». Si tu le suis déjà, il ne demande rien.
+
 La seule chose à écrire : **ton e-mail et ton prénom** pour les gates. Une adresse secondaire est conseillée.
 
 > **Une seule autorisation.** Au début du réglage, Claude te prévient puis affiche **une seule** fenêtre : clique **Autoriser**. Elle couvre le plugin pour toujours, même après ses mises à jour. Ensuite, l'extension Chrome demande l'accès à soundcloud.com, hypeddit.com et droploud.com : choisis à chaque fois l'option qui autorise **toujours** le site. Sur Mac, si le système demande l'accès à Téléchargements ou Musique, accepte. Après ça, plus aucune fenêtre pendant les téléchargements.
