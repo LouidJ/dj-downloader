@@ -1,4 +1,4 @@
-# Sound Cloud Downloader — télécharge tes likes et tes playlists SoundCloud automatiquement
+# SD Downloader — télécharge tes likes et tes playlists SoundCloud automatiquement
 
 Plugin gratuit pour Claude, pour les DJ sur Mac et Windows. Tu likes des sons sur SoundCloud, ou tu les mets dans une playlist, et Claude les télécharge pour toi :
 
@@ -10,7 +10,9 @@ Plugin gratuit pour Claude, pour les DJ sur Mac et Windows. Tu likes des sons su
 - **jamais deux fois le même son** : chaque son est suivi d'un run à l'autre, même s'il revient dans une playlist ;
 - **s'adapte** : si un site change, Claude trouve le nouveau bouton, termine, et note le changement pour les fois suivantes.
 
-**Tu n'as jamais utilisé Claude ?** Suis le guide pas à pas : [GUIDE.md](GUIDE.md).
+**Tu n'as jamais utilisé Claude ?** Suis le guide pas à pas, une question à la fois : [louidj.github.io/dj-downloader](https://louidj.github.io/dj-downloader/). Version texte : [GUIDE.md](GUIDE.md).
+
+**Never used Claude?** Step-by-step guide, one question at a time: [louidj.github.io/dj-downloader](https://louidj.github.io/dj-downloader/). Text version: [GUIDE.en.md](GUIDE.en.md).
 
 ## Ce qu'il te faut
 
@@ -26,26 +28,26 @@ Plugin gratuit pour Claude, pour les DJ sur Mac et Windows. Tu likes des sons su
 Dans Claude (onglet Code ou terminal), tape :
 
 ```
-/plugin install sound-cloud-downloader --marketplace LouidJ/dj-downloader
+/plugin install sd-downloader --marketplace LouidJ/dj-downloader
 ```
 
-(Claude Code v2.1.275 ou plus récent. Sinon : `/plugin marketplace add LouidJ/dj-downloader` puis `/plugin install sound-cloud-downloader@dj-downloader`.)
+(Claude Code v2.1.275 ou plus récent. Sinon : `/plugin marketplace add LouidJ/dj-downloader` puis `/plugin install sd-downloader@dj-downloader`.)
 
-Dans l'app Claude (onglet Code), le plus simple est de coller : « Installe le plugin sound-cloud-downloader depuis le dépôt GitHub LouidJ/dj-downloader ». Claude s'occupe du reste. Ouvre ensuite une nouvelle session.
+Dans l'app Claude (onglet Code), le plus simple est de coller : « Installe le plugin sd-downloader depuis le dépôt GitHub LouidJ/dj-downloader ». Claude s'occupe du reste. Ouvre ensuite une nouvelle session.
 
 Pour recevoir les améliorations toutes seules : `/plugin` → **Marketplaces** → `dj-downloader` → **Enable auto-update**.
 
 Puis lance l'installation guidée :
 
 ```
-/sound-cloud-downloader:setup
+/sd-downloader:setup
 ```
 
 Claude te demande ton profil SoundCloud, le compte pour les gates, ton e-mail, ton nom d'artiste, ton dossier de téléchargement et les dossiers où tu as déjà des sons. Il ne te demande jamais de mot de passe : tu te connectes toi-même.
 
 ## Utilisation
 
-Tape `/sound-cloud-downloader:download-likes` : Claude te propose des choix (nouveaux likes, likés aujourd'hui, 20 derniers, ta playlist…). Tu coches, puis tu cliques **Go**. Rien à écrire.
+Tape `/sd-downloader:download-likes` : Claude te propose des choix (nouveaux likes, likés aujourd'hui, 20 derniers, ta playlist…). Tu coches, puis tu cliques **Go**. Rien à écrire.
 
 Tu peux aussi dire ce que tu veux avec tes mots :
 
@@ -58,7 +60,7 @@ Tu peux aussi dire ce que tu veux avec tes mots :
 | « Télécharge cette playlist : <lien> » | une playlist entière, même privée avec son lien privé |
 | « Télécharge ces sons : <liens> » | les sons collés |
 
-Ou bien `/sound-cloud-downloader:download-likes 20 derniers`.
+Ou bien `/sd-downloader:download-likes 20 derniers`.
 
 **Le plus simple pour choisir** : crée une playlist SoundCloud « À télécharger », publique ou privée avec son lien privé. Ajoutes-y les sons au fil de l'eau, puis dis « télécharge ma playlist ». Les sons déjà téléchargés ne sont jamais refaits : pas besoin de vider la playlist.
 

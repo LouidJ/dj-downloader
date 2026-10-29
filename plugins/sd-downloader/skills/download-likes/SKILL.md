@@ -2,6 +2,16 @@
 name: download-likes
 description: Télécharge les sons SoundCloud choisis par un DJ — likes récents, likes d'une date, une playlist entière ou des liens — (téléchargement SoundCloud direct, gates Hypeddit et Droploud), range les fichiers dans son dossier et fait le bilan. À utiliser quand le DJ demande de télécharger ses likes (« les 20 derniers », « likés aujourd'hui », « depuis lundi »…), une playlist SoundCloud ou des liens de sons, ou le bilan.
 argument-hint: "[ex. : 20 derniers | aujourd'hui | depuis lundi | <lien de playlist ou de sons>]"
+allowed-tools:
+  - 'Bash(python3 -I "${CLAUDE_PLUGIN_ROOT}/scripts/djdl.py" *)'
+  - 'Bash(python3 -I ${CLAUDE_PLUGIN_ROOT}/scripts/djdl.py *)'
+  - 'Bash(py -3 -I "${CLAUDE_PLUGIN_ROOT}/scripts/djdl.py" *)'
+  - 'Bash(py -3 -I ${CLAUDE_PLUGIN_ROOT}/scripts/djdl.py *)'
+  - 'Bash(python -I "${CLAUDE_PLUGIN_ROOT}/scripts/djdl.py" *)'
+  - 'Bash(python -I ${CLAUDE_PLUGIN_ROOT}/scripts/djdl.py *)'
+  - 'PowerShell(py -3 -I "${CLAUDE_PLUGIN_ROOT}/scripts/djdl.py" *)'
+  - 'PowerShell(python -I "${CLAUDE_PLUGIN_ROOT}/scripts/djdl.py" *)'
+  - 'mcp__claude-in-chrome__*'
 ---
 
 # Télécharger des sons SoundCloud
@@ -11,7 +21,7 @@ Sous **Windows**, si `python3` ne répond pas, remplace-le par `py -3` (ou `pyth
 
 ## Avant de commencer
 
-1. `djdl check`. Si « Pas encore installé » ou INCOMPLET : propose `/sound-cloud-downloader:setup` et arrête-toi.
+1. `djdl check`. Si « Pas encore installé » ou INCOMPLET : propose `/sd-downloader:setup` et arrête-toi.
 2. Lis, dans cet ordre, et respecte-les tout au long du run :
    - `${CLAUDE_SKILL_DIR}/rules.md` — les règles (sécurité, quels sons, rangement, bilan). Elles priment sur tout le reste.
    - `${CLAUDE_SKILL_DIR}/selection.md` — comment traduire la demande du DJ en sélection de sons.

@@ -1,0 +1,581 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Démarrer SD Downloader</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Assistant pas à pas : une question par écran, l'étape suivante dépend de la réponse.
+   Retour possible à tout moment, guide complet (adapté aux réponses) à la fin. */
+:root {
+  --bg: #f6f6f3; --surface: #ffffff; --ink: #17191c; --muted: #5d6268; --line: #dcdcd6;
+  --accent: #e2531b; --accent-ink: #ffffff; --accent-soft: #fde8de; --ok: #1d7a4f; --code-bg: #eeeee9;
+  --display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --body: "Atkinson Hyperlegible", -apple-system, "Segoe UI", sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #121315; --surface: #1b1d20; --ink: #ecebe6; --muted: #a2a6ab; --line: #2f3236;
+    --accent: #ff7a45; --accent-ink: #1a0d06; --accent-soft: #3a2116; --ok: #5cc28f; --code-bg: #24272b;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #121315; --surface: #1b1d20; --ink: #ecebe6; --muted: #a2a6ab; --line: #2f3236;
+  --accent: #ff7a45; --accent-ink: #1a0d06; --accent-soft: #3a2116; --ok: #5cc28f; --code-bg: #24272b;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 17px; line-height: 1.6; }
+.wrap { max-width: 640px; margin: 0 auto; padding-block: 28px 64px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+.brand { font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+.linkbtn { background: none; border: 0; padding: 0; font: inherit; font-size: 14px; color: var(--muted); text-decoration: underline; cursor: pointer; }
+.linkbtn:hover { color: var(--ink); }
+.bar { height: 6px; background: var(--line); border-radius: 99px; overflow: hidden; }
+.bar i { display: block; height: 100%; width: 0; background: var(--accent); border-radius: 99px; }
+.count { font-family: var(--mono); font-size: 12px; color: var(--muted); margin: 8px 0 18px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 22px 20px 20px; }
+.kicker { font-family: var(--mono); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 0 0 6px; }
+h1, h2 { font-family: var(--display); font-weight: 800; letter-spacing: -.015em; line-height: 1.12; margin: 0 0 14px; text-wrap: balance; }
+h1 { font-size: clamp(26px, 6vw, 34px); }
+h2 { font-size: 24px; }
+h1:focus, h2:focus { outline: none; }
+p { margin: 0 0 12px; }
+ul, ol { margin: 0 0 12px; padding-left: 22px; }
+li { margin-bottom: 6px; }
+a { color: var(--accent); }
+code { font-family: var(--mono); font-size: .86em; background: var(--code-bg); padding: 1px 5px; border-radius: 4px; overflow-wrap: anywhere; }
+.say { margin: 12px 0 14px; border: 1px solid var(--line); background: var(--bg); border-radius: 10px; overflow: hidden; }
+.say-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 7px 10px 7px 12px; border-bottom: 1px solid var(--line); font-family: var(--mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.say pre { margin: 0; padding: 12px; font-family: var(--mono); font-size: 14.5px; line-height: 1.5; white-space: pre-wrap; word-break: break-word; }
+.copy { font-family: var(--mono); font-size: 12px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 6px; padding: 4px 10px; cursor: pointer; }
+.copy:hover { border-color: var(--accent); }
+.ph { background: var(--accent-soft); color: var(--accent); font-weight: 600; padding: 0 3px; border-radius: 3px; }
+.tip { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 10px 12px; border-radius: 0 8px 8px 0; margin: 12px 0; font-size: 16px; }
+.tip p:last-child { margin: 0; }
+.answers { display: grid; gap: 10px; margin-top: 18px; }
+.ans { width: 100%; text-align: left; font: inherit; font-weight: 700; color: var(--ink); background: var(--surface); border: 2px solid var(--line); border-radius: 12px; padding: 13px 16px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.ans::after { content: "→"; font-family: var(--mono); color: var(--muted); }
+.ans:hover { border-color: var(--accent); }
+.ans.main { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.ans.main::after { color: var(--accent-ink); }
+.ans small { display: block; font-weight: 400; font-size: 14px; color: var(--muted); }
+.ans.main small { color: var(--accent-ink); opacity: .85; }
+.ans:focus-visible, .linkbtn:focus-visible, .copy:focus-visible, .nav button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.nav { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 16px; }
+.nav button { font: inherit; font-size: 15px; background: none; border: 1px solid var(--line); color: var(--ink); border-radius: 8px; padding: 8px 14px; cursor: pointer; }
+.nav button:hover { border-color: var(--accent); }
+.nav button[hidden] { display: none; }
+.mock { border: 1px solid var(--line); border-radius: 12px; padding: 12px; display: grid; gap: 7px; margin: 12px 0; background: var(--bg); }
+.mock b { font-size: 15px; }
+.opt { display: flex; gap: 10px; align-items: center; padding: 7px 10px; border: 1px solid var(--line); border-radius: 8px; font-size: 15px; background: var(--surface); }
+.opt::before { content: ""; flex: none; width: 14px; height: 14px; border: 2px solid var(--muted); border-radius: 50%; }
+.opt.on { border-color: var(--accent); }
+.opt.on::before { border-color: var(--accent); background: radial-gradient(var(--accent) 40%, transparent 46%); }
+.gobtn { display: inline-block; font-weight: 700; background: var(--accent); color: var(--accent-ink); padding: 6px 22px; border-radius: 8px; }
+/* guide complet */
+.full section { padding: 22px 0; border-top: 1px solid var(--line); }
+.full section:first-of-type { border-top: 0; }
+.full h2 { font-size: 21px; display: flex; gap: 10px; align-items: baseline; }
+.full h2 .n { font-family: var(--mono); font-size: 13px; color: var(--accent-ink); background: var(--accent); padding: 1px 7px; border-radius: 5px; flex: none; }
+details { border: 1px solid var(--line); border-radius: 10px; padding: 0 12px; margin: 10px 0; background: var(--bg); }
+summary { cursor: pointer; padding: 10px 0; font-weight: 700; font-size: 15px; }
+details[open] summary { border-bottom: 1px solid var(--line); margin-bottom: 10px; }
+footer { margin-top: 28px; color: var(--muted); font-size: 14px; }
+@media (prefers-reduced-motion: no-preference) {
+  .bar i { transition: width .3s ease; }
+  .card { animation: in .22s ease; }
+  @keyframes in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="top">
+    <span class="brand">SD Downloader · installation</span>
+    <button class="linkbtn" type="button" id="seeAll"></button>
+  </div>
+  <div class="bar" aria-hidden="true"><i id="barFill"></i></div>
+  <p class="count" id="count" aria-live="polite"></p>
+  <main id="view"></main>
+  <footer id="foot"></footer>
+</div>
+
+<script>
+(function () {
+  var EXT = 'https://chromewebstore.google.com/detail/fcoeoabgfenejglbffodgkkbkcdhcgfn';
+  var KEY = 'sdd-guide-v3';
+  var S = { os: null, lang: null };  // réponses de la personne
+  var hist = ['lang'];               // étapes vues, pour revenir en arrière
+
+  // Les grandes étapes, dans l'ordre (pour la barre de progression et le guide complet). Le choix de langue n'en fait pas partie.
+  var MAIN = ['os', 'plan', 'app', 'code', 'chrome', 'ext', 'sc', 'plugin', 'setup', 'test', 'done'];
+
+  var nav = (navigator.language || '').toLowerCase().indexOf('fr') === 0 ? 'fr' : 'en';
+  function T(fr, en) { return (S.lang || nav) === 'en' ? en : fr; }
+
+  function byOs(mac, win) {
+    if (S.os === 'mac') return mac;
+    if (S.os === 'win') return win;
+    return '<p><strong>' + T('Sur Mac :', 'On a Mac:') + '</strong></p>' + mac + '<p><strong>' + T('Sur Windows :', 'On Windows:') + '</strong></p>' + win;
+  }
+  function say(text, label) {
+    return '<div class="say"><div class="say-head"><span>' + (label || T('À coller dans Claude', 'Paste into Claude')) +
+      '</span><button class="copy" type="button">' + T('Copier', 'Copy') + '</button></div><pre>' + text + '</pre></div>';
+  }
+  function typeLabel() { return T('À taper dans Claude', 'Type into Claude'); }
+  function tip(html) { return '<div class="tip"><p>' + html + '</p></div>'; }
+  function a(href, text) { return '<a href="' + href + '" target="_blank" rel="noopener">' + text + '</a>'; }
+
+  var STEPS;
+  function build() { STEPS = {
+    lang: {
+      kicker: 'Langue · Language', h1: true,
+      title: 'Choisis ta langue · Choose your language',
+      body: function () { return ''; },
+      answers: [
+        { l: 'Français', set: { lang: 'fr' }, go: 'os', main: (S.lang || nav) === 'fr' },
+        { l: 'English', set: { lang: 'en' }, go: 'os', main: (S.lang || nav) === 'en' }
+      ]
+    },
+    os: {
+      kicker: T('Bienvenue', 'Welcome'),
+      title: T('On installe ton téléchargeur, étape par étape', 'Let\'s set up your downloader, step by step'),
+      body: function () {
+        return T('<p>Tu likes des sons sur SoundCloud, Claude les télécharge pour toi : bouton de téléchargement, gates Hypeddit et Droploud, rangement, bilan.</p>' +
+          '<p>Je te pose une question à la fois, et je t\'explique quoi faire selon ta réponse. Compte environ 20 minutes, une seule fois. Tu peux revenir en arrière à tout moment.</p>' +
+          '<p><strong>Pour commencer : tu es sur quel ordinateur ?</strong></p>',
+          '<p>You like tracks on SoundCloud, Claude downloads them for you: download button, Hypeddit and Droploud gates, filing, report.</p>' +
+          '<p>I\'ll ask you one question at a time and explain what to do based on your answer. It takes about 20 minutes, once. You can go back at any time.</p>' +
+          '<p><strong>First: what computer are you on?</strong></p>');
+      },
+      answers: [
+        { l: T('Un Mac', 'A Mac'), set: { os: 'mac' }, go: 'plan' },
+        { l: T('Un PC Windows', 'A Windows PC'), set: { os: 'win' }, go: 'plan' },
+        { l: T('Je ne sais pas', 'I don\'t know'), go: 'os-help' }
+      ]
+    },
+    'os-help': {
+      main: 'os', kicker: T('Ton ordinateur', 'Your computer'), title: T('Comment savoir ?', 'How to tell?'),
+      body: function () {
+        return T('<ul><li>Une <strong>pomme</strong> en haut à gauche de l\'écran : c\'est un <strong>Mac</strong>.</li>' +
+          '<li>Un bouton <strong>Démarrer</strong> (le logo à 4 carreaux) en bas de l\'écran : c\'est un <strong>PC Windows</strong>.</li></ul>',
+          '<ul><li>An <strong>apple</strong> at the top left of the screen: it\'s a <strong>Mac</strong>.</li>' +
+          '<li>A <strong>Start</strong> button (the 4-square logo) at the bottom of the screen: it\'s a <strong>Windows PC</strong>.</li></ul>');
+      },
+      answers: [
+        { l: T('C\'est un Mac', 'It\'s a Mac'), set: { os: 'mac' }, go: 'plan' },
+        { l: T('C\'est un PC Windows', 'It\'s a Windows PC'), set: { os: 'win' }, go: 'plan' }
+      ]
+    },
+    plan: {
+      kicker: T('Ton compte Claude', 'Your Claude account'), title: T('As-tu un abonnement Claude payant (Pro ou Max) ?', 'Do you have a paid Claude plan (Pro or Max)?'),
+      body: function () {
+        return T('<p>Le plugin fonctionne dans l\'onglet « Code » de l\'app Claude, réservé aux abonnements payants. L\'extension pour Chrome demande aussi un abonnement payant.</p>',
+          '<p>The plugin runs in the “Code” tab of the Claude app, which needs a paid plan. The Chrome extension needs a paid plan too.</p>');
+      },
+      answers: [
+        { l: T('Oui', 'Yes'), go: 'app', main: true },
+        { l: T('Non', 'No'), go: 'plan-no' },
+        { l: T('Je ne sais pas', 'I don\'t know'), go: 'plan-check' }
+      ]
+    },
+    'plan-check': {
+      main: 'plan', kicker: T('Ton compte Claude', 'Your Claude account'), title: T('Vérifions ton abonnement', 'Let\'s check your plan'),
+      body: function () {
+        return T('<ol><li>Va sur ' + a('https://claude.ai', 'claude.ai') + ' et connecte-toi.</li>' +
+          '<li>Clique sur ton nom en bas à gauche, puis sur <strong>Paramètres</strong>.</li>' +
+          '<li>Regarde la ligne de ton abonnement : <strong>Gratuit</strong>, <strong>Pro</strong> ou <strong>Max</strong>.</li></ol>' +
+          '<p><strong>Qu\'est-ce qui est écrit ?</strong></p>',
+          '<ol><li>Go to ' + a('https://claude.ai', 'claude.ai') + ' and sign in.</li>' +
+          '<li>Click your name at the bottom left, then <strong>Settings</strong>.</li>' +
+          '<li>Look at your plan: <strong>Free</strong>, <strong>Pro</strong> or <strong>Max</strong>.</li></ol>' +
+          '<p><strong>What does it say?</strong></p>');
+      },
+      answers: [
+        { l: 'Pro / Max', go: 'app', main: true },
+        { l: T('Gratuit', 'Free'), go: 'plan-no' }
+      ]
+    },
+    'plan-no': {
+      main: 'plan', kicker: T('Ton compte Claude', 'Your Claude account'), title: T('Prends un abonnement Pro', 'Get a Pro plan'),
+      body: function () {
+        return T('<ol><li>Va sur ' + a('https://claude.ai/upgrade', 'claude.ai/upgrade') + '.</li>' +
+          '<li>Choisis <strong>Pro</strong> : c\'est suffisant pour ce plugin.</li>' +
+          '<li>Paie toi-même sur la page d\'Anthropic.</li></ol>' +
+          tip('Le plugin lui-même est gratuit. Seul l\'abonnement Claude est payant.'),
+          '<ol><li>Go to ' + a('https://claude.ai/upgrade', 'claude.ai/upgrade') + '.</li>' +
+          '<li>Pick <strong>Pro</strong>: it\'s enough for this plugin.</li>' +
+          '<li>Pay yourself on Anthropic\'s page.</li></ol>' +
+          tip('The plugin itself is free. Only the Claude plan costs money.'));
+      },
+      answers: [{ l: T('C\'est fait', 'Done'), go: 'app', main: true }]
+    },
+    app: {
+      kicker: T('L\'app Claude', 'The Claude app'), title: T('L\'app Claude est-elle installée sur ton ordi ?', 'Is the Claude app installed on your computer?'),
+      body: function () { return T('<p>Pas le site internet : l\'application, qu\'on ouvre comme une autre app.</p>', '<p>Not the website: the desktop app, which you open like any other app.</p>'); },
+      answers: [
+        { l: T('Oui', 'Yes'), go: 'code', main: true },
+        { l: T('Non', 'No'), go: 'app-install' }
+      ]
+    },
+    'app-install': {
+      main: 'app', kicker: T('L\'app Claude', 'The Claude app'), title: T('Installe l\'app Claude', 'Install the Claude app'),
+      body: function () {
+        return T('<p>Va sur ' + a('https://claude.ai/download', 'claude.ai/download') + ' et télécharge l\'app pour ton ordi.</p>',
+                 '<p>Go to ' + a('https://claude.ai/download', 'claude.ai/download') + ' and download the app for your computer.</p>') +
+          byOs(T('<ol><li>Ouvre le fichier téléchargé.</li><li>Glisse l\'icône Claude dans le dossier <strong>Applications</strong>.</li><li>Ouvre Claude depuis Applications et connecte-toi.</li></ol>',
+                 '<ol><li>Open the downloaded file.</li><li>Drag the Claude icon into the <strong>Applications</strong> folder.</li><li>Open Claude from Applications and sign in.</li></ol>'),
+               T('<ol><li>Ouvre le fichier téléchargé : l\'installation se lance.</li><li>Suis les étapes, puis ouvre Claude depuis le menu Démarrer.</li><li>Connecte-toi.</li></ol>',
+                 '<ol><li>Open the downloaded file: the installer starts.</li><li>Follow the steps, then open Claude from the Start menu.</li><li>Sign in.</li></ol>'));
+      },
+      answers: [{ l: T('C\'est fait, l\'app est ouverte', 'Done, the app is open'), go: 'code', main: true }]
+    },
+    code: {
+      kicker: T('L\'onglet Code', 'The Code tab'), title: T('Vois-tu l\'onglet « Code » en haut de l\'app ?', 'Do you see the “Code” tab at the top of the app?'),
+      body: function () {
+        return T('<p>Dans l\'app Claude, il y a des onglets en haut de la fenêtre. Clique sur <strong>Code</strong> : c\'est là que vit le plugin.</p>' +
+          '<p>Si l\'app te demande un dossier pour travailler, crée un dossier <code>DJ</code> dans Documents et choisis-le. Ta musique n\'ira pas là.</p>',
+          '<p>The Claude app has tabs at the top of the window. Click <strong>Code</strong>: that\'s where the plugin lives.</p>' +
+          '<p>If the app asks for a folder to work in, create a <code>DJ</code> folder in Documents and pick it. Your music won\'t go there.</p>') +
+          (S.os !== 'mac' ? tip(T('<strong>Windows :</strong> si l\'app te propose d\'installer <strong>Git pour Windows</strong>, accepte et garde les options par défaut. Elle en a besoin pour lancer des commandes.',
+                                  '<strong>Windows:</strong> if the app offers to install <strong>Git for Windows</strong>, accept and keep the default options. It needs it to run commands.')) : '');
+      },
+      answers: [
+        { l: T('Oui, je suis dans l\'onglet Code', 'Yes, I\'m in the Code tab'), go: 'chrome', main: true },
+        { l: T('Non, je ne le vois pas', 'No, I don\'t see it'), go: 'code-help' }
+      ]
+    },
+    'code-help': {
+      main: 'code', kicker: T('L\'onglet Code', 'The Code tab'), title: T('Faisons apparaître l\'onglet Code', 'Let\'s make the Code tab appear'),
+      body: function () {
+        return T('<ol><li>Vérifie que tu es connecté avec le compte qui a l\'abonnement Pro ou Max.</li><li>Mets l\'app à jour : ',
+                 '<ol><li>Check that you\'re signed in with the account that has the Pro or Max plan.</li><li>Update the app: ') +
+          byOs(T('menu <strong>Claude</strong> en haut à gauche, puis <strong>Rechercher des mises à jour</strong>.', 'the <strong>Claude</strong> menu at the top left, then <strong>Check for Updates</strong>.'),
+               T('menu de l\'app, puis <strong>Rechercher des mises à jour</strong>.', 'the app menu, then <strong>Check for Updates</strong>.')).replace(/<\/?p>/g, '') + '</li>' +
+          T('<li>Quitte complètement l\'app, puis rouvre-la.</li></ol>', '<li>Quit the app completely, then open it again.</li></ol>');
+      },
+      answers: [{ l: T('Je le vois maintenant', 'I see it now'), go: 'chrome', main: true }]
+    },
+    chrome: {
+      kicker: 'Chrome', title: T('As-tu Google Chrome ?', 'Do you have Google Chrome?'),
+      body: function () {
+        return T('<p>Claude utilise Chrome pour aller sur SoundCloud, Hypeddit et Droploud à ta place. Il faut Chrome lui-même : Safari, Edge, Brave ou Arc ne fonctionnent pas.</p>',
+                 '<p>Claude uses Chrome to visit SoundCloud, Hypeddit and Droploud for you. It has to be Chrome itself: Safari, Edge, Brave or Arc won\'t work.</p>');
+      },
+      answers: [
+        { l: T('Oui', 'Yes'), go: 'ext', main: true },
+        { l: T('Non', 'No'), go: 'chrome-install' }
+      ]
+    },
+    'chrome-install': {
+      main: 'chrome', kicker: 'Chrome', title: T('Installe Google Chrome', 'Install Google Chrome'),
+      body: function () {
+        return T('<ol><li>Va sur ' + a('https://www.google.com/chrome/', 'google.com/chrome') + '.</li>' +
+          '<li>Clique sur <strong>Télécharger Chrome</strong>, puis installe-le comme une autre app.</li><li>Ouvre Chrome.</li></ol>',
+          '<ol><li>Go to ' + a('https://www.google.com/chrome/', 'google.com/chrome') + '.</li>' +
+          '<li>Click <strong>Download Chrome</strong>, then install it like any other app.</li><li>Open Chrome.</li></ol>');
+      },
+      answers: [{ l: T('C\'est fait, Chrome est ouvert', 'Done, Chrome is open'), go: 'ext', main: true }]
+    },
+    ext: {
+      kicker: T('L\'extension', 'The extension'), title: T('Ajoute l\'extension Claude à Chrome', 'Add the Claude extension to Chrome'),
+      body: function () {
+        return T('<ol><li><strong>Dans Chrome</strong>, ouvre l\'extension ' + a(EXT, '<strong>Claude</strong>') + ' sur le Chrome Web Store (éditeur : Anthropic).</li>' +
+          '<li>Clique sur <strong>Ajouter à Chrome</strong>, puis confirme.</li>' +
+          '<li>Clique sur l\'icône puzzle en haut à droite de Chrome, puis sur l\'épingle à côté de Claude.</li>' +
+          '<li>Clique sur l\'icône Claude et connecte-toi avec <strong>le même compte</strong> que dans l\'app.</li></ol>' +
+          '<p><strong>C\'est bon ?</strong></p>',
+          '<ol><li><strong>In Chrome</strong>, open the ' + a(EXT, '<strong>Claude</strong>') + ' extension on the Chrome Web Store (publisher: Anthropic).</li>' +
+          '<li>Click <strong>Add to Chrome</strong>, then confirm.</li>' +
+          '<li>Click the puzzle icon at the top right of Chrome, then the pin next to Claude.</li>' +
+          '<li>Click the Claude icon and sign in with <strong>the same account</strong> as in the app.</li></ol>' +
+          '<p><strong>All good?</strong></p>');
+      },
+      answers: [
+        { l: T('Oui, l\'extension est connectée', 'Yes, the extension is signed in'), go: 'sc', main: true },
+        { l: T('J\'ai un souci', 'I have a problem'), go: 'ext-help' }
+      ]
+    },
+    'ext-help': {
+      main: 'ext', kicker: T('L\'extension', 'The extension'), title: T('Les problèmes fréquents', 'Common problems'),
+      body: function () {
+        return T('<ul><li><strong>Le lien ne s\'ouvre pas dans Chrome :</strong> copie-le et colle-le dans la barre d\'adresse de Chrome.</li>' +
+          '<li><strong>« Ajouter à Chrome » est grisé :</strong> tu n\'es pas dans Chrome, ou Chrome est géré par une entreprise.</li>' +
+          '<li><strong>L\'extension demande un abonnement :</strong> connecte-toi avec le compte Pro ou Max, le même que dans l\'app.</li>' +
+          '<li><strong>Plusieurs profils Chrome :</strong> installe l\'extension dans le profil que tu utiliseras pour SoundCloud.</li></ul>',
+          '<ul><li><strong>The link doesn\'t open in Chrome:</strong> copy it and paste it into Chrome\'s address bar.</li>' +
+          '<li><strong>“Add to Chrome” is greyed out:</strong> you\'re not in Chrome, or Chrome is managed by a company.</li>' +
+          '<li><strong>The extension asks for a plan:</strong> sign in with the Pro or Max account, the same one as in the app.</li>' +
+          '<li><strong>Several Chrome profiles:</strong> install the extension in the profile you\'ll use for SoundCloud.</li></ul>');
+      },
+      answers: [{ l: T('Ça marche maintenant', 'It works now'), go: 'sc', main: true }]
+    },
+    sc: {
+      kicker: 'SoundCloud', title: T('Quel compte SoundCloud pour les gates ?', 'Which SoundCloud account for the gates?'),
+      body: function () {
+        return T('<p>Pour te donner un son, les gates demandent souvent de suivre l\'artiste, liker, reposter ou commenter. Claude le fait pour toi, avec le compte SoundCloud connecté dans Chrome.</p>' +
+          '<p>Le conseil : un <strong>deuxième compte SoundCloud</strong>, rien que pour ça. Ton compte principal reste propre (pas de reposts en série).</p>',
+          '<p>To give you a track, gates often ask you to follow the artist, like, repost or comment. Claude does it for you, with the SoundCloud account signed in to Chrome.</p>' +
+          '<p>Tip: a <strong>second SoundCloud account</strong>, just for this. Your main account stays clean (no repost sprees).</p>');
+      },
+      answers: [
+        { l: T('J\'ai un 2e compte, connecté dans Chrome', 'I have a 2nd account, signed in to Chrome'), go: 'plugin', main: true },
+        { l: T('Je veux créer un 2e compte', 'I want to create a 2nd account'), go: 'sc-create' },
+        { l: T('J\'utilise mon compte principal', 'I\'ll use my main account'), go: 'sc-main' }
+      ]
+    },
+    'sc-create': {
+      main: 'sc', kicker: 'SoundCloud', title: T('Crée ton compte pour les gates', 'Create your gates account'),
+      body: function () {
+        return T('<ol><li>Dans Chrome, sur ' + a('https://soundcloud.com', 'soundcloud.com') + ', déconnecte-toi de ton compte principal (photo de profil, puis <strong>Se déconnecter</strong>).</li>' +
+          '<li>Clique sur <strong>Créer un compte</strong> et utilise une autre adresse e-mail (une adresse secondaire, idéalement).</li>' +
+          '<li>Reste connecté avec ce nouveau compte dans Chrome.</li></ol>' +
+          tip('Tu crées ce compte toi-même : Claude ne crée jamais de compte et ne tape jamais de mot de passe. Tes likes peuvent rester sur ton compte principal : Claude les lira là.'),
+          '<ol><li>In Chrome, on ' + a('https://soundcloud.com', 'soundcloud.com') + ', sign out of your main account (profile picture, then <strong>Sign out</strong>).</li>' +
+          '<li>Click <strong>Create account</strong> and use another email address (ideally a secondary one).</li>' +
+          '<li>Stay signed in to this new account in Chrome.</li></ol>' +
+          tip('You create this account yourself: Claude never creates accounts and never types passwords. Your likes can stay on your main account: Claude will read them there.'));
+      },
+      answers: [{ l: T('C\'est fait, je suis connecté', 'Done, I\'m signed in'), go: 'plugin', main: true }]
+    },
+    'sc-main': {
+      main: 'sc', kicker: 'SoundCloud', title: T('D\'accord, avec ton compte principal', 'OK, with your main account'),
+      body: function () {
+        return T('<p>Ça marche aussi. Sache que les reposts et les commentaires des gates apparaîtront sur ton profil. Tu pourras passer à un deuxième compte plus tard.</p>' +
+          '<p>Vérifie juste que tu es <strong>connecté à SoundCloud dans Chrome</strong>.</p>',
+          '<p>That works too. Just know that the gates\' reposts and comments will show on your profile. You can switch to a second account later.</p>' +
+          '<p>Just check that you\'re <strong>signed in to SoundCloud in Chrome</strong>.</p>');
+      },
+      answers: [{ l: T('Compris, je suis connecté', 'Got it, I\'m signed in'), go: 'plugin', main: true }]
+    },
+    plugin: {
+      kicker: T('Le plugin', 'The plugin'), title: T('Installe le plugin dans Claude', 'Install the plugin in Claude'),
+      body: function () {
+        return T('<p>Dans l\'app Claude, onglet <strong>Code</strong>, ouvre une nouvelle session, colle ce message et envoie-le :</p>',
+                 '<p>In the Claude app, <strong>Code</strong> tab, open a new session, paste this message and send it:</p>') +
+          say(T('Installe le plugin sd-downloader depuis le dépôt GitHub LouidJ/dj-downloader, active-le avec la mise à jour automatique, puis dis-moi quand c\'est prêt.',
+                'Install the sd-downloader plugin from the GitHub repo LouidJ/dj-downloader, turn on auto-update, then tell me when it\'s ready.')) +
+          T('<ol><li>Claude demande la permission de modifier ses réglages : clique <strong>Autoriser</strong>. Il fait le reste.</li>' +
+            '<li>Quand il dit que c\'est prêt, <strong>ouvre une nouvelle session</strong> : le plugin se charge au démarrage.</li></ol>' +
+            tip('<strong>Comment parler à Claude :</strong> tu écris en bas, dans la zone de texte, comme dans une messagerie, puis Entrée. En français, normalement.'),
+            '<ol><li>Claude asks permission to change its settings: click <strong>Allow</strong>. It does the rest.</li>' +
+            '<li>When it says it\'s ready, <strong>open a new session</strong>: the plugin loads at startup.</li></ol>' +
+            tip('<strong>How to talk to Claude:</strong> type at the bottom, in the text box, like in a chat app, then press Enter. Plain English is fine.'));
+      },
+      answers: [
+        { l: T('C\'est fait, nouvelle session ouverte', 'Done, new session open'), go: 'setup', main: true },
+        { l: T('Ça ne marche pas', 'It doesn\'t work'), go: 'plugin-help' }
+      ]
+    },
+    'plugin-help': {
+      main: 'plugin', kicker: T('Le plugin', 'The plugin'), title: T('Débloquons l\'installation', 'Let\'s fix the install'),
+      body: function () {
+        return T('<ul><li><strong>Claude ne trouve pas le dépôt :</strong> recopie le message avec le bouton Copier, sans le modifier.</li>' +
+          '<li><strong>Tu as refusé la permission :</strong> renvoie le message et clique <strong>Autoriser</strong> cette fois.</li>' +
+          '<li><strong>Le plugin n\'apparaît pas :</strong> dans une nouvelle session, tape <code>/</code> puis « sd ». Si rien ne s\'affiche, quitte complètement l\'app et rouvre-la.</li></ul>',
+          '<ul><li><strong>Claude can\'t find the repo:</strong> copy the message again with the Copy button, without changing it.</li>' +
+          '<li><strong>You denied the permission:</strong> send the message again and click <strong>Allow</strong> this time.</li>' +
+          '<li><strong>The plugin doesn\'t show up:</strong> in a new session, type <code>/</code> then “sd”. If nothing appears, quit the app completely and open it again.</li></ul>');
+      },
+      answers: [{ l: T('Ça marche maintenant', 'It works now'), go: 'setup', main: true }]
+    },
+    setup: {
+      kicker: T('Tes réglages', 'Your settings'), title: T('Règle le plugin : tu coches, c\'est tout', 'Set up the plugin: just tick boxes'),
+      body: function () {
+        return T('<p>Dans la nouvelle session, tape :</p>', '<p>In the new session, type:</p>') + say('/sd-downloader:setup', typeLabel()) +
+          T('<p>La commande s\'affiche dès que tu tapes <code>/</code> puis « sd ». Claude devine ton compte SoundCloud, ton nom d\'artiste et tes dossiers de sons. Il te les propose en <strong>choix à cliquer</strong> :</p>' +
+            '<ul><li>le compte des gates et le profil dont il télécharge les likes ;</li>' +
+            '<li>la case obligatoire de certains gates Droploud (recevoir les nouvelles de l\'artiste). Si tu dis non, ces sons seront marqués manquants ;</li>' +
+            '<li>Radio et Extended : seulement l\'Extended, ou les deux ;</li>' +
+            '<li>où ranger les sons, et dans quels dossiers tu en as déjà, pour ne jamais télécharger en double.</li></ul>' +
+            '<p>La seule chose à écrire : ton <strong>e-mail</strong> et ton <strong>prénom</strong> pour les gates.</p>',
+            '<p>The command shows up as soon as you type <code>/</code> then “sd”. Claude guesses your SoundCloud account, your artist name and your music folders. It offers them as <strong>clickable choices</strong>:</p>' +
+            '<ul><li>the gates account and the profile whose likes it downloads;</li>' +
+            '<li>the mandatory box on some Droploud gates (get news from the artist). If you say no, those tracks will be marked missing;</li>' +
+            '<li>Radio and Extended: only the Extended, or both;</li>' +
+            '<li>where to file the tracks, and which folders already hold some, so nothing is ever downloaded twice.</li></ul>' +
+            '<p>The only thing to type: your <strong>email</strong> and <strong>first name</strong> for the gates.</p>') +
+          (S.os !== 'mac' ? tip(T('<strong>Windows :</strong> si Claude te demande d\'installer Python, va sur ' + a('https://www.python.org/downloads/', 'python.org') + ', clique Download Python, lance l\'installateur et <strong>coche « Add python.exe to PATH »</strong> avant Install. Ouvre ensuite une nouvelle session et retape la commande.',
+                                  '<strong>Windows:</strong> if Claude asks you to install Python, go to ' + a('https://www.python.org/downloads/', 'python.org') + ', click Download Python, run the installer and <strong>tick “Add python.exe to PATH”</strong> before Install. Then open a new session and type the command again.')) : '') +
+          tip(T('<strong>Les autorisations, une fois pour toutes.</strong> Les commandes du plugin sont déjà autorisées. Pendant le réglage, l\'extension Chrome demande l\'accès à soundcloud.com, hypeddit.com et droploud.com : choisis à chaque fois l\'option qui autorise <strong>toujours</strong> le site.' + (S.os !== 'win' ? ' Sur Mac, accepte aussi l\'accès à Téléchargements et Musique.' : '') + ' Ensuite, plus aucune fenêtre pendant les téléchargements.',
+                '<strong>Permissions, once and for all.</strong> The plugin\'s commands are already allowed. During setup, the Chrome extension asks for access to soundcloud.com, hypeddit.com and droploud.com: each time, pick the option that <strong>always</strong> allows the site.' + (S.os !== 'win' ? ' On a Mac, also allow access to Downloads and Music.' : '') + ' After that, no more pop-ups while downloading.'));
+      },
+      answers: [
+        { l: T('Réglages terminés', 'Setup done'), go: 'test', main: true },
+        { l: T('Claude bloque', 'Claude is stuck'), go: 'setup-help' }
+      ]
+    },
+    'setup-help': {
+      main: 'setup', kicker: T('Tes réglages', 'Your settings'), title: T('Ce qui bloque le plus souvent', 'What usually gets stuck'),
+      body: function () {
+        return T('<ul><li><strong>« Chrome n\'est pas connecté » :</strong> Chrome doit être ouvert, l\'extension connectée avec le même compte que l\'app. Puis écris « réessaie ».</li><li><strong>Python manquant :</strong> ',
+                 '<ul><li><strong>“Chrome isn\'t connected”:</strong> Chrome must be open, with the extension signed in to the same account as the app. Then type “try again”.</li><li><strong>Python missing:</strong> ') +
+          byOs(T('Claude te donne une commande à lancer dans le Terminal (<code>xcode-select --install</code>). Lance-la, accepte l\'installation, puis reviens.', 'Claude gives you a command to run in Terminal (<code>xcode-select --install</code>). Run it, accept the install, then come back.'),
+               T('installe-le depuis ' + a('https://www.python.org/downloads/', 'python.org') + ' en cochant « Add python.exe to PATH ».', 'install it from ' + a('https://www.python.org/downloads/', 'python.org') + ', ticking “Add python.exe to PATH”.')).replace(/<\/?p>/g, ' ') + '</li>' +
+          T('<li><strong>Un dossier « illisible » :</strong> ', '<li><strong>A folder is “unreadable”:</strong> ') +
+          byOs(T('Réglages Système, puis Confidentialité et sécurité, puis Fichiers et dossiers : autorise Claude.', 'System Settings, then Privacy &amp; Security, then Files and Folders: allow Claude.'),
+               T('choisis un dossier de ton profil (Musique, Documents), ou branche le disque externe.', 'pick a folder in your user profile (Music, Documents), or plug in the external drive.')).replace(/<\/?p>/g, ' ') + '</li></ul>';
+      },
+      answers: [{ l: T('Ça marche maintenant', 'It works now'), go: 'test', main: true }]
+    },
+    test: {
+      kicker: T('Premier essai', 'First try'), title: T('Ton premier téléchargement', 'Your first download'),
+      body: function () {
+        return T('<p>Tape la commande, ou écris simplement « télécharge » :</p>', '<p>Type the command, or just write “download”:</p>') + say('/sd-downloader:download-likes', typeLabel()) +
+          T('<p>Claude affiche des choix, comme ceci :</p>', '<p>Claude shows choices, like this:</p>') +
+          '<div class="mock" aria-hidden="true"><b>' + T('Quels sons je télécharge ?', 'Which tracks should I download?') + '</b>' +
+          '<div class="opt">' + T('Mes nouveaux likes', 'My new likes') + '</div><div class="opt">' + T('Likés aujourd\'hui', 'Liked today') + '</div><div class="opt">' + T('Mes 20 derniers likes', 'My last 20 likes') + '</div><div class="opt on">' + T('Autre : 3 derniers', 'Other: last 3') + '</div>' +
+          '<b>' + T('Je fais tout jusqu\'au bilan ?', 'Shall I do everything up to the report?') + '</b><div><span class="gobtn">Go</span></div></div>' +
+          T('<p>Pour ce premier essai, choisis <strong>Autre</strong>, écris « 3 derniers », puis clique <strong>Go</strong>. Regarde Chrome : Claude ouvre les pages et clique tout seul, le son est coupé. À la fin, il te donne le bilan, et les fichiers sont déjà rangés.</p>' +
+            tip('Le bouton Go vaut pour tout le téléchargement : Claude t\'a dit ce qu\'il fera en ton nom. Il ne s\'arrête ensuite que pour un CAPTCHA (tu le fais toi-même), un mot de passe ou un paiement.'),
+            '<p>For this first try, pick <strong>Other</strong>, type “last 3”, then click <strong>Go</strong>. Watch Chrome: Claude opens the pages and clicks on its own, with the sound muted. At the end it gives you the report, and the files are already filed.</p>' +
+            tip('The Go button covers the whole download: Claude has told you what it will do on your behalf. After that it only stops for a CAPTCHA (you solve it yourself), a password or a payment.'));
+      },
+      answers: [
+        { l: T('Ça a marché !', 'It worked!'), go: 'done', main: true },
+        { l: T('Ça bloque', 'It\'s stuck'), go: 'test-help' }
+      ]
+    },
+    'test-help': {
+      main: 'test', kicker: T('Premier essai', 'First try'), title: T('Que se passe-t-il ?', 'What\'s happening?'),
+      body: function () {
+        return T('<ul><li><strong>Claude attend :</strong> regarde sous son dernier message s\'il y a des choix ou un bouton <strong>Go</strong> à cliquer.</li>' +
+          '<li><strong>Une fenêtre d\'autorisation s\'affiche :</strong> lis-la et clique <strong>Autoriser</strong>. Si c\'est Chrome qui demande l\'accès à un site, choisis l\'option qui l\'autorise <strong>toujours</strong>.</li>' +
+          '<li><strong>Un CAPTCHA s\'affiche :</strong> résous-le dans l\'onglet ouvert, puis écris « c\'est fait ».</li>' +
+          '<li><strong>Il s\'est arrêté au milieu :</strong> écris « continue jusqu\'au bout ». Rien n\'est perdu.</li>' +
+          '<li><strong>Un son est « manquant » :</strong> le bilan dit pourquoi. Souvent, il n\'y a pas de téléchargement gratuit (Beatport, Bandcamp…).</li></ul>',
+          '<ul><li><strong>Claude is waiting:</strong> look under its last message for choices or a <strong>Go</strong> button to click.</li>' +
+          '<li><strong>A permission pop-up appears:</strong> read it and click <strong>Allow</strong>. If it\'s Chrome asking for access to a site, pick the option that <strong>always</strong> allows it.</li>' +
+          '<li><strong>A CAPTCHA appears:</strong> solve it in the open tab, then type “done”.</li>' +
+          '<li><strong>It stopped halfway:</strong> type “keep going until the end”. Nothing is lost.</li>' +
+          '<li><strong>A track is “missing”:</strong> the report says why. Often there\'s no free download (Beatport, Bandcamp…).</li></ul>');
+      },
+      answers: [{ l: T('Ça marche maintenant', 'It works now'), go: 'done', main: true }]
+    },
+    done: {
+      kicker: T('Terminé', 'Done'), title: T('C\'est installé. Bon digging !', 'You\'re all set. Happy digging!'),
+      body: function () {
+        return T('<p>À partir de maintenant, c\'est toujours pareil : tape <code>/sd-downloader:download-likes</code>, coche les sons, clique <strong>Go</strong>.</p>' +
+          '<ul><li><strong>L\'astuce :</strong> crée sur SoundCloud une playlist « À télécharger ». Ajoute-y des sons pendant que tu digs, puis coche <strong>Ma playlist</strong>. Les sons déjà téléchargés ne sont jamais refaits.</li>' +
+          '<li>Tu peux aussi écrire : « retire #12 de la liste », « compare aussi avec ma clé USB », « garde aussi les versions radio », « montre le bilan ».</li></ul>',
+          '<p>From now on it\'s always the same: type <code>/sd-downloader:download-likes</code>, tick the tracks, click <strong>Go</strong>.</p>' +
+          '<ul><li><strong>Tip:</strong> create a “To download” playlist on SoundCloud. Add tracks to it while you dig, then tick <strong>My playlist</strong>. Tracks already downloaded are never done twice.</li>' +
+          '<li>You can also type: “remove #12 from the list”, “also compare with my USB stick”, “keep the radio versions too”, “show the report”.</li></ul>');
+      },
+      answers: [
+        { l: T('Voir le guide complet', 'See the full guide'), full: true, main: true },
+        { l: T('Recommencer depuis le début', 'Start over'), restart: true }
+      ]
+    }
+  }; }
+
+  // ---------- état ----------
+  function save() { try { localStorage.setItem(KEY, JSON.stringify({ S: S, hist: hist })); } catch (e) {} }
+  function load() {
+    try {
+      var d = JSON.parse(localStorage.getItem(KEY) || 'null');
+      if (d && d.hist && d.hist.length && d.hist.every(function (h) { return h === '#full' || STEPS[h]; })) { S = d.S || S; hist = d.hist; }
+    } catch (e) {}
+  }
+
+  var view = document.getElementById('view');
+
+  function chrome() {
+    var en = (S.lang || nav) === 'en';
+    document.documentElement.lang = en ? 'en' : 'fr';
+    document.title = T('Démarrer SD Downloader', 'Get started with SD Downloader');
+    document.getElementById('seeAll').textContent = T('Voir tout le guide d\'un coup', 'See the whole guide at once');
+    document.getElementById('foot').textContent = T('Plugin gratuit et indépendant, partagé par un DJ pour les DJ. Il n\'est affilié ni à SoundCloud, ni à Hypeddit, ni à Droploud.',
+      'Free, independent plugin, shared by a DJ for DJs. Not affiliated with SoundCloud, Hypeddit or Droploud.');
+  }
+
+  function progress(id) {
+    var i = id === 'lang' ? -1 : MAIN.indexOf(id === '#full' ? 'done' : (STEPS[id].main || id));
+    document.getElementById('barFill').style.width = Math.max(0, Math.round(i / (MAIN.length - 1) * 100)) + '%';
+    document.getElementById('count').textContent = id === 'lang' ? 'SD Downloader' : id === '#full' ? T('Guide complet', 'Full guide') :
+      (i >= MAIN.length - 1 ? T('Installation terminée', 'Setup complete') : T('Étape ', 'Step ') + (i + 1) + T(' sur ', ' of ') + (MAIN.length - 1));
+  }
+
+  function render() {
+    build(); chrome();
+    var id = hist[hist.length - 1];
+    progress(id);
+    document.getElementById('seeAll').hidden = id === '#full' || id === 'lang';
+    if (id === '#full') return renderFull();
+    var st = STEPS[id], tag = st.h1 ? 'h1' : 'h2';
+    var html = '<article class="card"><p class="kicker">' + st.kicker + '</p><' + tag + ' tabindex="-1">' + st.title + '</' + tag + '>' + st.body() + '<div class="answers">';
+    st.answers.forEach(function (a, k) {
+      html += '<button class="ans' + (a.main ? ' main' : '') + '" type="button" data-k="' + k + '"><span>' + a.l + '</span></button>';
+    });
+    html += '</div></article><div class="nav"><button type="button" id="back"' + (hist.length > 1 ? '' : ' hidden') + '>' + T('← Retour', '← Back') + '</button>' +
+      (hist.length > 1 ? '<button type="button" id="restart">' + T('Recommencer', 'Start over') + '</button>' : '<span></span>') + '</div>';
+    view.innerHTML = html;
+    view.querySelectorAll('.ans').forEach(function (b) {
+      b.addEventListener('click', function () { choose(st.answers[+b.getAttribute('data-k')]); });
+    });
+    wireCommon();
+    var h = view.querySelector(tag); if (h && hist.length > 1) h.focus({ preventScroll: true });
+  }
+
+  function choose(a) {
+    if (a.restart) return restart();
+    if (a.set) for (var k in a.set) S[k] = a.set[k];
+    hist.push(a.full ? '#full' : a.go);
+    save(); render(); window.scrollTo(0, 0);
+  }
+  function back() { if (hist.length > 1) { hist.pop(); save(); render(); window.scrollTo(0, 0); } }
+  function restart() { S = { os: null, lang: S.lang }; hist = ['lang']; save(); render(); window.scrollTo(0, 0); }
+
+  function renderFull() {
+    var html = '<article class="card full"><p class="kicker">' + T('Tout le guide', 'The whole guide') + (S.os ? (S.os === 'mac' ? ' · Mac' : ' · Windows') : '') + '</p><h2 tabindex="-1">' + T('Le guide complet', 'The full guide') + '</h2>';
+    var n = 0;
+    MAIN.forEach(function (id) {
+      if (id === 'os') return;
+      var st = STEPS[id];
+      html += '<section><h2>' + (id !== 'done' ? '<span class="n">' + (++n) + '</span>' : '') + st.title + '</h2>' + st.body();
+      Object.keys(STEPS).forEach(function (hid) {
+        if (STEPS[hid].main === id) html += '<details><summary>' + STEPS[hid].title + '</summary>' + STEPS[hid].body() + '</details>';
+      });
+      html += '</section>';
+    });
+    html += '</article><div class="nav"><button type="button" id="back">' + T('← Retour à l\'étape précédente', '← Back to the previous step') + '</button><button type="button" id="restart">' + T('Recommencer', 'Start over') + '</button></div>';
+    view.innerHTML = html;
+    wireCommon();
+  }
+
+  function wireCommon() {
+    var b = document.getElementById('back'); if (b) b.addEventListener('click', back);
+    var r = document.getElementById('restart'); if (r) r.addEventListener('click', restart);
+    view.querySelectorAll('.copy').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var pre = btn.closest('.say').querySelector('pre');
+        var label = T('Copier', 'Copy');
+        var done = function () { btn.textContent = T('Copié', 'Copied'); setTimeout(function () { btn.textContent = label; }, 1500); };
+        var fallback = function () {
+          var rg = document.createRange(); rg.selectNodeContents(pre); var s = getSelection(); s.removeAllRanges(); s.addRange(rg);
+          btn.textContent = '⌘C / Ctrl+C'; setTimeout(function () { btn.textContent = label; }, 2000);
+        };
+        try { navigator.clipboard.writeText(pre.innerText).then(done, fallback); } catch (e) { fallback(); }
+      });
+    });
+  }
+
+  document.getElementById('seeAll').addEventListener('click', function () {
+    hist.push('#full'); save(); render(); window.scrollTo(0, 0);
+  });
+
+  build();
+  load();
+  render();
+})();
+</script>
+</body>
+</html>

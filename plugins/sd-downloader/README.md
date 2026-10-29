@@ -1,4 +1,4 @@
-# Sound Cloud Downloader
+# SD Downloader
 
 Plugin gratuit pour les DJ, sur Mac et Windows. Tu choisis des sons SoundCloud (tes nouveaux likes, ceux du jour, les 20 derniers, une playlist ou des liens). Claude récupère les **téléchargements gratuits que les artistes proposent** : le bouton de téléchargement SoundCloud, ou les gates Hypeddit et Droploud. Il range les fichiers dans ton dossier sans doublons, puis te fait un bilan.
 
@@ -6,10 +6,10 @@ Plugin gratuit pour les DJ, sur Mac et Windows. Tu choisis des sons SoundCloud (
 
 ## Utilisation
 
-1. `/sound-cloud-downloader:setup` : réglages, une seule fois. Claude détecte ton compte et tes dossiers, tu coches les choix.
-2. `/sound-cloud-downloader:download-likes` : tu coches les sons voulus, tu cliques **Go**, Claude fait le reste.
+1. `/sd-downloader:setup` : réglages, une seule fois. Claude détecte ton compte et tes dossiers, tu coches les choix.
+2. `/sd-downloader:download-likes` : tu coches les sons voulus, tu cliques **Go**, Claude fait le reste.
 
-Guide pas à pas pour débutants : [GUIDE.md](../../GUIDE.md).
+Guide pas à pas pour débutants : [louidj.github.io/dj-downloader](https://louidj.github.io/dj-downloader/) (FR / EN), ou en texte : [GUIDE.md](../../GUIDE.md), [GUIDE.en.md](../../GUIDE.en.md).
 
 ## Ce dont le plugin a besoin
 

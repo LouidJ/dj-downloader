@@ -32,6 +32,8 @@ Après `import` :
 
 Le DJ ne doit rien avoir à taper. Pose tes questions avec l'outil **`AskUserQuestion`** : il affiche des choix cliquables, et « Other » reste là pour écrire autre chose. Seulement si cet outil n'est pas disponible, pose la question en texte.
 
+**Langue** : les libellés ci-dessous sont en français. Si le DJ écrit dans une autre langue, traduis-les dans sa langue (par exemple `My new likes (Recommended)`, `Go (Recommended)` / `Cancel`), et parle-lui dans cette langue pendant tout le run.
+
 **Si la demande ne dit pas quels sons** (la commande seule, « télécharge », « lance-toi »…) : **un seul** appel `AskUserQuestion` avec ces deux questions.
 
 1. Question « Quels sons je télécharge ? », en-tête `Sons`, choix unique :

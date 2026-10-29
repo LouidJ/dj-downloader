@@ -1,12 +1,25 @@
 ---
 name: setup
-description: Installe Sound Cloud Downloader pour un DJ (profil de likes, compte pour les gates, navigateur Chrome, e-mail, dossier). À lancer une fois avant le premier téléchargement, ou pour changer un réglage.
+description: Installe SD Downloader pour un DJ (profil de likes, compte pour les gates, navigateur Chrome, e-mail, dossier). À lancer une fois avant le premier téléchargement, ou pour changer un réglage.
 disable-model-invocation: true
+allowed-tools:
+  - 'Bash(python3 -I "${CLAUDE_PLUGIN_ROOT}/scripts/djdl.py" *)'
+  - 'Bash(python3 -I ${CLAUDE_PLUGIN_ROOT}/scripts/djdl.py *)'
+  - 'Bash(py -3 -I "${CLAUDE_PLUGIN_ROOT}/scripts/djdl.py" *)'
+  - 'Bash(py -3 -I ${CLAUDE_PLUGIN_ROOT}/scripts/djdl.py *)'
+  - 'Bash(python -I "${CLAUDE_PLUGIN_ROOT}/scripts/djdl.py" *)'
+  - 'Bash(python -I ${CLAUDE_PLUGIN_ROOT}/scripts/djdl.py *)'
+  - 'PowerShell(py -3 -I "${CLAUDE_PLUGIN_ROOT}/scripts/djdl.py" *)'
+  - 'PowerShell(python -I "${CLAUDE_PLUGIN_ROOT}/scripts/djdl.py" *)'
+  - 'mcp__claude-in-chrome__*'
+  - 'Bash(python3 --version)'
+  - 'Bash(py -3 --version)'
+  - 'Bash(python --version)'
 ---
 
-# Installation de Sound Cloud Downloader
+# Installation de SD Downloader
 
-Parle au DJ dans sa langue, simplement, une question à la fois quand c'est possible. Ne tape jamais de mot de passe et ne crée aucun compte : le DJ se connecte lui-même.
+Parle au DJ dans sa langue (les libellés des choix ci-dessous sont en français : traduis-les s'il écrit dans une autre langue), simplement, une question à la fois quand c'est possible. Ne tape jamais de mot de passe et ne crée aucun compte : le DJ se connecte lui-même.
 
 Outil : `python3 -I "${CLAUDE_PLUGIN_ROOT}/scripts/djdl.py" --home "${CLAUDE_PLUGIN_DATA}"` (appelé `djdl` ci-dessous).
 Sous **Windows**, si `python3` ne répond pas, remplace-le par `py -3` (ou `python`). Garde les guillemets autour des chemins.
@@ -25,6 +38,7 @@ Le DJ ne doit presque rien écrire. **Devine d'abord** ce que tu peux, puis pose
 **A. Détecter, sans rien demander**
 - **Navigateur et compte des gates** : `list_connected_browsers`. Pour chaque navigateur : `select_browser`, ouvrir soundcloud.com, lire le compte connecté (`playbook.md` §1). Garde son deviceId et son compte. Ne touche plus jamais aux autres navigateurs.
 - **Nom affiché** de ce compte (sur sa page de profil).
+- **Accès de Chrome aux sites, une fois pour toutes** : dans ce navigateur, ouvre aussi hypeddit.com et droploud.com. Si l'extension demande l'accès à un site (soundcloud.com, hypeddit.com, droploud.com), dis au DJ de choisir l'option qui autorise **toujours** ce site. Les commandes du plugin, elles, sont déjà autorisées pendant ses skills : pendant les téléchargements, plus aucune fenêtre d'autorisation.
 - **Dossiers de sons** : `djdl scan`. Il liste les dossiers qui contiennent déjà des sons, avec leur nombre.
 
 **B. Premier appel `AskUserQuestion`**
@@ -80,10 +94,10 @@ djdl init --likes-of <profil> --account <compte-gates> --device <deviceId> \
 
 ## 4. Fin
 
-Dis au DJ que c'est prêt. Pour télécharger, il tape `/sound-cloud-downloader:download-likes`, puis coche ce qu'il veut et clique « Go ». Il peut aussi demander avec ses mots :
+Dis au DJ que c'est prêt. Pour télécharger, il tape `/sd-downloader:download-likes`, puis coche ce qu'il veut et clique « Go ». Il peut aussi demander avec ses mots :
 - « télécharge mes nouveaux likes »
 - « télécharge les 20 derniers »
 - « télécharge ce que j'ai liké aujourd'hui » (ou « depuis lundi »)
 - « télécharge ma playlist », ou en collant un lien de playlist ou de sons
 
-ou lancer `/sound-cloud-downloader:download-likes`.
+ou lancer `/sd-downloader:download-likes`.

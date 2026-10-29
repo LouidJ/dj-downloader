@@ -3,8 +3,8 @@
   "owner": { "name": "Luigi Hayek" },
   "plugins": [
     {
-      "name": "sound-cloud-downloader",
-      "source": "./plugins/sound-cloud-downloader",
+      "name": "sd-downloader",
+      "source": "./plugins/sd-downloader",
       "description": "Télécharge automatiquement tes likes SoundCloud (téléchargement direct, gates Hypeddit et Droploud) et les range dans ton dossier. Gratuit, pour Mac et Windows.",
       "category": "music",
       "tags": ["dj", "soundcloud", "hypeddit", "droploud", "free download"]

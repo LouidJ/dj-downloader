@@ -1,5 +1,7 @@
 # Premiers pas : tu n'as jamais utilisé Claude
 
+*[English version](GUIDE.en.md) · Guide interactif, une question à la fois : [ouvrir](https://louidj.github.io/dj-downloader/)*
+
 Installation : ~20 minutes, une seule fois. Ensuite, une phrase à chaque fois. Aucun code à écrire.
 
 ## 0. Ce qu'il te faut
@@ -33,17 +35,17 @@ Pendant les téléchargements, laisse Chrome ouvert et ne touche pas aux onglets
 Dans l'onglet Code, ouvre une nouvelle session et colle :
 
 ```
-Installe le plugin sound-cloud-downloader depuis le dépôt GitHub LouidJ/dj-downloader, active-le avec la mise à jour automatique, puis dis-moi quand c'est prêt.
+Installe le plugin sd-downloader depuis le dépôt GitHub LouidJ/dj-downloader, active-le avec la mise à jour automatique, puis dis-moi quand c'est prêt.
 ```
 
 1. Claude demande la permission de modifier ses réglages : clique **Autoriser**. Il fait tout le reste.
 2. Quand c'est prêt, **ouvre une nouvelle session** : le plugin se charge au démarrage.
 
-Dans le terminal (Claude Code), une seule commande suffit : `/plugin install sound-cloud-downloader --marketplace LouidJ/dj-downloader`.
+Dans le terminal (Claude Code), une seule commande suffit : `/plugin install sd-downloader --marketplace LouidJ/dj-downloader`.
 
 ## 4. Tes réglages : tu coches, c'est tout
 
-Tape `/sound-cloud-downloader:setup`. Elle apparaît dès que tu tapes `/` puis « soundcloud ». Si elle n'apparaît pas, ouvre une autre nouvelle session. Claude vérifie d'abord que tout est prêt. **Sur Windows**, il peut te demander d'installer **Python** : sur [python.org](https://www.python.org/downloads/), clique Download Python, lance l'installateur et **coche « Add python.exe to PATH »** avant Install. Ouvre ensuite une nouvelle session et retape la commande.
+Tape `/sd-downloader:setup`. Elle apparaît dès que tu tapes `/` puis « sd ». Si elle n'apparaît pas, ouvre une autre nouvelle session. Claude vérifie d'abord que tout est prêt. **Sur Windows**, il peut te demander d'installer **Python** : sur [python.org](https://www.python.org/downloads/), clique Download Python, lance l'installateur et **coche « Add python.exe to PATH »** avant Install. Ouvre ensuite une nouvelle session et retape la commande.
 
 Ensuite Claude **devine tout seul** le compte SoundCloud connecté dans Chrome, ton nom d'artiste et les dossiers où tu as déjà des sons. Il te propose tout en **choix à cliquer** :
 - le compte pour les gates et le profil dont il télécharge les likes ;
@@ -55,11 +57,11 @@ Ensuite Claude **devine tout seul** le compte SoundCloud connecté dans Chrome, 
 
 La seule chose à écrire : **ton e-mail et ton prénom** pour les gates. Une adresse secondaire est conseillée.
 
-> **Les demandes de permission sont normales.** Lis la phrase, puis **Autoriser**. Pour les commandes qui contiennent `djdl.py`, choisis **Toujours autoriser**. Dans Chrome, accepte soundcloud.com, hypeddit.com et droploud.com. Sur Mac, si le système demande l'accès à Téléchargements ou Musique, accepte.
+> **Les autorisations, une fois pour toutes.** Les commandes du plugin sont déjà autorisées : pas de fenêtre à chaque étape. Pendant le réglage, l'extension Chrome demande l'accès à soundcloud.com, hypeddit.com et droploud.com : choisis à chaque fois l'option qui autorise **toujours** le site. Sur Mac, si le système demande l'accès à Téléchargements ou Musique, accepte. Ensuite, plus aucune fenêtre pendant les téléchargements.
 
 ## 5. Premier test
 
-Tape `/sound-cloud-downloader:download-likes` (ou écris simplement « télécharge »). Claude affiche des choix : **rien à écrire, tu coches puis tu cliques Go**.
+Tape `/sd-downloader:download-likes` (ou écris simplement « télécharge »). Claude affiche des choix : **rien à écrire, tu coches puis tu cliques Go**.
 
 - **Quels sons je télécharge ?** Les choix sont *Mes nouveaux likes*, *Likés aujourd'hui*, *Mes 20 derniers likes* et *Ma playlist*. Avec *Autre*, tu peux écrire un nombre ou une date, ou coller un lien.
 - **Je fais tout jusqu'au bilan ?** Les choix sont **Go** et *Montre-moi d'abord*.
@@ -75,7 +77,7 @@ Le bouton Go vaut pour tout le run. Sa description dit ce que Claude fera en ton
 
 ## Au quotidien
 
-Toujours pareil : `/sound-cloud-downloader:download-likes`, tu coches, tu cliques **Go**.
+Toujours pareil : `/sd-downloader:download-likes`, tu coches, tu cliques **Go**.
 
 Si tu préfères écrire, Claude comprend aussi tes mots, et ne te pose alors que la question du Go. Par exemple : « télécharge ce que j'ai liké depuis lundi », « télécharge cette playlist : lien ». Ajoute « go pour tout » et il démarre sans même afficher le bouton.
 
@@ -95,9 +97,9 @@ Autres phrases : « retire #12 de la liste », « compare aussi avec ma clé USB
 ## Si ça coince
 
 - **Claude attend** : regarde sous son dernier message s'il y a des choix ou un bouton **Go** à cliquer. S'il s'est arrêté, écris « continue jusqu'au bout ».
-- **Permission à chaque commande** : choisis **Toujours autoriser** pour `djdl.py`.
+- **Une fenêtre d'autorisation s'affiche** : lis-la et clique **Autoriser**. Si c'est Chrome qui demande l'accès à un site, choisis l'option qui l'autorise **toujours**.
 - **Chrome pas connecté** : Chrome ouvert, extension Claude connectée au même compte, puis « réessaie ».
-- **« Pas encore installé »** : tape `/sound-cloud-downloader:setup`.
+- **« Pas encore installé »** : tape `/sd-downloader:setup`.
 - **CAPTCHA** : fais-le toi-même dans l'onglet, puis « c'est fait ».
 - **Tout arrêter** : bouton Stop à côté de la zone de texte (ou Échap). Rien n'est perdu, le prochain run reprend où il en était.
 - **Un son gratuit marqué manquant** : « Télécharge ce son : lien ».
