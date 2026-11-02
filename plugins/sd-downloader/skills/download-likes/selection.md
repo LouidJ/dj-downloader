@@ -30,22 +30,22 @@ Après `import` :
 
 ## Des cases à cocher, pas de texte à écrire
 
-Le DJ ne doit rien avoir à taper. Pose tes questions avec l'outil **`AskUserQuestion`** : il affiche des choix cliquables, et « Other » reste là pour écrire autre chose. Seulement si cet outil n'est pas disponible, pose la question en texte.
+Le DJ ne doit rien avoir à taper. Pose tes questions avec l'outil **`AskUserQuestion`** : il affiche des choix cliquables, et « Other » reste là pour écrire autre chose. Chaque description de choix commence par une **majuscule**. Seulement si cet outil n'est pas disponible, pose la question en texte.
 
 **Langue** : les libellés ci-dessous sont en français. Utilise la langue de la config (`language`, choisie au réglage), ou celle où le DJ t'écrit s'il en change, et traduis-les (par exemple `My new likes (Recommended)`, `Go (Recommended)` / `Cancel`), et parle-lui dans cette langue pendant tout le run.
 
 **Si la demande ne dit pas quels sons** (la commande seule, « télécharge », « lance-toi »…) : **un seul** appel `AskUserQuestion` avec ces deux questions. Si la config dit `"go": "auto"`, seulement la première (le feu vert est déjà donné).
 
 1. Question « Quels sons je télécharge ? », en-tête `Sons`, choix unique :
-   - `Mes nouveaux likes (Recommended)` : tout ce que tu as liké depuis la dernière fois ;
-   - `Likés aujourd'hui` : seulement les likes du jour ;
-   - `Mes 20 derniers likes` : les 20 likes les plus récents ;
-   - `Ma playlist` : ta playlist « À télécharger » (seulement si `soundcloud.download_playlist` est réglé ; sinon, `Likés cette semaine` : depuis lundi).
+   - `Mes nouveaux likes (Recommended)` : Tout ce que tu as liké depuis la dernière fois ;
+   - `Likés aujourd'hui` : Seulement les likes du jour ;
+   - `Mes 20 derniers likes` : Les 20 likes les plus récents ;
+   - `Ma playlist` : Ta playlist « À télécharger » (seulement si `soundcloud.download_playlist` est réglé ; sinon, `Likés cette semaine` : depuis lundi).
 
    Dans « Other », le DJ peut écrire un autre nombre, une date, ou coller un lien de playlist ou de sons. Traduis-le avec le tableau ci-dessus.
 2. Question « Je fais tout jusqu'au bilan ? », en-tête `Feu vert`, choix unique :
    - `Go (Recommended)`. Description d'une ligne : « Je fais les gates avec `<account>` et je range dans `<dossier>`. » Pas la liste des actions, pas l'e-mail. C'est le feu vert du run (étape 2b) ;
-   - `Montre-moi d'abord` : je lis la sélection, je te dis combien de sons et de gates, puis tu valides.
+   - `Montre-moi d'abord` : Je lis la sélection, je te dis combien de sons et de gates, puis tu valides.
 
 **Si la demande dit déjà quels sons** mais sans feu vert : pose seulement le feu vert, à l'étape 2b, une fois la sélection lue et comparée. Utilise `AskUserQuestion`, en-tête `Feu vert`. La question tient en une ligne : « Je télécharge Thriller (Christian Maas Edit) ? » pour un son, « Je télécharge 12 sons (3 directs, 6 Hypeddit, 3 Droploud) ? » pour plusieurs. Deux choix : `Go (Recommended)` (même description d'une ligne que ci-dessus) et `Annuler`.
 

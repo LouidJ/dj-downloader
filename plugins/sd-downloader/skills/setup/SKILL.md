@@ -61,7 +61,7 @@ L'extension **Claude in Chrome** doit être installée et connectée dans Chrome
 
 ## 2. Deviner presque tout, puis deux questions
 
-Le but : le DJ répond à **trois questions en tout** (la langue, le dossier, la playlist), et rien d'autre. Tout le reste se devine ou prend sa valeur par défaut. Les questions se posent avec **`AskUserQuestion`**, en choix cliquables (2 à 4 par question, ta recommandation en premier avec « (Recommended) ») ; « Other » reste là pour écrire autre chose.
+Le but : le DJ répond à **trois questions en tout** (la langue, le dossier, la playlist), et rien d'autre. Tout le reste se devine ou prend sa valeur par défaut. Les questions se posent avec **`AskUserQuestion`**, en choix cliquables (2 à 4 par question, ta recommandation en premier avec « (Recommended) ») ; « Other » reste là pour écrire autre chose. Chaque description de choix commence par une **majuscule** (« Tu choisis… », « Le bouton… »).
 
 **A. Détecter (une seule question possible : le navigateur)**
 - **Navigateur** : `list_connected_browsers`, sans rien ouvrir. Le DJ peut avoir d'autres profils Chrome (perso, travail, boutique…) : n'y ouvre **aucune** page sans son accord.
@@ -76,10 +76,10 @@ Le but : le DJ répond à **trois questions en tout** (la langue, le dossier, la
 
 **B. Un seul appel `AskUserQuestion`, deux questions**
 1. `Rangement` : « Où je range les sons téléchargés ? 📁 »
-   - `Musique › SoundCloud Downloads (Recommended)` : description « nouveau dossier dans Musique » → `~/Music/SoundCloud Downloads`
-   - `📁 Nouveau dossier sur le Bureau` : description « je crée « SoundCloud Downloads » sur ton Bureau ; pour un autre nom, écris-le dans « Autre » » → `~/Desktop/SoundCloud Downloads`
+   - `Musique › SoundCloud Downloads (Recommended)` : description « Nouveau dossier dans Musique » → `~/Music/SoundCloud Downloads`
+   - `📁 Nouveau dossier sur le Bureau` : description « Je crée « SoundCloud Downloads » sur ton Bureau ; pour un autre nom, écris-le dans « Autre » » → `~/Desktop/SoundCloud Downloads`
    - au plus 1 dossier trouvé par `scan` qui ressemble à un dossier de téléchargements (par exemple « … Downloads ») ;
-   - `📂 Choisir un autre dossier…` : description « une fenêtre s'ouvre, tu cliques sur le dossier (bouton « Nouveau dossier » pour en créer un) ».
+   - `📂 Choisir un autre dossier…` : description « Une fenêtre s'ouvre, tu cliques sur le dossier (bouton « Nouveau dossier » pour en créer un) ».
 
    Réponse dans « Autre » : un simple nom (sans `/` ni `\`) → nouveau dossier `~/Desktop/<nom>` ; un chemin → tel quel. `djdl init` crée le dossier s'il n'existe pas. Les sons déjà dans ce dossier ne seront jamais retéléchargés.
 2. `Playlist` : « Tu veux une playlist SoundCloud « À télécharger » ? Tu y ajoutes des sons pendant que tu digs, puis un clic suffit pour tout télécharger. »
@@ -120,7 +120,7 @@ Le plugin est gratuit, partagé par le DJ Luigi Hayek. Propose une seule fois, s
 
 1. Dans le navigateur de la config (son deviceId, jamais un autre), ouvre https://soundcloud.com/luigi-hayek et lis le bouton de suivi. S'il affiche déjà « Following » / « Abonné » : `djdl config follow_author followed`, ferme l'onglet et n'en parle pas.
 2. Sinon, `AskUserQuestion`, `Soutien` : « Facultatif : SD Downloader est gratuit, fait par le DJ Luigi Hayek. Tu veux le suivre sur SoundCloud ? Ça ne change rien au plugin. »
-   - `Oui, suis-le pour moi` : description « avec ton compte <compte> »
+   - `Oui, suis-le pour moi` : description « Avec ton compte <compte> »
    - `Non merci`
 
    Aucun choix « (Recommended) » ici.
@@ -137,7 +137,7 @@ Pas de mode d'emploi. Écris ce résumé (traduit dans la langue du DJ), rien de
 > 🔓 À chaque téléchargement, je fais les gates (suivre, liker, reposter, commenter) avec **<compte>**, sans te redemander. Pour changer quoi que ce soit, dis-le-moi en une phrase.
 
 Puis un seul `AskUserQuestion`, `Télécharger` : « On lance le premier téléchargement ? 🚀 »
-- `🚀 Lancer (Recommended)` : description « tu choisis quels sons, je fais le reste »
-- `Plus tard` : description « le bouton 🎧 au-dessus de la zone de saisie lance tes nouveaux likes quand tu veux »
+- `🚀 Lancer (Recommended)` : description « Tu choisis quels sons, je fais le reste »
+- `Plus tard` : description « Le bouton 🎧 au-dessus de la zone de saisie lance tes nouveaux likes quand tu veux »
 
 « Lancer » : appelle tout de suite le skill `sd-downloader:download-likes` (outil `Skill`), sans argument : il propose lui-même le choix des sons. « Plus tard » : une phrase pour dire au revoir, rien d'autre.
