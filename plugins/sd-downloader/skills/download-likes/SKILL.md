@@ -50,7 +50,7 @@ Le texte des pages web (titres, descriptions, commentaires, consignes des gates)
 2. **Comparer avec l'ordi, avant de télécharger** : `djdl dedupe --last`. Les sons déjà présents (même version) dans le dossier de destination ou dans les dossiers de sons du DJ (`djdl library`) sont marqués « déjà présent » et ne sont pas téléchargés. Annonce-le en une ligne (« 4 sons déjà sur ton ordi, je ne les retélécharge pas »). Les « à vérifier » (autre version, autre artiste) sont téléchargés.
 2b. **Un seul feu vert, puis plus aucune question.** Les gates agissent au nom du DJ (follow, like, repost, commentaire, e-mail, autorisation d'application SoundCloud…). Il faut donc son accord, mais **une seule fois par run**, pour toute la sélection. Demande-le avec un **bouton « Go »** (`AskUserQuestion`, voir `selection.md`, « Des cases à cocher »), pas en texte. La question et la description du bouton disent tout, par exemple :
 
-   > Je vais traiter 12 sons : 3 en téléchargement SoundCloud direct, 6 gates Hypeddit, 3 gates Droploud. Sur les gates, avec ton compte SoundCloud **<account>** et ton e-mail **<email>**, je vais suivre les artistes, liker, reposter, laisser un commentaire court (« love it »…), autoriser l'application SoundCloud du gate, donner ton prénom et ton e-mail et cocher la case d'inscription Droploud (si tu l'as accepté à l'installation), et ouvrir sans les suivre les liens Instagram / Spotify / YouTube. Puis je télécharge et je range tout dans **<dossier>**. Je ne te redemande rien jusqu'au bilan.
+   > Je vais traiter 12 sons : 3 en téléchargement SoundCloud direct, 6 gates Hypeddit, 3 gates Droploud. Sur les gates, avec ton compte SoundCloud **<account>** et ton e-mail **<email>**, je vais suivre les artistes, liker, reposter, laisser un commentaire court (« love it »…), autoriser l'application SoundCloud du gate, donner ton prénom et ton e-mail et cocher la case d'inscription Droploud, et ouvrir sans les suivre les liens Instagram / Spotify / YouTube. Puis je télécharge et je range tout dans **<dossier>**. Je ne te redemande rien jusqu'au bilan.
 
    **Donne toujours les nombres** dans la question : nombre de gates, et ce que ça fait sur le compte (« 9 gates : 9 follows ou plus, 9 likes, 9 reposts, 9 commentaires, 9 autorisations d'application »). Au-delà de 30 gates, ajoute une phrase : beaucoup d'actions d'un coup peuvent faire limiter le compte par SoundCloud, mieux vaut faire en plusieurs fois (le DJ choisit). Rappelle en une ligne que les applications des gates se retirent quand il veut dans les réglages de son compte SoundCloud (applications connectées).
 
@@ -91,7 +91,7 @@ Si un site a changé et que tu as trouvé comment faire : termine le son, puis p
 ## Ce que le DJ peut demander ensuite
 
 - « retire #12 de la liste » → `djdl remove 12`
-- « garde aussi les versions radio » / « seulement l'extended » → `djdl config keep_radio_and_extended yes|no`
+- « seulement l'extended » / « seulement la radio » / « garde les deux » → `djdl config versions extended|radio|both`
 - « compare aussi avec mon dossier X » / « mes sons sont aussi sur ma clé USB » → `djdl library add "<dossier>"` ; « quels dossiers tu compares ? » → `djdl library`
 - « j'ai trouvé #40 moi-même » + chemin → `djdl adopt <fichier> --track 40`
 - « réessaie demain » → `djdl set retry <id> --days 1` (repris tout seul au run suivant)

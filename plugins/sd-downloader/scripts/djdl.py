@@ -312,9 +312,20 @@ def cut_of(name):
     return "extended" if "extended" in n else ("radio" if "radio" in n else "autre")
 
 
-def rank(name):
+VERSIONS = ("extended", "radio", "both")  # coupe gardée quand un son existe en Extended et en Radio
+
+
+def cut_pref(c):
+    """« extended », « radio » ou « both » (anciennes configs : keep_radio_and_extended)."""
+    v = c.get("versions")
+    return v if v in VERSIONS else ("both" if c.get("keep_radio_and_extended") else "extended")
+
+
+def rank(name, pref="extended"):
+    """Ordre de préférence d'un fichier : la coupe choisie par le DJ d'abord, puis WAV / AIFF avant MP3."""
     n = name.lower()
-    v = 0 if "extended" in n else (2 if "radio" in n else 1)
+    cut = "extended" if "extended" in n else ("radio" if "radio" in n else None)
+    v = 1 if cut is None else (0 if cut == pref or pref == "both" and cut == "extended" else 2)
     f = 1 if n.endswith((".wav", ".aif", ".aiff", ".flac")) else 2
     return v * 10 + f
 
@@ -408,13 +419,14 @@ def process(c, path, title=None):
         trash(path)
         return [("zip sans audio", left)]
     # un groupe par son ; dans un son, une seule version (la meilleure) ou, si le DJ garde les deux, une par coupe
-    both = c.get("keep_radio_and_extended", False)
+    pref = cut_pref(c)
+    both = pref == "both"
     groups = {}
     for a in audio:
         b = os.path.basename(a)
         g = groups.setdefault(track_key(b), {})
         ck = cut_of(b) if both else "*"
-        if ck not in g or rank(b) < rank(os.path.basename(g[ck])):
+        if ck not in g or rank(b, pref) < rank(os.path.basename(g[ck]), pref):
             g[ck] = a
     if len(groups) > 1:  # pack : on garde le dossier tel quel
         entries = [e for e in os.listdir(tmp) if not e.startswith(".")]
@@ -427,7 +439,7 @@ def process(c, path, title=None):
         trash(path)
         return [("pack rangé", target)]
     out = []
-    for f in sorted(next(iter(groups.values())).values(), key=lambda x: rank(os.path.basename(x))):
+    for f in sorted(next(iter(groups.values())).values(), key=lambda x: rank(os.path.basename(x), pref)):
         res = place(c, f, title)
         if res[0] == "conflit":  # ne pas jeter le seul exemplaire avec le dossier extrait
             keep = free_path(os.path.join(c["downloads_folder"], os.path.basename(res[1])))
@@ -505,7 +517,7 @@ def cmd_init(a):
         "own_artist_names": a.own or [],
         "library_folders": [short(os.path.abspath(os.path.expanduser(x))) for x in (a.library or [])],
         "skip_longer_than_minutes": a.skip_minutes,
-        "keep_radio_and_extended": a.keep_both == "yes",
+        "versions": "both" if a.keep_both == "yes" else a.versions,
         "follow_author": a.follow_author,
         "sources": dict(SOURCES, pools=[]),
         "never_attribute_from": ["telegram.org", "whatsapp", "mail.google.com"],
@@ -517,8 +529,8 @@ def cmd_init(a):
 
 # Proposition facultative de suivre l'auteur du plugin : ask = la proposer, followed = déjà suivi, no = ne plus proposer.
 FOLLOW_AUTHOR = ("ask", "followed", "no")
-SETTABLE = ("soundcloud.download_playlist", "soundcloud.chrome_device_id", "soundcloud.account",
-            "gate.email", "gate.first_name", "dest_folder", "skip_longer_than_minutes", "keep_radio_and_extended",
+SETTABLE = ("soundcloud.likes_of", "soundcloud.download_playlist", "soundcloud.chrome_device_id", "soundcloud.account",
+            "gate.email", "gate.first_name", "dest_folder", "skip_longer_than_minutes", "versions",
             "follow_author")
 
 
@@ -534,10 +546,11 @@ def cmd_config(a):
         node = node.setdefault(k, {})
     if leaf == "skip_longer_than_minutes":
         node[leaf] = int(a.value)
-    elif leaf == "keep_radio_and_extended":
-        if a.value not in ("yes", "no", "true", "false"):
-            sys.exit("Valeur : yes ou no")
-        node[leaf] = a.value in ("yes", "true")
+    elif leaf == "versions":
+        if a.value not in VERSIONS:
+            sys.exit("Valeur : " + " | ".join(VERSIONS))
+        node[leaf] = a.value
+        node.pop("keep_radio_and_extended", None)
     elif leaf == "follow_author":
         if a.value not in FOLLOW_AUTHOR:
             sys.exit("Valeur : " + " | ".join(FOLLOW_AUTHOR))
@@ -759,7 +772,7 @@ def cmd_check(c, st, a):
             except PermissionError:
                 bad.append(f"{k} illisible ({ACCESS_HINT}) : {c[k]}")
     sc, g = c["soundcloud"], c["gate"]
-    for k, v in (("soundcloud.likes_of", sc.get("likes_of")), ("soundcloud.account", sc.get("account")),
+    for k, v in (("soundcloud.account", sc.get("account")),
                  ("soundcloud.chrome_device_id", sc.get("chrome_device_id")), ("gate.email", g.get("email")),
                  ("gate.first_name", g.get("first_name"))):
         if not v or "@exemple" in str(v) or str(v).isupper():
@@ -767,11 +780,13 @@ def cmd_check(c, st, a):
     print(f"Système : {SYSTEM} | Python {sys.version.split()[0]}")
     if WINDOWS and not os.path.isfile(POWERSHELL):
         bad.append("PowerShell introuvable : impossible d'envoyer les doublons à la Corbeille")
-    print(f"Édition : {c.get('edition')} | likes de : {sc.get('likes_of')} | compte gates : {sc.get('account')}")
+    print(f"Édition : {c.get('edition')} | likes de : {sc.get('likes_of') or 'aucun profil (liens et playlists)'}"
+          f" | compte gates : {sc.get('account')}")
     for r in c.get("library_folders", []):
         if not os.path.isdir(r):
             print(f"  ATTENTION : dossier de sons introuvable (disque débranché ?) : {r}")
-    print("Versions : " + ("Radio ET Extended gardées" if c.get("keep_radio_and_extended") else "Extended seulement (avant Radio)"))
+    print("Versions : " + {"both": "Radio ET Extended gardées", "radio": "Radio seulement (avant Extended)",
+                           "extended": "Extended seulement (avant Radio)"}[cut_pref(c)])
     print(f"Dossiers comparés avant téléchargement : {', '.join(short(r) for r in library_roots(c))}")
     print(f"Destination : {c['dest_folder']} | sons suivis : {len(st['tracks'])}"
           f" | pools : {', '.join(p['name'] for p in c['sources'].get('pools', [])) or 'aucun'}")
@@ -988,7 +1003,7 @@ def title_candidates(title, uploader):
     return [parts_of(left, right), parts_of(right, left)]
 
 
-def best_match(title, uploader, files, strict_cut=False):
+def best_match(title, uploader, files, pref="extended"):
     """(lecture retenue, [(verdict, chemin)]). La lecture « Titre - Artiste » ne sert que si elle trouve
     la même version : sinon on garde « Artiste - Titre », pour ne pas signaler de faux « à vérifier »."""
     cands = title_candidates(title, uploader)
@@ -997,7 +1012,7 @@ def best_match(title, uploader, files, strict_cut=False):
         core, vw, aw, kind = cand
         # lecture inversée : tout « l'artiste » doit être dans le nom, sinon « Latch | Renyn Remix »
         # passerait pour un artiste et le remix pour l'original déjà présent
-        found.append((cand, match_files(core, vw, aw, files, kind, strict_cut, all_artists=i > 0)))
+        found.append((cand, match_files(core, vw, aw, files, kind, pref, all_artists=i > 0)))
         if found[-1][1] and found[-1][1][0][0] == "MÊME VERSION":
             return found[-1]
     return found[0]
@@ -1024,7 +1039,7 @@ def cut_kind(text):
     return "extended" if "extended" in w else ("radio" if "radio" in w else None)
 
 
-def match_files(core, vw, aw, files, kind=None, strict_cut=False, all_artists=False):
+def match_files(core, vw, aw, files, kind=None, pref="extended", all_artists=False):
     """[(verdict, chemin)] des fichiers qui contiennent le titre. L'artiste peut être dans le nom ou dans les dossiers."""
     hits = []
     for p, root in files:
@@ -1044,9 +1059,10 @@ def match_files(core, vw, aw, files, kind=None, strict_cut=False, all_artists=Fa
             # (« Tik Tok » ≠ « Adjust (Tik Tok) »)
             fbase, fv = split_title(name.split(" - ", 1)[-1])
             same_version = not fv or (fv <= set(core) and any(w in fbase.split() for w in core if w not in fv))
-        if kind == "extended" and cut_kind(name) == "radio":  # on veut l'Extended, l'ordi n'a que la Radio
+        other = {"extended": "radio", "radio": "extended"}.get(pref)
+        if kind == pref and cut_kind(name) == other:  # on veut la coupe préférée, l'ordi n'a que l'autre
             same_version = False
-        if strict_cut and kind and cut_kind(name) != kind:  # le DJ garde Radio et Extended : chaque coupe compte à part
+        if pref == "both" and kind and cut_kind(name) != kind:  # le DJ garde Radio et Extended : chaque coupe compte à part
             same_version = False
         same_artist = not aw or (aw <= ctx if all_artists else bool(aw & ctx))
         verdict = "MÊME VERSION" if same_version and same_artist else (
@@ -1060,7 +1076,7 @@ def cmd_find(c, st, a):
     t = get_track(st, a.track) if not a.text else None
     title = a.text or t["title"]
     (core, vw, aw, kind), hits = best_match(title, "" if a.text else t["uploader"], library_files(c),
-                                            c.get("keep_radio_and_extended", False))
+                                            cut_pref(c))
     print(f"Recherche : {title}  (titre : {' '.join(core)} | artiste : {' '.join(sorted(aw)) or '?'}"
           f" | version : {' '.join(sorted(vw)) or 'originale'})")
     for v, p in hits:
@@ -1080,7 +1096,7 @@ def cmd_dedupe(c, st, a):
     for t in st["tracks"]:
         if t["id"] not in ids or t["status"] not in ("new", "retry", "missing", "other_version"):
             continue
-        hits = best_match(t["title"], t["uploader"], files, c.get("keep_radio_and_extended", False))[1]
+        hits = best_match(t["title"], t["uploader"], files, cut_pref(c))[1]
         if hits and hits[0][0] == "MÊME VERSION":
             owned += 1
             print(f"  DÉJÀ SUR L'ORDI : {label(t)}\n      -> {short(hits[0][1])}")
@@ -1182,19 +1198,20 @@ def main():
     sp = ap.add_subparsers(dest="cmd", required=True)
     p = sp.add_parser("init", help="installation : crée la config")
     p.add_argument("--edition", choices=("soundcloud", "personal"), default="soundcloud")
-    p.add_argument("--likes-of", required=True, help="profil SoundCloud dont on télécharge les likes")
+    p.add_argument("--likes-of", default="", help="profil SoundCloud dont on télécharge les likes (vide : liens et playlists seulement)")
     p.add_argument("--account", required=True, help="compte SoundCloud utilisé pour les gates (repost, autorisation)")
     p.add_argument("--device", required=True, help="deviceId du navigateur Chrome à utiliser")
     p.add_argument("--email", required=True); p.add_argument("--first-name", required=True)
-    p.add_argument("--droploud-optin", choices=("yes", "no"), required=True,
-                   help="le DJ accepte de cocher la case d'inscription obligatoire des gates Droploud")
+    p.add_argument("--droploud-optin", choices=("yes", "no"), default="yes",
+                   help="cocher la case d'inscription obligatoire des gates Droploud (oui par défaut : sans elle, pas de son)")
     p.add_argument("--dest", default="~/Music/SoundCloud Downloads"); p.add_argument("--downloads", default="~/Downloads")
     p.add_argument("--own", action="append", help="nom d'artiste du DJ (répétable)")
     p.add_argument("--playlist", help="lien de la playlist « à télécharger » du DJ (optionnel)")
     p.add_argument("--library", action="append", help="dossier où le DJ a déjà des sons, comparé avant téléchargement (répétable)")
     p.add_argument("--comments", nargs="+"); p.add_argument("--skip-minutes", type=int, default=45)
-    p.add_argument("--keep-both", choices=("yes", "no"), default="no",
-                   help="garder la Radio ET l'Extended quand les deux existent (sinon : seulement l'Extended)")
+    p.add_argument("--versions", choices=VERSIONS, default="extended",
+                   help="quand un son existe en Extended et en Radio : extended, radio, ou both (les deux)")
+    p.add_argument("--keep-both", choices=("yes", "no"), default="no", help=argparse.SUPPRESS)  # ancien nom de --versions both
     p.add_argument("--follow-author", choices=FOLLOW_AUTHOR, default="ask",
                    help="proposition facultative de suivre l'auteur du plugin sur SoundCloud")
     p.add_argument("--force", action="store_true")

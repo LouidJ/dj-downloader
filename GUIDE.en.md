@@ -9,7 +9,7 @@ Setup takes about 20 minutes, one time only. After that, it's one sentence each 
 - A **Mac** or a **Windows PC** (10 or 11), with **Google Chrome**.
 - A **paid Claude subscription** (Pro or Max): it gives you access to the "Code" tab of the app, where the plugin lives.
 - Recommended: a **second SoundCloud account** for the gates (they ask you to follow, repost, comment). Your main account stays clean.
-- Recommended: a **secondary email address**: the gates pass it on to the artists.
+- Your **SoundCloud email**: you give it once during setup; the gates pass it on to the artists.
 
 ## 1. Install the Claude app
 
@@ -49,15 +49,14 @@ Type `/sd-downloader:setup`. It shows up as soon as you type `/` and then "sd". 
 
 Next, Claude **figures out on its own** which SoundCloud account is logged in to Chrome, your artist name and the folders where you already have tracks. It offers everything as **choices to click**:
 - the account for the gates and the profile whose likes it downloads;
-- the Droploud box: whether it can accept the artist's news emails for you when a gate requires it (otherwise, those tracks are marked as missing);
-- Radio and Extended: only the Extended, or both;
+- Extended version, Radio version, or both;
 - where to save the tracks, and which folders to search for the ones you already have, so nothing gets downloaded twice;
 - your artist name, so it never downloads your own tracks;
 - optionally, a "To download" playlist.
 
 At the end, Claude offers, **with no obligation**, to follow the plugin's author on SoundCloud. It offers again after a big playlist, unless you pick "Don't ask again". If you already follow him, it doesn't ask.
 
-The only thing to type: **your email and your first name** for the gates. A secondary address is recommended.
+The only thing to type: **your SoundCloud email and your first name**, once. After that, Claude fills them in on the gates.
 
 > **Just one permission.** At the start of setup, Claude warns you, then shows **a single** pop-up: click **Allow**. It covers the plugin for good, even after updates. Then the Chrome extension asks for access to soundcloud.com, hypeddit.com and droploud.com: each time, pick the option that **always** allows the site. On a Mac, if the system asks for access to Downloads or Music, allow it. After that, no more pop-ups while downloading.
 

@@ -53,8 +53,14 @@ L'extension **Claude in Chrome** doit être installée et connectée dans Chrome
 
 Le DJ ne doit presque rien écrire. **Devine d'abord** ce que tu peux, puis pose les questions avec **`AskUserQuestion`**, en choix cliquables (2 à 4 par question, ta recommandation en premier avec « (Recommended) »). « Other » reste toujours là pour écrire autre chose. Regroupe jusqu'à 4 questions par appel. Ne pose en texte libre que ce qui ne peut pas se deviner : l'e-mail et le prénom.
 
-**A. Détecter, sans rien demander**
-- **Navigateur et compte des gates** : `list_connected_browsers`. Pour chaque navigateur : `select_browser`, ouvrir soundcloud.com, lire le compte connecté (`playbook.md` §1). Garde son deviceId et son compte. Ne touche plus jamais aux autres navigateurs.
+**A. Détecter (une seule question possible : le navigateur)**
+- **Navigateur** : `list_connected_browsers`, sans rien ouvrir. Le DJ peut avoir d'autres profils Chrome (perso, travail, boutique…) : n'y ouvre **aucune** page sans son accord.
+  - Consignes du DJ (CLAUDE.md…) : seule une consigne qui désigne un navigateur **pour SoundCloud** (ou ce plugin) décide. Une consigne qui réserve un navigateur à autre chose (Instagram, boutique…) ne dit pas lequel prendre ici : écarte ce navigateur, et pose la question ci-dessous pour les autres. Ne choisis jamais un navigateur parce qu'une consigne l'autorise pour une autre tâche.
+  - Un seul navigateur connecté : c'est lui.
+  - Plusieurs : `AskUserQuestion`, `Navigateur` : « Plusieurs navigateurs Chrome sont connectés à Claude. Lequel est celui de SoundCloud ? » Un choix par navigateur (son nom affiché ; 3 au plus, les autres se tapent dans « Other »), plus `Je ne sais pas`. Description : le nom se voit dans l'extension Claude du profil Chrome que tu utilises pour SoundCloud.
+  - `Je ne sais pas` : deuxième question, `Vérifier` : « Je peux ouvrir soundcloud.com dans chacun (un onglet, refermé aussitôt) pour trouver celui où tu es connecté ? » `Oui, vérifie` / `Non, je déconnecte l'extension des autres profils`. Seulement après « Oui » : pour chaque navigateur, `select_browser`, ouvrir soundcloud.com, lire le compte (`playbook.md` §1), fermer l'onglet ; rien d'autre. Après « Non » : attendre que le DJ le fasse, puis refaire `list_connected_browsers`.
+  - Garde le deviceId choisi. Ensuite, ne touche plus jamais aux autres navigateurs.
+- **Compte des gates** : dans ce navigateur seulement, ouvrir soundcloud.com et lire le compte connecté (`playbook.md` §1). Pas connecté : demander au DJ de se connecter lui-même, puis relire.
 - **Nom affiché** de ce compte (sur sa page de profil).
 - **Accès de Chrome aux sites, une fois pour toutes** : dans ce navigateur, ouvre aussi hypeddit.com et droploud.com. Si l'extension demande l'accès à un site (soundcloud.com, hypeddit.com, droploud.com), dis au DJ de choisir l'option qui autorise **toujours** ce site. Les commandes du plugin, elles, sont déjà autorisées par l'étape 1 : pendant les téléchargements, plus aucune fenêtre d'autorisation.
 - **Dossiers de sons** : `djdl scan`. Il liste les dossiers qui contiennent déjà des sons, avec leur nombre.
@@ -65,29 +71,30 @@ Le DJ ne doit presque rien écrire. **Devine d'abord** ce que tu peux, puis pose
    - `Non, j'en connecte un autre`
 
    Explique dans la description qu'un deuxième compte SoundCloud garde le compte principal propre. Si le DJ en connecte un autre, attends qu'il le fasse, puis relis le compte connecté.
-2. `Likes` : « De quel profil je télécharge les likes ? »
-   - `<compte> (Recommended)`
-   - `Un autre profil` : le DJ colle l'adresse dans « Other » ; garde seulement `<profil>`.
-3. `Droploud` : « Certains gates Droploud obligent à cocher « J'accepte de recevoir ce son et des nouvelles de l'artiste ». Je peux la cocher pour toi ? »
-   - `Oui (Recommended)`
-   - `Non` : ces sons seront marqués manquants.
-4. `Versions` : « Quand un son existe en Radio et en Extended ? »
-   - `Seulement l'Extended (Recommended)`
-   - `Garder les deux`
+2. `Likes` : « De quel profil je télécharge les likes ? Pour un autre profil, écris son nom ou son adresse dans « Autre ». »
+   - `<compte> (Recommended)` : description « les likes du compte connecté ».
+   - `Aucun` : description « je ne télécharge que des liens ou des playlists ». Alors `--likes-of ""` ; si le DJ demande un jour ses likes, le skill lui demandera le profil.
+   - Réponse écrite dans « Autre » : garde seulement `<profil>` (de `soundcloud.com/<profil>`, sans le reste de l'adresse).
+
+   Ne mets pas de choix « Un autre profil » : « Autre » sert déjà à l'écrire.
+3. `Versions` : « Quand un son existe en Extended et en Radio, je garde quelle version ? »
+   - `Extended version (Recommended)` → `--versions extended`
+   - `Radio version` → `--versions radio`
+   - `Les deux` → `--versions both`
 
 **C. Deuxième appel `AskUserQuestion`**
-5. `Rangement` : « Où je range les sons téléchargés ? »
+4. `Rangement` : « Où je range les sons téléchargés ? »
    - `Musique › SoundCloud Downloads (Recommended)` : `~/Music/SoundCloud Downloads`
    - `Bureau › SoundCloud Downloads` : `~/Desktop/SoundCloud Downloads`
    - jusqu'à 2 dossiers trouvés par `scan` qui ressemblent à un dossier de téléchargements (par exemple « … Downloads »).
-6. `Mes sons` (**multiSelect**) : « Où sont les sons que tu as déjà ? Je les compare avant chaque téléchargement pour ne jamais télécharger un son en double. »
+5. `Mes sons` (**multiSelect**) : « Où sont les sons que tu as déjà ? Je les compare avant chaque téléchargement pour ne jamais télécharger un son en double. »
    - les 4 dossiers de `scan` les plus utiles, avec leur nombre de sons, par exemple « Musique › PioneerDJ (1849 sons) ». Évite un dossier déjà compris dans un autre choix ;
    - une clé USB ou un disque externe se colle dans « Other ». Un disque débranché est simplement ignoré ce jour-là.
-7. `Artiste` : « Tu sors des sons sous quel nom ? Je ne les téléchargerai jamais. »
+6. `Artiste` : « Tu sors des sons sous quel nom ? Je ne les téléchargerai jamais. »
    - `<nom affiché> (Recommended)`
    - `Je ne produis pas`
    - « Other » pour un autre nom, ou plusieurs.
-8. `Playlist` : « Tu veux une playlist SoundCloud « À télécharger » ? Tu y ajoutes des sons pendant que tu digs, puis un clic suffit pour tout télécharger. »
+7. `Playlist` : « Tu veux une playlist SoundCloud « À télécharger » ? Tu y ajoutes des sons pendant que tu digs, puis un clic suffit pour tout télécharger. »
    - `Pas maintenant (Recommended)`
    - `Oui, je colle son lien` : le lien va dans « Other ». Il peut être public ou privé.
 
@@ -104,8 +111,8 @@ Le DJ peut les changer plus tard en le demandant.
 
 ```bash
 djdl init --likes-of <profil> --account <compte-gates> --device <deviceId> \
-  --email <email> --first-name <prénom> --droploud-optin yes|no \
-  --own "<nom d'artiste>" --dest "<dossier>" [--playlist <lien>] [--library "<dossier>" …] [--keep-both yes|no] [--comments "love it" "fire"] [--skip-minutes 45]
+  --email <email> --first-name <prénom> \
+  --own "<nom d'artiste>" --dest "<dossier>" [--playlist <lien>] [--library "<dossier>" …] [--versions extended|radio|both] [--comments "love it" "fire"] [--skip-minutes 45]
 ```
 
 (`--force` pour remplacer une config existante. Plus tard : `djdl library add "<dossier>"` / `remove` / `list`.) Puis `djdl check` : tout doit être OK. Si un dossier est « illisible » : sur **Mac**, le DJ autorise l'accès (Réglages Système → Confidentialité et sécurité → Fichiers et dossiers, ou Accès complet au disque) pour l'application qui fait tourner Claude ; sur **Windows**, il choisit un dossier de son profil (Musique, Documents) ou vérifie que le disque externe est branché. Sur Windows, les chemins se donnent tels quels (ex. `D:\Musique\Sets`).

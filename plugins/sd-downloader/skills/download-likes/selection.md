@@ -16,7 +16,7 @@ Aucune limite de nombre ni de jour : on prend tout ce que la demande couvre. Ré
 | « cette semaine », « depuis le 20 octobre » | likes §2a : `SINCE='<date>'` | `djdl import F --since <date>` |
 | « les 10 derniers likés aujourd'hui » | likes §2a : `SINCE='<aujourd'hui>'` | `djdl import F --since <aujourd'hui> --limit 10` |
 | « télécharge ma playlist » (sans lien) | §2b avec `soundcloud.download_playlist` de la config | `djdl import F --source "playlist:<titre>"` |
-| un lien de playlist, ou « la playlist <nom> » | §2b avec ce lien (sinon chercher la playlist sur `soundcloud.com/<likes_of>/sets`) | `djdl import F --source "playlist:<titre>"` |
+| un lien de playlist, ou « la playlist <nom> » | §2b avec ce lien (sinon chercher la playlist sur `soundcloud.com/<likes_of>/sets`, ou du compte des gates si `likes_of` est vide) | `djdl import F --source "playlist:<titre>"` |
 | un ou plusieurs liens de sons collés | §2b avec ces liens | `djdl import F --source liens` |
 
 `F` est le fichier écrit au §2c.

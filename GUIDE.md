@@ -9,7 +9,7 @@ Installation : ~20 minutes, une seule fois. Ensuite, une phrase à chaque fois. 
 - Un **Mac** ou un **PC Windows** (10 ou 11), avec **Google Chrome**.
 - Un **abonnement Claude payant** (Pro ou Max) : il donne accès à l'onglet « Code » de l'app, où vit le plugin.
 - Conseillé : un **deuxième compte SoundCloud** pour les gates (ils demandent de suivre, reposter, commenter). Ton compte principal reste propre.
-- Conseillé : une **adresse e-mail secondaire** : les gates la transmettent aux artistes.
+- Ton **e-mail SoundCloud** : tu le donnes une fois au réglage, les gates le transmettent aux artistes.
 
 ## 1. Installer l'app Claude
 
@@ -49,15 +49,14 @@ Tape `/sd-downloader:setup`. Elle apparaît dès que tu tapes `/` puis « sd ».
 
 Ensuite Claude **devine tout seul** le compte SoundCloud connecté dans Chrome, ton nom d'artiste et les dossiers où tu as déjà des sons. Il te propose tout en **choix à cliquer** :
 - le compte pour les gates et le profil dont il télécharge les likes ;
-- la case Droploud : s'il peut accepter pour toi les nouvelles de l'artiste quand un gate l'exige (sinon, ces sons sont marqués manquants) ;
-- Radio et Extended : seulement l'Extended, ou les deux ;
+- Extended version, Radio version, ou les deux ;
 - où ranger les sons, et dans quels dossiers chercher ceux que tu as déjà, pour ne rien télécharger en double ;
 - ton nom d'artiste, pour ne jamais télécharger tes propres sons ;
 - en option, une playlist « À télécharger ».
 
 À la fin, Claude te propose, **sans obligation**, de suivre l'auteur du plugin sur SoundCloud. Il te le reproposera après une grosse playlist, sauf si tu choisis « Ne plus me proposer ». Si tu le suis déjà, il ne demande rien.
 
-La seule chose à écrire : **ton e-mail et ton prénom** pour les gates. Une adresse secondaire est conseillée.
+La seule chose à écrire : **ton e-mail SoundCloud et ton prénom**, une seule fois. Ensuite Claude les remplit lui-même sur les gates.
 
 > **Une seule autorisation.** Au début du réglage, Claude te prévient puis affiche **une seule** fenêtre : clique **Autoriser**. Elle couvre le plugin pour toujours, même après ses mises à jour. Ensuite, l'extension Chrome demande l'accès à soundcloud.com, hypeddit.com et droploud.com : choisis à chaque fois l'option qui autorise **toujours** le site. Sur Mac, si le système demande l'accès à Téléchargements ou Musique, accepte. Après ça, plus aucune fenêtre pendant les téléchargements.
 

@@ -4,7 +4,7 @@ Plugin gratuit pour Claude, pour les DJ sur Mac et Windows. Tu likes des sons su
 
 - **téléchargement SoundCloud direct** quand l'artiste l'autorise ;
 - **gates Hypeddit et Droploud** : follow, like, repost, commentaire, e-mail… Claude fait toutes les étapes ;
-- **rangement** : chaque fichier va directement dans ton dossier. Pour un zip, il garde la meilleure version (Extended avant Radio, WAV/AIFF avant MP3) et jette le reste. Tu préfères garder la Radio **et** l'Extended ? Dis-le à l'installation, ou plus tard : « garde aussi les versions radio ». Les doublons partent à la corbeille ;
+- **rangement** : chaque fichier va directement dans ton dossier. Pour un zip, il garde la meilleure version (la coupe que tu as choisie, WAV/AIFF avant MP3) et jette le reste. Extended, Radio ou les deux : tu choisis à l'installation, ou plus tard (« garde aussi les versions radio »). Les doublons partent à la corbeille ;
 - **bilan** à la fin : ce qui est téléchargé, déjà présent, ignoré (longs sets, tes propres sons) et ce qui manque, avec la raison ;
 - **compare avec tes sons** : avant de télécharger, Claude regarde dans tes dossiers (Musique, rekordbox, Serato, clé USB…) et saute les sons que tu as déjà, dans la même version ;
 - **jamais deux fois le même son** : chaque son est suivi d'un run à l'autre, même s'il revient dans une playlist ;
@@ -21,7 +21,7 @@ Plugin gratuit pour Claude, pour les DJ sur Mac et Windows. Tu likes des sons su
 - L'app Claude (onglet Code) ou Claude Code, avec un abonnement Claude.
 - L'extension [**Claude in Chrome**](https://chromewebstore.google.com/detail/fcoeoabgfenejglbffodgkkbkcdhcgfn), connectée.
 - Conseillé : un **second compte SoundCloud** pour les gates (reposts, follows), connecté dans ce Chrome. Ton compte principal reste propre.
-- Conseillé : une adresse e-mail secondaire pour les gates.
+- Ton e-mail SoundCloud et ton prénom : tu les donnes une seule fois au réglage, ensuite Claude les remplit sur les gates.
 
 ## Installation
 
@@ -74,7 +74,7 @@ Ensuite :
 
 ## Bon à savoir
 
-- Les gates Droploud exigent parfois de s'inscrire aux nouvelles de l'artiste. Claude te demande une fois à l'installation si tu es d'accord. Si tu refuses, ces sons sont marqués manquants.
+- Les gates Droploud exigent parfois de s'inscrire aux nouvelles de l'artiste pour donner le son : Claude coche la case, comme tu le ferais.
 - Facultatif : Claude te propose de suivre l'auteur du plugin sur SoundCloud, à la fin du réglage et après une grosse playlist. Il ne suit que si tu dis oui, ne demande rien si tu le suis déjà, et « Ne plus me proposer » arrête pour de bon.
 - Aucune limite : prends 5 sons ou 500, Claude va jusqu'au bout. Si SoundCloud bloque un téléchargement direct (limite de SoundCloud), Claude passe tout de suite par le gate Hypeddit / Droploud quand il existe.
 - Beatport, Bandcamp et les autres sites payants ne sont pas touchés : ces sons sont listés comme manquants.
