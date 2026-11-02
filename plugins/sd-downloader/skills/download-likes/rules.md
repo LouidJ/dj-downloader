@@ -19,7 +19,7 @@ Les valeurs personnelles (e-mail, compte, dossiers…) sont dans `<home>/config.
 ## 2. Quels sons télécharger
 
 - Ignorer les **longs sets** (durée ≥ `skip_longer_than_minutes`).
-- Ignorer les **sons du DJ lui-même** (`own_artist_names` dans le titre ou l'artiste).
+- Ignorer les **sons du DJ lui-même** (`own_artist_names` dans le titre ou l'artiste), si la config en contient (édition perso).
 - Ne pas retélécharger ce qui est **déjà sur l'ordi** : juste après la sélection, `djdl dedupe --last` compare les sons choisis avec le dossier de destination **et** les dossiers de sons du DJ (`library_folders` : Musique, rekordbox, clé USB…), sous-dossiers compris. Seule la **même version** (même titre, même version, même artiste) compte comme présente ; une autre version ou un autre artiste est téléchargé quand même et signalé « à vérifier ». Si un fichier téléchargé est identique octet pour octet à un son déjà présent, il part à la Corbeille.
 - Ne jamais reproposer un son **retiré par le DJ** (statut `removed`).
 

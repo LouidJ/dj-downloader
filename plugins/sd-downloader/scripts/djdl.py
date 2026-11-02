@@ -2,7 +2,7 @@
 """DJ Downloader: suivi des likes SoundCloud, rangement des téléchargements, bilan recompté sur disque.
 
 Usage: python3 -I djdl.py [--home DOSSIER] <commande> ...   (Windows : py -3 -I djdl.py …)
-Commandes : init, scan, perms, check, import, snapshot, collect, adopt, set, remove, find, todo, sweep, report, show
+Commandes : init, scan, pick-folder, perms, check, import, snapshot, collect, adopt, set, remove, find, todo, sweep, report, show
 
 Réglages et suivi : <home>/config.json et <home>/state.json (home par défaut : $DJDL_HOME ou ~/.dj-downloader).
 """
@@ -519,6 +519,7 @@ def cmd_init(a):
         "skip_longer_than_minutes": a.skip_minutes,
         "versions": "both" if a.keep_both == "yes" else a.versions,
         "follow_author": a.follow_author,
+        "language": a.language,
         "sources": dict(SOURCES, pools=[]),
         "never_attribute_from": ["telegram.org", "whatsapp", "mail.google.com"],
     }
@@ -529,7 +530,7 @@ def cmd_init(a):
 
 # Proposition facultative de suivre l'auteur du plugin : ask = la proposer, followed = déjà suivi, no = ne plus proposer.
 FOLLOW_AUTHOR = ("ask", "followed", "no")
-SETTABLE = ("soundcloud.likes_of", "soundcloud.download_playlist", "soundcloud.chrome_device_id", "soundcloud.account",
+SETTABLE = ("language", "soundcloud.likes_of", "soundcloud.download_playlist", "soundcloud.chrome_device_id", "soundcloud.account",
             "gate.email", "gate.first_name", "dest_folder", "skip_longer_than_minutes", "versions",
             "follow_author")
 
@@ -610,6 +611,50 @@ def cmd_scan(a):
     print("Dossiers avec des sons (du plus fourni au moins fourni) :")
     for n, full, r in sorted(found, key=lambda x: -x[0])[:a.top]:
         print(f"  {short(r)}\t{n}{'' if full else '+'} sons")
+
+
+PICK_MAC = (  # fenêtre « Choisir un dossier » du Finder ; annuler = erreur -128
+    "on run argv",
+    "activate",
+    "set start to path to music folder",
+    'if item 2 of argv is "desktop" then set start to path to desktop folder',
+    'if item 2 of argv is "home" then set start to path to home folder',
+    "return POSIX path of (choose folder with prompt (item 1 of argv) default location start)",
+    "end run")
+PICK_WIN = (  # fenêtre « Rechercher un dossier » de Windows, au premier plan
+    "Add-Type -AssemblyName System.Windows.Forms; "
+    "$f = New-Object System.Windows.Forms.Form -Property @{TopMost = $true}; "
+    "$d = New-Object System.Windows.Forms.FolderBrowserDialog; "
+    "$d.Description = $env:DJDL_PROMPT; $d.ShowNewFolderButton = $true; "
+    "$d.SelectedPath = [Environment]::GetFolderPath($env:DJDL_START); "
+    "if ($d.ShowDialog($f) -eq 'OK') { $d.SelectedPath } else { exit 1 }")
+
+
+def cmd_pick_folder(a):
+    """Ouvre la fenêtre du système pour choisir un dossier (le DJ clique, n'écrit pas de chemin) et l'affiche."""
+    try:
+        if sys.platform == "darwin":
+            r = subprocess.run(["/usr/bin/osascript"] + [x for l in PICK_MAC for x in ("-e", l)] + [a.prompt, a.start],
+                               capture_output=True, text=True, timeout=a.wait)
+        elif WINDOWS:
+            start = {"music": "MyMusic", "desktop": "Desktop", "home": "UserProfile"}[a.start]
+            r = subprocess.run([POWERSHELL, "-STA", "-NoProfile", "-NonInteractive", "-Command", PICK_WIN],
+                               env={**os.environ, "DJDL_PROMPT": a.prompt, "DJDL_START": start},
+                               capture_output=True, text=True, timeout=a.wait)
+        else:
+            sys.exit("Fenêtre de choix de dossier indisponible ici : écrire le chemin du dossier.")
+    except subprocess.TimeoutExpired:
+        print("Aucun dossier choisi (fenêtre restée ouverte trop longtemps).")
+        return 1
+    except OSError as e:
+        sys.exit(f"Fenêtre de choix de dossier indisponible ({e}) : écrire le chemin du dossier.")
+    path = r.stdout.strip()
+    if r.returncode != 0 or not path:
+        print("Aucun dossier choisi.")
+        return 1
+    path = path.rstrip("/\\") or path
+    print(f"Dossier choisi : {short(path)}")
+    return 0
 
 
 def claude_settings_path():
@@ -1212,6 +1257,7 @@ def main():
     p.add_argument("--versions", choices=VERSIONS, default="extended",
                    help="quand un son existe en Extended et en Radio : extended, radio, ou both (les deux)")
     p.add_argument("--keep-both", choices=("yes", "no"), default="no", help=argparse.SUPPRESS)  # ancien nom de --versions both
+    p.add_argument("--language", default="fr", help="langue du DJ pour parler et pour les questions (fr, en, es, it…)")
     p.add_argument("--follow-author", choices=FOLLOW_AUTHOR, default="ask",
                    help="proposition facultative de suivre l'auteur du plugin sur SoundCloud")
     p.add_argument("--force", action="store_true")
@@ -1220,6 +1266,10 @@ def main():
     p = sp.add_parser("scan", help="installation : trouver les dossiers où le DJ a déjà des sons")
     p.add_argument("--min", type=int, default=10, help="nombre minimal de sons pour proposer un dossier")
     p.add_argument("--top", type=int, default=12); p.add_argument("--seconds", type=float, default=4.0)
+    p = sp.add_parser("pick-folder", help="installation : fenêtre du système pour choisir un dossier (pas de chemin à écrire)")
+    p.add_argument("--prompt", default="Choisis un dossier")
+    p.add_argument("--start", choices=("music", "desktop", "home"), default="music", help="dossier ouvert au départ")
+    p.add_argument("--wait", type=int, default=300, help="secondes avant d'abandonner")
     sp.add_parser("perms", help="installation : règles pour n'autoriser le plugin qu'une seule fois (ajout : autoriser.py)")
     p = sp.add_parser("library", help="dossiers de sons déjà sur l'ordi : list | add <dossier> | remove <dossier>")
     p.add_argument("action", nargs="?", default="list", choices=("list", "add", "remove")); p.add_argument("path", nargs="?")
@@ -1262,6 +1312,8 @@ def main():
         return cmd_scan(a)
     if a.cmd == "perms":
         return cmd_perms(a)
+    if a.cmd == "pick-folder":
+        return cmd_pick_folder(a)
     if not os.path.exists(a.config):
         sys.exit(f"Pas encore installé : {a.config} introuvable (lancer « init »).")
     if a.cmd == "config":

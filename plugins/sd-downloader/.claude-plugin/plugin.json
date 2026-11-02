@@ -2,7 +2,7 @@
   "name": "sd-downloader",
   "displayName": "SD Downloader",
   "version": "1.0.0",
-  "description": "Pour les DJ : Claude télécharge les sons gratuits de tes likes ou playlists SoundCloud (téléchargement direct, gates Hypeddit et Droploud), les range dans ton dossier sans doublons et fait le bilan. Mac et Windows, avec Claude in Chrome.",
+  "description": "For DJs: Claude downloads the free tracks from your SoundCloud likes or playlists (direct download, Hypeddit and Droploud gates), files them without duplicates and reports. Mac and Windows, with Claude in Chrome. FR : Claude télécharge les sons gratuits de tes likes ou playlists SoundCloud, les range sans doublons et fait le bilan.",
   "author": {
     "name": "Luigi Hayek"
   },
@@ -18,5 +18,6 @@
     "likes",
     "mac",
     "windows"
-  ]
+  ],
+  "types": "./types/index.d.ts"
 }

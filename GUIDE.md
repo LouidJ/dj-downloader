@@ -47,11 +47,10 @@ Dans le terminal (Claude Code), une seule commande suffit : `/plugin install sd-
 
 Tape `/sd-downloader:setup`. Elle apparaît dès que tu tapes `/` puis « sd ». Si elle n'apparaît pas, ouvre une autre nouvelle session. Claude vérifie d'abord que tout est prêt. **Sur Windows**, il peut te demander d'installer **Python** : sur [python.org](https://www.python.org/downloads/), clique Download Python, lance l'installateur et **coche « Add python.exe to PATH »** avant Install. Ouvre ensuite une nouvelle session et retape la commande.
 
-Ensuite Claude **devine tout seul** le compte SoundCloud connecté dans Chrome, ton nom d'artiste et les dossiers où tu as déjà des sons. Il te propose tout en **choix à cliquer** :
+Il te demande d'abord ta **langue** : tout le reste se fait dans ta langue. Ensuite Claude **devine tout seul** le compte SoundCloud connecté dans Chrome et les dossiers où tu as déjà des sons. Il te propose tout en **choix à cliquer** :
 - le compte pour les gates et le profil dont il télécharge les likes ;
 - Extended version, Radio version, ou les deux ;
 - où ranger les sons, et dans quels dossiers chercher ceux que tu as déjà, pour ne rien télécharger en double ;
-- ton nom d'artiste, pour ne jamais télécharger tes propres sons ;
 - en option, une playlist « À télécharger ».
 
 À la fin, Claude te propose, **sans obligation**, de suivre l'auteur du plugin sur SoundCloud. Il te le reproposera après une grosse playlist, sauf si tu choisis « Ne plus me proposer ». Si tu le suis déjà, il ne demande rien.
@@ -91,7 +90,6 @@ Autres phrases : « retire #12 de la liste », « compare aussi avec ma clé USB
 - **téléchargé** : le fichier est dans ton dossier.
 - **déjà présent** : tu l'avais déjà, même version.
 - **long set ignoré** : plus de 45 minutes.
-- **ton propre son** : laissé de côté.
 - **manquant** : pas de téléchargement gratuit (Beatport, Bandcamp…) ou gate bloqué. La raison est écrite à côté.
 - **à relancer** : refait tout seul au prochain run.
 

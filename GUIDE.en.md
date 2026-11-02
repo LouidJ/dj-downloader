@@ -47,11 +47,10 @@ In the terminal (Claude Code), one command is enough: `/plugin install sd-downlo
 
 Type `/sd-downloader:setup`. It shows up as soon as you type `/` and then "sd". If it doesn't show up, open another new session. Claude first checks that everything is ready. **On Windows**, it may ask you to install **Python**: on [python.org](https://www.python.org/downloads/), click Download Python, run the installer and **tick "Add python.exe to PATH"** before clicking Install. Then open a new session and type the command again.
 
-Next, Claude **figures out on its own** which SoundCloud account is logged in to Chrome, your artist name and the folders where you already have tracks. It offers everything as **choices to click**:
+It first asks for your **language**: everything else happens in your language. Next, Claude **figures out on its own** which SoundCloud account is logged in to Chrome and the folders where you already have tracks. It offers everything as **choices to click**:
 - the account for the gates and the profile whose likes it downloads;
 - Extended version, Radio version, or both;
 - where to save the tracks, and which folders to search for the ones you already have, so nothing gets downloaded twice;
-- your artist name, so it never downloads your own tracks;
 - optionally, a "To download" playlist.
 
 At the end, Claude offers, **with no obligation**, to follow the plugin's author on SoundCloud. It offers again after a big playlist, unless you pick "Don't ask again". If you already follow him, it doesn't ask.
@@ -91,7 +90,6 @@ Other phrases: "remove #12 from the list", "also compare with my USB stick", "al
 - **downloaded**: the file is in your folder.
 - **already there**: you already had it, same version.
 - **long set skipped**: longer than 45 minutes.
-- **your own track**: left aside.
 - **missing**: no free download (Beatport, Bandcamp…) or the gate is blocked. The reason is written next to it.
 - **to retry**: done again automatically on the next run.
 

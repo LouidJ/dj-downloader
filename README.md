@@ -1,11 +1,13 @@
 # SD Downloader — télécharge tes likes et tes playlists SoundCloud automatiquement
 
+**🇬🇧 English: [README.en.md](README.en.md)** · Le réglage te demande ta langue : tout se fait ensuite dans ta langue.
+
 Plugin gratuit pour Claude, pour les DJ sur Mac et Windows. Tu likes des sons sur SoundCloud, ou tu les mets dans une playlist, et Claude les télécharge pour toi :
 
 - **téléchargement SoundCloud direct** quand l'artiste l'autorise ;
 - **gates Hypeddit et Droploud** : follow, like, repost, commentaire, e-mail… Claude fait toutes les étapes ;
 - **rangement** : chaque fichier va directement dans ton dossier. Pour un zip, il garde la meilleure version (la coupe que tu as choisie, WAV/AIFF avant MP3) et jette le reste. Extended, Radio ou les deux : tu choisis à l'installation, ou plus tard (« garde aussi les versions radio »). Les doublons partent à la corbeille ;
-- **bilan** à la fin : ce qui est téléchargé, déjà présent, ignoré (longs sets, tes propres sons) et ce qui manque, avec la raison ;
+- **bilan** à la fin : ce qui est téléchargé, déjà présent, ignoré (longs sets, doublons) et ce qui manque, avec la raison ;
 - **compare avec tes sons** : avant de télécharger, Claude regarde dans tes dossiers (Musique, rekordbox, Serato, clé USB…) et saute les sons que tu as déjà, dans la même version ;
 - **jamais deux fois le même son** : chaque son est suivi d'un run à l'autre, même s'il revient dans une playlist ;
 - **s'adapte** : si un site change, Claude trouve le nouveau bouton, termine, et note le changement pour les fois suivantes.
@@ -43,7 +45,7 @@ Puis lance l'installation guidée :
 /sd-downloader:setup
 ```
 
-Claude te demande ton profil SoundCloud, le compte pour les gates, ton e-mail, ton nom d'artiste, ton dossier de téléchargement et les dossiers où tu as déjà des sons. Il ne te demande jamais de mot de passe : tu te connectes toi-même.
+Claude te demande d'abord ta langue, puis ton profil SoundCloud, le compte pour les gates, ton e-mail, ton dossier de téléchargement et les dossiers où tu as déjà des sons. Il ne te demande jamais de mot de passe : tu te connectes toi-même.
 
 ## Utilisation
 

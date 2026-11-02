@@ -391,12 +391,12 @@ footer { margin-top: 28px; color: var(--muted); font-size: 14px; }
       kicker: T('Tes réglages', 'Your settings'), title: T('Règle le plugin : tu coches, c\'est tout', 'Set up the plugin: just tick boxes'),
       body: function () {
         return T('<p>Dans la nouvelle session, tape :</p>', '<p>In the new session, type:</p>') + say('/sd-downloader:setup', typeLabel()) +
-          T('<p>La commande s\'affiche dès que tu tapes <code>/</code> puis « sd ». Claude devine ton compte SoundCloud, ton nom d\'artiste et tes dossiers de sons. Il te les propose en <strong>choix à cliquer</strong> :</p>' +
+          T('<p>La commande s\'affiche dès que tu tapes <code>/</code> puis « sd ». Claude te demande d\'abord ta langue, puis devine ton compte SoundCloud et tes dossiers de sons. Il te les propose en <strong>choix à cliquer</strong> :</p>' +
             '<ul><li>le compte des gates et le profil dont il télécharge les likes ;</li>' +
             '<li>Extended version, Radio version, ou les deux ;</li>' +
             '<li>où ranger les sons, et dans quels dossiers tu en as déjà, pour ne jamais télécharger en double.</li></ul>' +
             '<p>La seule chose à écrire : ton <strong>e-mail SoundCloud</strong> et ton <strong>prénom</strong>, une seule fois. Ensuite Claude les remplit lui-même sur les gates. À la fin, Claude te propose, sans obligation, de suivre l\'auteur du plugin sur SoundCloud.</p>',
-            '<p>The command shows up as soon as you type <code>/</code> then “sd”. Claude guesses your SoundCloud account, your artist name and your music folders. It offers them as <strong>clickable choices</strong>:</p>' +
+            '<p>The command shows up as soon as you type <code>/</code> then “sd”. Claude first asks for your language, then guesses your SoundCloud account and your music folders. It offers them as <strong>clickable choices</strong>:</p>' +
             '<ul><li>the gates account and the profile whose likes it downloads;</li>' +
             '<li>Extended version, Radio version, or both;</li>' +
             '<li>where to file the tracks, and which folders already hold some, so nothing is ever downloaded twice.</li></ul>' +
