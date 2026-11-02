@@ -53,3 +53,10 @@ Les valeurs personnelles (e-mail, compte, dossiers…) sont dans `<home>/config.
 
 - Le bilan vient **toujours** de `djdl.py report`, recompté à partir du disque, jamais de mémoire.
 - Catégories : téléchargés, ajoutés par le DJ, déjà présents, retirés, ignorés (longs sets, packs, propres sons, doublons), à relancer, manquants.
+- **Présentation** : le bilan doit sauter aux yeux, pas se perdre dans le texte. Toujours ce format, dans la langue du DJ (titres et colonnes traduits, noms de sons et de dossiers inchangés) :
+  1. Un titre : `## 🎧 Bilan : <N> sons traités` (+ le nom de la sélection s'il y en a un).
+  2. Un tableau des chiffres sur une ligne, une colonne par catégorie **non vide**, le nombre en gras : `✅ Téléchargés`, `➕ Ajoutés par toi`, `📁 Déjà sur ton ordi`, `🔁 À relancer`, `⏭️ Ignorés`, `❌ Manquants`.
+  3. Une phrase de conclusion en citation (`> …`) : ce qu'il faut retenir (« 3 nouveaux sons dans ton dossier », « Aucun nouveau son : tu avais déjà tout ce qui était disponible »…).
+  4. Un tableau par catégorie non vide, sous un titre `### <emoji> <catégorie> (<n>)`, colonnes `#`, `Son` (Artiste – Titre), et une colonne courte : `Source` pour les téléchargés (SoundCloud, Hypeddit, Droploud…), `Où` pour les déjà présents (le dossier, pas le chemin complet), `Pourquoi` pour les manquants, à relancer et ignorés. Une cellule = quelques mots ; pas de phrase longue dans un tableau (« identique à 01 SKADOOSH.wav, doublon mis à la Corbeille »).
+  5. S'il y en a : « PROBLÈMES », musique restée dans Téléchargements, page qui demandait autre chose, site changé → un bloc `> ⚠️ **À regarder** : …`, une ligne par point.
+  6. Pour finir, une ligne courte sur les gates (« Gates faits avec <compte> : 4 », ou « Aucun gate nécessaire : rien fait avec <compte> »).
