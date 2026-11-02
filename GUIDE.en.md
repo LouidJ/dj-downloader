@@ -101,6 +101,7 @@ Other phrases: "remove #12 from the list", "also compare with my USB stick", "al
 - **Claude is waiting**: look under its last message for choices or a **Go** button to click. If it has stopped, type "keep going until the end".
 - **A permission window appears**: read it and click **Allow**. If it's Chrome asking for access to a site, pick the option that **always** allows it.
 - **Chrome not connected**: Chrome open, Claude extension logged in to the same account, then "try again".
+- **The Chrome connection keeps dropping** (especially on Droploud): during a download, only one Claude conversation in Chrome at a time; keep the Chrome window open and your Mac/PC awake; update Chrome and the Claude extension. If a gate is left on "Drop unlocked!", click **Download** yourself, then type "file it".
 - **"Not installed yet"**: type `/sd-downloader:setup`.
 - **CAPTCHA**: do it yourself in the tab, then type "done".
 - **Stop everything**: Stop button next to the text box (or Esc). Nothing is lost, the next run picks up where it left off.

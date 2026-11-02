@@ -101,6 +101,7 @@ Autres phrases : « retire #12 de la liste », « compare aussi avec ma clé USB
 - **Claude attend** : regarde sous son dernier message s'il y a des choix ou un bouton **Go** à cliquer. S'il s'est arrêté, écris « continue jusqu'au bout ».
 - **Une fenêtre d'autorisation s'affiche** : lis-la et clique **Autoriser**. Si c'est Chrome qui demande l'accès à un site, choisis l'option qui l'autorise **toujours**.
 - **Chrome pas connecté** : Chrome ouvert, extension Claude connectée au même compte, puis « réessaie ».
+- **La connexion à Chrome saute souvent** (surtout sur Droploud) : pendant un téléchargement, une seule conversation Claude dans Chrome à la fois ; garde la fenêtre Chrome ouverte et le Mac/PC éveillé ; mets à jour Chrome et l'extension Claude. Si un gate est resté sur « Drop unlocked! », clique toi-même sur **Download**, puis dis « range le fichier ».
 - **« Pas encore installé »** : tape `/sd-downloader:setup`.
 - **CAPTCHA** : fais-le toi-même dans l'onglet, puis « c'est fait ».
 - **Tout arrêter** : bouton Stop à côté de la zone de texte (ou Échap). Rien n'est perdu, le prochain run reprend où il en était.

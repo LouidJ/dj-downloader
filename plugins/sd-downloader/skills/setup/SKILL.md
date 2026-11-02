@@ -11,11 +11,19 @@ allowed-tools:
   - 'Bash(python -I ${CLAUDE_PLUGIN_ROOT}/scripts/djdl.py *)'
   - 'PowerShell(py -3 -I "${CLAUDE_PLUGIN_ROOT}/scripts/djdl.py" *)'
   - 'PowerShell(python -I "${CLAUDE_PLUGIN_ROOT}/scripts/djdl.py" *)'
-  - 'mcp__claude-in-chrome__*'
-  - 'Read(~/.claude/settings.json)'
-  - 'Bash(python3 --version)'
-  - 'Bash(py -3 --version)'
-  - 'Bash(python --version)'
+  - 'mcp__claude-in-chrome__list_connected_browsers'
+  - 'mcp__claude-in-chrome__select_browser'
+  - 'mcp__claude-in-chrome__tabs_context_mcp'
+  - 'mcp__claude-in-chrome__tabs_create_mcp'
+  - 'mcp__claude-in-chrome__tabs_close_mcp'
+  - 'mcp__claude-in-chrome__navigate'
+  - 'mcp__claude-in-chrome__javascript_tool'
+  - 'mcp__claude-in-chrome__find'
+  - 'mcp__claude-in-chrome__read_page'
+  - 'mcp__claude-in-chrome__get_page_text'
+  - 'mcp__claude-in-chrome__computer'
+  - 'mcp__claude-in-chrome__form_input'
+  - 'mcp__claude-in-chrome__browser_batch'
 ---
 
 # Installation de SD Downloader
@@ -25,21 +33,21 @@ Parle au DJ dans sa langue (les libellés des choix ci-dessous sont en français
 Outil : `python3 -I "${CLAUDE_PLUGIN_ROOT}/scripts/djdl.py" --home "${CLAUDE_PLUGIN_DATA}"` (appelé `djdl` ci-dessous).
 Sous **Windows**, si `python3` ne répond pas, remplace-le par `py -3` (ou `python`). Garde les guillemets autour des chemins.
 
-## 1. Prérequis
+## 1. Une seule autorisation, en tout premier
 
-- **Python 3.9 ou plus** doit répondre :
-  - **Mac** : `python3 --version`. Sinon, demande au DJ de lancer lui-même `xcode-select --install` dans le Terminal, puis de revenir.
-  - **Windows** : essaie `python3 --version`, puis `py -3 --version`, puis `python --version`, et garde le premier qui affiche « Python 3.x » pour toutes les commandes `djdl`. Si aucun ne répond (ou si le Microsoft Store s'ouvre), demande au DJ d'installer Python depuis python.org (Download Python, puis à l'installation **cocher « Add python.exe to PATH »**), puis d'ouvrir une nouvelle session.
-- L'extension **Claude in Chrome** doit être installée et connectée dans Chrome. Appelle `list_connected_browsers`. Si rien n'est connecté, donne au DJ le lien direct https://chromewebstore.google.com/detail/fcoeoabgfenejglbffodgkkbkcdhcgfn. Il clique « Ajouter à Chrome », puis se connecte dans l'extension avec le même compte Claude. Attends, puis réessaie.
+C'est la **toute première action** du réglage, avant tout autre outil : ni `python3 --version`, ni Chrome, ni lecture de fichier, ni `djdl`. Chaque appel fait avant pourrait ouvrir sa propre fenêtre d'autorisation.
 
-## 1b. Une seule autorisation, pour tout le reste
+1. Dis au DJ, en deux phrases : « Pour ne pas te demander la permission à chaque étape, je t'en demande une seule maintenant. Elle autorise uniquement l'outil du plugin, l'extension Claude in Chrome et les fichiers du plugin. Une fenêtre va s'afficher : clique **Autoriser**. »
+2. Lance `python3 -I "${CLAUDE_PLUGIN_ROOT}/scripts/autoriser.py" --home "${CLAUDE_PLUGIN_DATA}"`. Ce script ajoute lui-même les règles du plugin aux réglages de Claude, sans toucher au reste, et garde une copie de l'ancien fichier. Il répond « donnée » ou « déjà donnée ». Ne modifie jamais toi-même le fichier de réglages.
+   - **Python ne répond pas** (commande introuvable) :
+     - **Mac** : demande au DJ de lancer lui-même `xcode-select --install` dans le Terminal, puis de revenir.
+     - **Windows** : réessaie la même commande avec `py -3`, puis avec `python`. Garde le premier qui marche pour toutes les commandes `djdl`. Si aucun ne répond (ou si le Microsoft Store s'ouvre), demande au DJ d'installer Python depuis python.org (Download Python, puis à l'installation **cocher « Add python.exe to PATH »**), puis d'ouvrir une nouvelle session.
+   - **« Réglages illisibles » ou « Écriture impossible »** : rien n'a été changé. Dis-le au DJ en une phrase et continue.
+   - **Le DJ refuse** : continue quand même. Claude demandera simplement la permission à chaque étape.
 
-À faire **juste après les prérequis, avant Chrome et avant `djdl scan`** : c'est ce qui évite au DJ une fenêtre d'autorisation à chaque étape, aujourd'hui comme à chaque téléchargement.
+## 1b. Claude in Chrome
 
-1. `djdl perms`. S'il répond « déjà donnée », passe à l'étape 2.
-2. Dis au DJ, en deux phrases : « Pour ne pas te demander la permission à chaque étape, je t'en demande une seule maintenant. Elle autorise uniquement l'outil du plugin, l'extension Claude in Chrome et les fichiers du plugin. Une fenêtre va s'afficher : clique **Autoriser**. »
-3. Lis le fichier de réglages indiqué par `djdl perms` (Read). Ajoute les règles affichées à `permissions.allow` (crée `permissions` et `allow` s'ils manquent) en **un seul** Edit, ou un seul Write si le fichier n'existe pas. Ne change rien d'autre : ni les autres règles, ni le mode de permission, ni aucune autre clé. N'ajoute jamais de règle plus large que celles affichées.
-4. Relance `djdl perms` : il doit répondre « déjà donnée ». Si le DJ a refusé, continue quand même : Claude demandera simplement la permission à chaque étape.
+L'extension **Claude in Chrome** doit être installée et connectée dans Chrome. Appelle `list_connected_browsers`. Si rien n'est connecté, donne au DJ le lien direct https://chromewebstore.google.com/detail/fcoeoabgfenejglbffodgkkbkcdhcgfn. Il clique « Ajouter à Chrome », puis se connecte dans l'extension avec le même compte Claude. Attends, puis réessaie.
 
 ## 2. Questions au DJ : détecter d'abord, puis faire cocher
 
@@ -48,7 +56,7 @@ Le DJ ne doit presque rien écrire. **Devine d'abord** ce que tu peux, puis pose
 **A. Détecter, sans rien demander**
 - **Navigateur et compte des gates** : `list_connected_browsers`. Pour chaque navigateur : `select_browser`, ouvrir soundcloud.com, lire le compte connecté (`playbook.md` §1). Garde son deviceId et son compte. Ne touche plus jamais aux autres navigateurs.
 - **Nom affiché** de ce compte (sur sa page de profil).
-- **Accès de Chrome aux sites, une fois pour toutes** : dans ce navigateur, ouvre aussi hypeddit.com et droploud.com. Si l'extension demande l'accès à un site (soundcloud.com, hypeddit.com, droploud.com), dis au DJ de choisir l'option qui autorise **toujours** ce site. Les commandes du plugin, elles, sont déjà autorisées par l'étape 1b : pendant les téléchargements, plus aucune fenêtre d'autorisation.
+- **Accès de Chrome aux sites, une fois pour toutes** : dans ce navigateur, ouvre aussi hypeddit.com et droploud.com. Si l'extension demande l'accès à un site (soundcloud.com, hypeddit.com, droploud.com), dis au DJ de choisir l'option qui autorise **toujours** ce site. Les commandes du plugin, elles, sont déjà autorisées par l'étape 1 : pendant les téléchargements, plus aucune fenêtre d'autorisation.
 - **Dossiers de sons** : `djdl scan`. Il liste les dossiers qui contiennent déjà des sons, avec leur nombre.
 
 **B. Premier appel `AskUserQuestion`**

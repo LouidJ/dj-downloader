@@ -32,9 +32,20 @@ STATUSES = {
     "own_track": "ton propre son",
     "duplicate_like": "doublon de like",
 }
+# note d'un son téléchargé alors qu'il était déjà sur l'ordi (fichier identique, mis à la Corbeille)
+GATE_FOR_NOTHING = "téléchargé pour rien, identique à"
 
 
 # ---------- config / état ----------
+
+def check_home(home):
+    """Le dossier du plugin doit s'appeler « …dj-downloader… » ou « …sd-downloader… » : un --home vers
+    ~/.claude, ~ ou le dossier d'une autre appli (où init écrirait config.json) est refusé."""
+    h = os.path.abspath(os.path.expanduser(home))
+    if not re.search(r"(dj|sd)-downloader", os.path.basename(h)):
+        sys.exit(f"Dossier refusé : {h} (le dossier du plugin doit contenir « dj-downloader » ou « sd-downloader »).")
+    return h
+
 
 def load_config(path):
     with open(path, encoding="utf-8") as f:
@@ -42,8 +53,10 @@ def load_config(path):
     for k in ("dest_folder", "downloads_folder"):
         c[k] = os.path.expanduser(c[k])
     c["library_folders"] = [os.path.expanduser(x) for x in c.get("library_folders", [])]
-    sf = os.path.expanduser(c.get("state_file", "state.json"))
-    c["state_file"] = sf if os.path.isabs(sf) else os.path.join(os.path.dirname(os.path.abspath(path)), sf)
+    sf = c.get("state_file", "state.json")
+    if not isinstance(sf, str) or os.path.basename(sf) != sf or sf in ("", ".", "..") or "/" in sf:
+        sys.exit(f"state_file refusé : {sf!r} (un simple nom de fichier, dans le dossier du plugin).")
+    c["state_file"] = os.path.join(os.path.dirname(os.path.abspath(path)), sf)
     return c
 
 
@@ -229,25 +242,75 @@ def rank(name):
     return v * 10 + f
 
 
-def place(c, src):
-    """Range un fichier audio dans la destination. Retourne (résultat, chemin)."""
+W0, W1 = r"(?<![^\W_])", r"(?![^\W_])"  # bords de mot (le « _ » sépare aussi)
+ANYWHERE = re.compile(W0 + r"(?:version[\s_]+finale?|final[\s_]+version|v\d+)" + W1, re.I)
+MASTER = re.compile(W0 + r"master(?:ed|is[ée]e?|ized|ing)?" + W1, re.I)
+FINAL = re.compile(W0 + r"finale?" + W1, re.I)
+KEEP_UPPER = {"dj", "vip", "mc"}  # restent en capitales : « DJ Snake », « (VIP Mix) »
+
+
+def clean_name(name, title=None):
+    """Nom de fichier propre : sans « V1/V2 » ni « version finale », sans « master » ni « final » s'ils ne
+    sont pas dans le titre SoundCloud (`title` ; sans titre connu : seulement entre parenthèses), et en
+    Majuscules Initiales si tout est en capitales."""
+    stem, ext = os.path.splitext(name)
+    s = ANYWHERE.sub(" ", stem)
+    for word in (MASTER, FINAL):
+        if title is not None and not word.search(title):
+            s = word.sub(" ", s)
+
+    def inside(m):
+        if title and re.search(r"[(\[]\s*" + re.escape(m[2].strip()) + r"\s*[)\]]", title, re.I):
+            return m[0]  # parenthèse qui fait partie du titre SoundCloud
+        txt = FINAL.sub(" ", MASTER.sub(" ", m[2]))
+        txt = re.sub(r"\s+", " ", txt).strip(" _-–.")
+        return f"{m[1]}{txt}{m[3]}" if txt else " "
+    s = re.sub(r"([(\[])([^)\]]*)([)\]])", inside, s)
+    s = re.sub(r"(?:\s*[-–]\s*){2,}", " - ", s)  # « Artist - - Track » après un mot retiré
+    s = re.sub(r"[\s_\-–.]+(?=[(\[])", " ", s)  # « Track_ (Extended) »
+    s = re.sub(r"\s+", " ", s).strip(" _-–.")
+    if not any(ch.isalpha() for ch in s):
+        s = stem  # rien de lisible ne resterait : on garde le nom d'origine
+    letters = [ch for ch in s if ch.isalpha()]
+    if letters and all(ch.isupper() for ch in letters):
+        s = re.sub(r"[^\W\d_]+(?:['’][^\W\d_]+)*", lambda m: title_word(m[0]), s)
+    return s + ext
+
+
+def title_word(w):
+    """« DON'T » -> « Don't », « L'AMOUR » -> « L'Amour » (élision : une lettre avant l'apostrophe), « DJ » reste."""
+    if w.lower() in KEEP_UPPER:
+        return w.upper()
+    parts = re.split(r"(['’])", w.lower())
+    out = parts[0].capitalize()
+    for i in range(1, len(parts), 2):
+        nxt = parts[i + 1]
+        out += parts[i] + (nxt.capitalize() if len(parts[i - 1]) == 1 else nxt)
+    return out
+
+
+def place(c, src, title=None):
+    """Range un fichier audio dans la destination (title : titre SoundCloud du son, pour le nom). Retourne (résultat, chemin)."""
     same = find_identical(c, src)
     if same:
         trash(src)
         return "doublon", same
-    target = os.path.join(c["dest_folder"], os.path.basename(src))
+    name = clean_name(os.path.basename(src), title)
+    if name != os.path.basename(src):
+        print(f"  renommé : {os.path.basename(src)} → {name}")
+    target = os.path.join(c["dest_folder"], name)
     if os.path.exists(target):
         return "conflit", src  # même nom, contenu différent : on laisse, on signale
     shutil.move(src, target)
     return "rangé", target
 
 
-def process(c, path):
+def process(c, path, title=None):
     """Traite un fichier téléchargé (audio ou zip). Retourne une liste de (résultat, chemin)."""
     name = os.path.basename(path)
     low = name.lower()
     if low.endswith(AUDIO):
-        return [place(c, path)]
+        return [place(c, path, title)]
     if not low.endswith(".zip"):
         return [("non audio", path)]
     tmp = tempfile.mkdtemp(prefix="unzip.", dir=os.path.dirname(c["state_file"]))
@@ -285,7 +348,7 @@ def process(c, path):
         return [("pack rangé", target)]
     out = []
     for f in sorted(next(iter(groups.values())).values(), key=lambda x: rank(os.path.basename(x))):
-        res = place(c, f)
+        res = place(c, f, title)
         if res[0] == "conflit":  # ne pas jeter le seul exemplaire avec le dossier extrait
             keep = os.path.join(c["downloads_folder"], os.path.basename(res[1]))
             shutil.move(res[1], keep)
@@ -452,11 +515,16 @@ def rule_path(path):
     return "//" + path.replace("\\", "/").replace(":", "").lstrip("/")
 
 
+def plugin_root():
+    return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
 def perm_rules(home):
-    """Règles d'autorisation durables du plugin : ses propres commandes, Chrome, ses fichiers. Rien d'autre."""
-    root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    if os.sep.join(("plugins", "cache")) in root:  # installé depuis une marketplace : …/<plugin>/<version>
-        root = os.path.join(os.path.dirname(root), "*")  # reste valable après chaque mise à jour
+    """Règles d'autorisation durables : le seul djdl.py de CETTE version du plugin (pas de « * » dans le
+    chemin, sinon « …/*/scripts » laisserait passer « …/../données/scripts »), et ses fichiers.
+    Ni autoriser.py (son accord doit toujours passer par une fenêtre), ni Claude in Chrome (couvert
+    pendant les runs par `allowed-tools` des skills, à ne pas ouvrir à toutes les sessions)."""
+    root = plugin_root()
     script = os.path.join(root, "scripts", "djdl.py")
     rules = []
     for py in (("py -3", "python", "python3") if WINDOWS else ("python3",)):
@@ -464,28 +532,90 @@ def perm_rules(home):
         if WINDOWS:
             rules.append(f'PowerShell({py} -I "{script}" *)')
     data = rule_path(os.path.abspath(os.path.expanduser(home)))
-    rules += ["mcp__claude-in-chrome__*", f"Read({rule_path(root)}/**)", f"Read({data}/**)", f"Edit({data}/**)"]
+    rules += [f"Read({rule_path(root)}/**)", f"Read({data}/**)", f"Edit({data}/**)"]
     return rules
 
 
-def missing_rules(home):
+def stale_rule(r, home):
+    """Règle laissée par une ancienne version du plugin (chemin en « * », autre version, Chrome pour tous)."""
+    if r in perm_rules(home):
+        return False
+    if r == "mcp__claude-in-chrome__*":
+        return True
+    root = plugin_root()
+    base = os.path.dirname(root) if os.sep.join(("plugins", "cache")) in root else root  # toutes versions
+    return any(m in r for m in (base + os.sep, base + "/", rule_path(base) + "/"))
+
+
+def settings_allow():
     try:
         with open(claude_settings_path(), encoding="utf-8") as f:
-            have = set(json.load(f).get("permissions", {}).get("allow", []))
-    except (OSError, ValueError):
-        have = set()
+            return json.load(f).get("permissions", {}).get("allow", [])
+    except (OSError, ValueError, AttributeError):
+        return []
+
+
+def missing_rules(home):
+    have = set(settings_allow())
     return [r for r in perm_rules(home) if r not in have]
 
 
+def perms_ok(home):
+    """Donnée = toutes les règles de cette version présentes, et plus aucune d'une ancienne version."""
+    return not missing_rules(home) and not any(stale_rule(r, home) for r in settings_allow())
+
+
+def write_rules(home, remove=False):
+    """Seul endroit qui écrit les réglages de Claude, appelé par autoriser.py (jamais par la ligne de
+    commande de djdl) : ajoute les règles du plugin, ou les retire ; retire aussi celles des anciennes
+    versions. Aucune autre règle ni clé touchée ; copie datée de l'ancien fichier."""
+    path = os.path.realpath(claude_settings_path())  # suit un éventuel lien symbolique
+    try:
+        with open(path, encoding="utf-8") as f:
+            s = json.load(f)
+    except FileNotFoundError:
+        s = {}
+    except (OSError, ValueError) as e:
+        sys.exit(f"Réglages illisibles, rien n'est changé ({e}).")
+    if not isinstance(s, dict) or not isinstance(s.setdefault("permissions", {}), dict) \
+            or not isinstance(s["permissions"].setdefault("allow", []), list):
+        sys.exit("Réglages d'une forme inattendue, rien n'est changé.")
+    allow = s["permissions"]["allow"]
+    ours = set(perm_rules(home))
+    keep = [r for r in allow if not stale_rule(r, home) and not (remove and r in ours)]
+    added = [] if remove else [r for r in perm_rules(home) if r not in keep]
+    if keep + added == allow:
+        return 0, 0
+    s["permissions"]["allow"] = keep + added
+    backup = os.path.exists(path)
+    try:
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        if backup:
+            shutil.copy2(path, f"{path}.avant-djdl-{time.strftime('%Y%m%d-%H%M%S')}")
+        tmp = path + ".djdl.tmp"
+        with open(tmp, "w", encoding="utf-8") as f:
+            json.dump(s, f, ensure_ascii=False, indent=2)
+            f.write("\n")
+        if backup:
+            shutil.copymode(path, tmp)
+        os.replace(tmp, path)
+    except OSError as e:
+        sys.exit(f"Écriture impossible, rien n'est changé ({e}).")
+    return len(added), len(allow) - len(keep)
+
+
 def cmd_perms(a):
-    """Affiche les règles à ajouter une fois dans permissions.allow des réglages de Claude (l'ajout est fait par Claude, avec l'accord du DJ)."""
-    todo = missing_rules(a.home)
+    """Affiche les règles d'autorisation du plugin à ajouter (l'ajout passe par autoriser.py, avec une fenêtre)."""
     print(f"Réglages de Claude : {claude_settings_path()}")
-    if not todo:
+    if perms_ok(a.home):
         print("Autorisation unique : déjà donnée.")
         return
-    print("Règles à ajouter dans permissions.allow :")
-    print(json.dumps(todo, ensure_ascii=False, indent=2))
+    print("Autorisation unique : pas encore donnée. autoriser.py ajoutera :")
+    print(json.dumps(missing_rules(a.home), ensure_ascii=False, indent=2))
+    old = [r for r in settings_allow() if stale_rule(r, a.home)]
+    if old:
+        print("et retirera ces règles d'une ancienne version :")
+        print(json.dumps(old, ensure_ascii=False, indent=2))
 
 
 def cmd_library(a):
@@ -551,8 +681,8 @@ def cmd_check(c, st, a):
           f" | pools : {', '.join(p['name'] for p in c['sources'].get('pools', [])) or 'aucun'}")
     if sc.get("download_playlist"):
         print(f"Playlist à télécharger : {sc['download_playlist']}")
-    print("Autorisation unique : " + ("donnée" if not missing_rules(a.home) else
-                                       "pas encore donnée (voir « perms »), Claude demandera la permission à chaque étape"))
+    print("Autorisation unique : " + ("donnée" if perms_ok(a.home) else
+                                       "pas encore donnée (lancer autoriser.py), Claude demandera la permission à chaque étape"))
     for b in bad:
         print("  À CORRIGER : " + b)
     print("OK" if not bad else "INCOMPLET")
@@ -670,7 +800,7 @@ def cmd_collect(c, st, a):
         if v == "étranger" or (v == "non vérifié" and not a.accept_unverified):
             print(f"  PAS ATTRIBUÉ ({v}, origine {host}) : {n} — laissé dans Téléchargements")
             continue
-        results = process(c, p)
+        results = process(c, p, t["title"])
         for res, path in results:
             print(f"  {res} : {os.path.relpath(path, c['dest_folder']) if path.startswith(c['dest_folder']) else path}")
         new = [x for r, x in results if r in ("rangé", "pack rangé")]
@@ -682,7 +812,7 @@ def cmd_collect(c, st, a):
             if len(new) > 1:
                 t["note"] = "versions gardées : " + " + ".join(cut_of(os.path.basename(x)) for x in new)
             elif not new:
-                t["note"] = "fichier identique déjà présent"
+                t["note"] = f"{GATE_FOR_NOTHING} : {short(dup[0])}"
     st["snapshot"] = sorted(os.listdir(c["downloads_folder"]))
     print(("OK " if took else "ÉCHEC ") + label(t))
     return 0 if took else 1
@@ -691,11 +821,12 @@ def cmd_collect(c, st, a):
 def cmd_adopt(c, st, a):
     """Range un fichier ajouté par le DJ et l'associe (optionnellement) à un son."""
     p = os.path.expanduser(a.file)
-    results = process(c, p) if not p.startswith(c["dest_folder"]) else [("déjà rangé", p)]
+    t = get_track(st, a.track) if a.track else None
+    results = (process(c, p, t and t["title"]) if not p.startswith(c["dest_folder"])
+               else [("déjà rangé", p)])
     for res, path in results:
         print(f"  {res} : {path}")
-    if a.track:
-        t = get_track(st, a.track)
+    if t:
         res, path = results[0]
         if res in ("rangé", "pack rangé", "doublon", "déjà rangé"):
             t.update(status="user_added", source="user", updated=today(),
@@ -726,29 +857,67 @@ def cmd_remove(c, st, a):
     cmd_set(c, st, a)
 
 
+# Mentions promo des titres SoundCloud, qui ne disent rien de la version :
+# « {HYPEDDIT #55 FREE DOWNLOAD} », « [FREE DL] », « (FILTERED) », « (OUT NOW) »…
+PROMO = re.compile(r"[(\[{][^)\]}]*?(?:free\s*d(?:own)?l(?:oad)?|freedl|hypeddit|droploud|filtered|"
+                   r"out\s+now|buy|click|support(?:ed)?|premiere)[^)\]}]*[)\]}]", re.I)
+
+
+def strip_promo(title):
+    """Titre sans mentions promo ni blocs {…}."""
+    t = PROMO.sub(" ", title)
+    t = re.sub(r"\{[^}]*\}", " ", t)
+    return re.sub(r"\s+", " ", t).strip()
+
+
 def split_title(title):
     """('titre de base', {mots de version}) — la version = ce qui est entre () ou []."""
     base = re.sub(r"[(\[].*?[)\]]", " ", title)
     vers = " ".join(re.findall(r"[(\[](.*?)[)\]]", title))
     generic = {"extended", "original", "mix", "radio", "edit", "club", "version", "free", "download",
-               "dl", "remix", "rework", "vip", "feat", "ft", "the", "x", "and", "vocal"}
+               "dl", "remix", "rework", "vip", "feat", "ft", "the", "x", "and", "vocal",
+               "filtered", "hypeddit", "droploud", "out", "now", "buy"}
     vw = {w for w in norm(vers).split() if w not in generic and len(w) > 1}
     return norm(base), vw
 
 
-def title_parts(title, uploader):
-    """(mots du titre, mots de version, mots d'artiste) d'un titre SoundCloud."""
-    if " - " in title:
-        artist, rest = title.split(" - ", 1)
-    else:
-        artist, rest = uploader, title
+def title_candidates(title, uploader):
+    """Lectures possibles d'un titre : « Artiste - Titre » d'abord, puis « Titre - Artiste »."""
+    t = strip_promo(title)
+    if " - " not in t:
+        return [parts_of(uploader, t, artist_in_title=False)]
+    left, right = t.split(" - ", 1)
+    return [parts_of(left, right), parts_of(right, left)]
+
+
+def best_match(title, uploader, files, strict_cut=False):
+    """(lecture retenue, [(verdict, chemin)]). La lecture « Titre - Artiste » ne sert que si elle trouve
+    la même version : sinon on garde « Artiste - Titre », pour ne pas signaler de faux « à vérifier »."""
+    cands = title_candidates(title, uploader)
+    found = []
+    for i, cand in enumerate(cands):
+        core, vw, aw, kind = cand
+        # lecture inversée : tout « l'artiste » doit être dans le nom, sinon « Latch | Renyn Remix »
+        # passerait pour un artiste et le remix pour l'original déjà présent
+        found.append((cand, match_files(core, vw, aw, files, kind, strict_cut, all_artists=i > 0)))
+        if found[-1][1] and found[-1][1][0][0] == "MÊME VERSION":
+            return found[-1]
+    return found[0]
+
+
+def parts_of(artist, rest, artist_in_title=True):
+    """Une lecture : la version (entre () ou []) compte des deux côtés du « - »,
+    pour « Titre - Artiste (Remix) » comme pour « Artiste - Titre (Remix) ».
+    Les parenthèses du nom de l'uploader (« JUNO (DE) ») ne sont pas une version."""
     base, vw = split_title(rest)
-    junk = {"free", "download", "dl", "buy", "filtered", "out", "now"}
+    abase, avw = split_title(artist)
+    avw = {w for w in avw if len(w) > 2} if artist_in_title else set()
+    junk = {"free", "download", "dl", "buy", "filtered", "out", "now", "hypeddit", "droploud"}
     core = [w for w in base.split() if w not in junk]
     while core and core[0] in ("the", "a"):
         core = core[1:]
-    aw = {w for w in norm(artist).split() if len(w) > 2} - {"records", "music", "official", "the", "feat"}
-    return core, vw, aw, cut_kind(rest)
+    aw = {w for w in abase.split() if len(w) > 2} - {"records", "music", "official", "the", "feat"}
+    return core, vw | avw, aw, cut_kind(rest) or cut_kind(artist)
 
 
 def cut_kind(text):
@@ -757,7 +926,7 @@ def cut_kind(text):
     return "extended" if "extended" in w else ("radio" if "radio" in w else None)
 
 
-def match_files(core, vw, aw, files, kind=None, strict_cut=False):
+def match_files(core, vw, aw, files, kind=None, strict_cut=False, all_artists=False):
     """[(verdict, chemin)] des fichiers qui contiennent le titre. L'artiste peut être dans le nom ou dans les dossiers."""
     hits = []
     for p, root in files:
@@ -769,12 +938,19 @@ def match_files(core, vw, aw, files, kind=None, strict_cut=False):
             continue
         folders = os.path.relpath(os.path.dirname(p), root).split(os.sep)[-2:]
         ctx = n | set(norm(" ".join(f for f in folders if f != ".")).split())
-        same_version = all(w in n for w in vw) if vw else not split_title(name.split(" - ", 1)[-1])[1]
+        if vw:
+            same_version = all(w in n for w in vw)
+        else:
+            # sans version dans le titre : le fichier n'en a pas non plus, ou seulement des mots du titre
+            # (« Latch | Renyn Remix » = « Latch (Renyn Remix) »), le reste du titre étant hors parenthèses
+            # (« Tik Tok » ≠ « Adjust (Tik Tok) »)
+            fbase, fv = split_title(name.split(" - ", 1)[-1])
+            same_version = not fv or (fv <= set(core) and any(w in fbase.split() for w in core if w not in fv))
         if kind == "extended" and cut_kind(name) == "radio":  # on veut l'Extended, l'ordi n'a que la Radio
             same_version = False
         if strict_cut and kind and cut_kind(name) != kind:  # le DJ garde Radio et Extended : chaque coupe compte à part
             same_version = False
-        same_artist = not aw or bool(aw & ctx)
+        same_artist = not aw or (aw <= ctx if all_artists else bool(aw & ctx))
         verdict = "MÊME VERSION" if same_version and same_artist else (
             "autre artiste" if same_version else "autre version")
         hits.append((verdict, p))
@@ -785,8 +961,8 @@ def cmd_find(c, st, a):
     """Cherche sur l'ordi (destination + dossiers de sons du DJ) si un son est déjà présent."""
     t = get_track(st, a.track) if not a.text else None
     title = a.text or t["title"]
-    core, vw, aw, kind = title_parts(title, "" if a.text else t["uploader"])
-    hits = match_files(core, vw, aw, library_files(c), kind, c.get("keep_radio_and_extended", False))
+    (core, vw, aw, kind), hits = best_match(title, "" if a.text else t["uploader"], library_files(c),
+                                            c.get("keep_radio_and_extended", False))
     print(f"Recherche : {title}  (titre : {' '.join(core)} | artiste : {' '.join(sorted(aw)) or '?'}"
           f" | version : {' '.join(sorted(vw)) or 'originale'})")
     for v, p in hits:
@@ -806,8 +982,7 @@ def cmd_dedupe(c, st, a):
     for t in st["tracks"]:
         if t["id"] not in ids or t["status"] not in ("new", "retry", "missing", "other_version"):
             continue
-        core, vw, aw, kind = title_parts(t["title"], t["uploader"])
-        hits = match_files(core, vw, aw, files, kind, c.get("keep_radio_and_extended", False))
+        hits = best_match(t["title"], t["uploader"], files, c.get("keep_radio_and_extended", False))[1]
         if hits and hits[0][0] == "MÊME VERSION":
             owned += 1
             print(f"  DÉJÀ SUR L'ORDI : {label(t)}\n      -> {short(hits[0][1])}")
@@ -879,6 +1054,12 @@ def cmd_report(c, st, a):
                 extra = f" — {t['note']}" if t.get("note") else ""
                 extra += f" (à partir du {t['retry_after']})" if s == "retry" else ""
                 print(f"  {label(t)}{extra}")
+    wasted = [t for t in groups.get("owned", []) if t.get("note", "").startswith(GATE_FOR_NOTHING)]
+    if wasted:
+        print(f"\nTÉLÉCHARGÉS POUR RIEN ({len(wasted)}, déjà sur l'ordi sans être repérés avant : "
+              "fichier mis à la Corbeille, gate fait quand même) :")
+        for t in wasted:
+            print(f"  {label(t)} — {t['note'][len(GATE_FOR_NOTHING) + 3:]}")
     if problems:
         print("\nPROBLÈMES :")
         for p in problems:
@@ -900,7 +1081,6 @@ def main():
             s.reconfigure(encoding="utf-8", errors="replace")
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--home", default=DEFAULT_HOME, help="dossier des réglages et du suivi")
-    ap.add_argument("--config", help="chemin de config (par défaut <home>/config.json)")
     sp = ap.add_subparsers(dest="cmd", required=True)
     p = sp.add_parser("init", help="installation : crée la config")
     p.add_argument("--edition", choices=("soundcloud", "personal"), default="soundcloud")
@@ -925,7 +1105,7 @@ def main():
     p = sp.add_parser("scan", help="installation : trouver les dossiers où le DJ a déjà des sons")
     p.add_argument("--min", type=int, default=10, help="nombre minimal de sons pour proposer un dossier")
     p.add_argument("--top", type=int, default=12); p.add_argument("--seconds", type=float, default=4.0)
-    sp.add_parser("perms", help="installation : règles pour n'autoriser le plugin qu'une seule fois")
+    sp.add_parser("perms", help="installation : règles pour n'autoriser le plugin qu'une seule fois (ajout : autoriser.py)")
     p = sp.add_parser("library", help="dossiers de sons déjà sur l'ordi : list | add <dossier> | remove <dossier>")
     p.add_argument("action", nargs="?", default="list", choices=("list", "add", "remove")); p.add_argument("path", nargs="?")
     p = sp.add_parser("import", help="ajouter les sons choisis (jsonl du plus récent au plus ancien : t,u,p,d,dl,buy,liked)")
@@ -957,9 +1137,10 @@ def main():
     p.add_argument("--last", action="store_true", help="seulement la dernière sélection importée")
     p = sp.add_parser("show"); p.add_argument("track")
     a = ap.parse_args()
+    a.home = check_home(a.home)
     global FALLBACK_TRASH
-    FALLBACK_TRASH = os.path.join(os.path.expanduser(a.home), "corbeille")
-    a.config = os.path.expanduser(a.config or os.path.join(a.home, "config.json"))
+    FALLBACK_TRASH = os.path.join(a.home, "corbeille")
+    a.config = os.path.join(a.home, "config.json")
     if a.cmd == "init":
         return cmd_init(a)
     if a.cmd == "scan":
