@@ -134,7 +134,7 @@ Pas de mode d'emploi. Écris ce résumé (traduit dans la langue du DJ), rien de
 
 > ✅ **SD Downloader est prêt.**
 > 🎧 Compte **<compte>** · ✉️ <email> · 🙂 <prénom> · 📁 **<dossier>** · Extended
-> 🔓 À chaque téléchargement, je fais les gates (suivre, liker, reposter, commenter) avec **<compte>**, sans te redemander. Pour changer quoi que ce soit, dis-le-moi en une phrase.
+> 🔓 À chaque téléchargement, je fais les gates avec **<compte>** sans te redemander : suivre, liker, reposter, commenter, et autoriser l'application SoundCloud du gate (Hypeddit, Droploud ; révocable dans SoundCloud › Applications connectées). Pour changer quoi que ce soit, dis-le-moi en une phrase.
 
 Puis un seul `AskUserQuestion`, `Télécharger` : « On lance le premier téléchargement ? 🚀 »
 - `🚀 Lancer (Recommended)` : description « Tu choisis quels sons, je fais le reste »
