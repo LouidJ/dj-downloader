@@ -44,10 +44,10 @@ Le DJ ne doit rien avoir à taper. Pose tes questions avec l'outil **`AskUserQue
 
    Dans « Other », le DJ peut écrire un autre nombre, une date, ou coller un lien de playlist ou de sons. Traduis-le avec le tableau ci-dessus.
 2. Question « Je fais tout jusqu'au bilan ? », en-tête `Feu vert`, choix unique :
-   - `Go (Recommended)`. Dans la description, liste tout ce que tu feras en son nom : suivre, liker, reposter, commenter court, autoriser l'application SoundCloud du gate, donner prénom et e-mail, et cocher la case Droploud si c'est accepté dans la config. Cite le compte `<account>`, l'e-mail `<email>` et le dossier, et ajoute « plus aucune question jusqu'au bilan ». C'est le feu vert du run (étape 2b) ;
+   - `Go (Recommended)`. Description d'une ligne : « Je fais les gates avec `<account>` et je range dans `<dossier>`. » Pas la liste des actions, pas l'e-mail. C'est le feu vert du run (étape 2b) ;
    - `Montre-moi d'abord` : je lis la sélection, je te dis combien de sons et de gates, puis tu valides.
 
-**Si la demande dit déjà quels sons** mais sans feu vert : pose seulement le feu vert, à l'étape 2b, une fois la sélection lue et comparée. Utilise `AskUserQuestion`, en-tête `Feu vert`. La question donne les chiffres, par exemple « 12 sons : 3 directs, 6 Hypeddit, 3 Droploud. Je lance ? ». Deux choix : `Go (Recommended)` (même description que ci-dessus) et `Annuler`.
+**Si la demande dit déjà quels sons** mais sans feu vert : pose seulement le feu vert, à l'étape 2b, une fois la sélection lue et comparée. Utilise `AskUserQuestion`, en-tête `Feu vert`. La question tient en une ligne : « Je télécharge Thriller (Christian Maas Edit) ? » pour un son, « Je télécharge 12 sons (3 directs, 6 Hypeddit, 3 Droploud) ? » pour plusieurs. Deux choix : `Go (Recommended)` (même description d'une ligne que ci-dessus) et `Annuler`.
 
 **Ne demande pas le feu vert** si le DJ a déjà répondu `Go`, s'il a écrit « go pour tout », ou s'il n'y a aucun gate.
 
