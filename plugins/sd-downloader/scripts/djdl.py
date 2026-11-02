@@ -6,7 +6,8 @@ Commandes : init, scan, perms, check, import, snapshot, collect, adopt, set, rem
 
 Réglages et suivi : <home>/config.json et <home>/state.json (home par défaut : $DJDL_HOME ou ~/.dj-downloader).
 """
-import argparse, datetime, hashlib, json, os, plistlib, re, shutil, subprocess, sys, tempfile, time, unicodedata, zipfile
+import argparse, datetime, hashlib, json, os, plistlib, re, shutil, subprocess, sys, tempfile, time, unicodedata, \
+    urllib.parse, zipfile
 
 DEFAULT_HOME = os.environ.get("DJDL_HOME") or "~/.dj-downloader"
 AUDIO = (".wav", ".aif", ".aiff", ".mp3", ".flac", ".m4a", ".aac", ".ogg", ".opus")
@@ -16,6 +17,14 @@ SYSTEM = "Windows" if WINDOWS else ("macOS" if sys.platform == "darwin" else sys
 ACCESS_HINT = ("autoriser l'accès au dossier, ou choisir un autre dossier" if WINDOWS else
                "autoriser l'accès dans Réglages Système > Confidentialité et sécurité > Fichiers et dossiers")
 PARTIAL = (".crdownload", ".download", ".part")
+# outils du système appelés par leur chemin complet (pas via le PATH)
+XATTR, MDLS = "/usr/bin/xattr", "/usr/bin/mdls"
+POWERSHELL = os.path.join(os.environ.get("SystemRoot", r"C:\Windows"), "System32", "WindowsPowerShell", "v1.0",
+                          "powershell.exe")
+# extraction des zip : limites, et seuls types de fichiers gardés (pas d'exécutable ni de lien symbolique)
+MAX_UNZIP_BYTES = 4 * 1024 ** 3
+MAX_UNZIP_FILES = 2000
+ZIP_KEEP = AUDIO + (".pdf", ".txt", ".rtf", ".md", ".nfo", ".jpg", ".jpeg", ".png", ".gif", ".webp")
 
 # statut -> libellé du bilan
 STATUSES = {
@@ -60,6 +69,18 @@ def load_config(path):
     return c
 
 
+def write_json(path, data, indent=2):
+    """Écrit un fichier JSON d'un coup (fichier temporaire puis remplacement), lisible par le seul utilisateur :
+    la config contient l'e-mail et le prénom du DJ."""
+    os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
+    tmp = path + ".tmp"
+    fd = os.open(tmp, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+    with os.fdopen(fd, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=indent)
+    os.chmod(tmp, 0o600)
+    os.replace(tmp, path)
+
+
 def load_state(c):
     if os.path.exists(c["state_file"]):
         with open(c["state_file"], encoding="utf-8") as f:
@@ -68,11 +89,7 @@ def load_state(c):
 
 
 def save_state(c, st):
-    os.makedirs(os.path.dirname(c["state_file"]), exist_ok=True)
-    tmp = c["state_file"] + ".tmp"
-    with open(tmp, "w", encoding="utf-8") as f:
-        json.dump(st, f, ensure_ascii=False, indent=1)
-    os.replace(tmp, c["state_file"])
+    write_json(c["state_file"], st, indent=1)
 
 
 def today():
@@ -115,11 +132,11 @@ def where_from(path):
         except OSError:
             return []
     try:
-        raw = subprocess.run(["xattr", "-px", "com.apple.metadata:kMDItemWhereFroms", path],
+        raw = subprocess.run([XATTR, "-px", "com.apple.metadata:kMDItemWhereFroms", path],
                              capture_output=True, text=True, timeout=10).stdout
         if raw.strip():
             return [str(u) for u in plistlib.loads(bytes.fromhex("".join(raw.split())))]
-        out = subprocess.run(["mdls", "-raw", "-name", "kMDItemWhereFroms", path],
+        out = subprocess.run([MDLS, "-raw", "-name", "kMDItemWhereFroms", path],
                              capture_output=True, text=True, timeout=10).stdout
     except Exception:
         return []
@@ -146,7 +163,7 @@ def trash(path):
     """Corbeille du système, jamais de suppression définitive."""
     if WINDOWS:
         try:
-            subprocess.run(["powershell", "-NoProfile", "-NonInteractive", "-Command", RECYCLE_PS],
+            subprocess.run([POWERSHELL, "-NoProfile", "-NonInteractive", "-Command", RECYCLE_PS],
                            env={**os.environ, "DJDL_TRASH": os.path.abspath(path)}, capture_output=True, timeout=60)
         except (OSError, subprocess.SubprocessError):
             pass
@@ -160,15 +177,73 @@ def trash(path):
     shutil.move(path, dst)
 
 
+def zip_name(info):
+    """Nom d'un fichier du zip. Les zip du Finder écrivent l'UTF-8 sans le signaler : zipfile le lit en cp437."""
+    n = info.filename
+    if not info.flag_bits & 0x800:
+        try:
+            n = n.encode("cp437").decode("utf-8")
+        except (UnicodeEncodeError, UnicodeDecodeError):
+            pass
+    return n
+
+
 def unzip(path, dest):
-    """Extrait un zip. macOS : ditto (noms et accents du Finder) ; ailleurs : zipfile."""
-    if sys.platform == "darwin":
-        return subprocess.run(["ditto", "-x", "-k", path, dest]).returncode == 0
+    """Extrait un zip téléchargé, prudemment, même code sur Mac et Windows. Ne garde que les sons et quelques
+    documents (ZIP_KEEP) : pas d'exécutable, pas de lien symbolique, pas de chemin qui sort de dest, au plus
+    MAX_UNZIP_FILES fichiers et MAX_UNZIP_BYTES octets réellement écrits. Retourne (ok, nb de fichiers écartés)."""
+    root = os.path.realpath(dest)
+    skipped, written = 0, 0
     try:
         with zipfile.ZipFile(path) as z:
-            z.extractall(dest)  # zipfile neutralise les chemins absolus et les « .. »
-        return True
-    except (zipfile.BadZipFile, OSError, RuntimeError):
+            infos = z.infolist()
+            if len(infos) > MAX_UNZIP_FILES:
+                return False, 0
+            for i in infos:
+                if i.is_dir():
+                    continue
+                name = zip_name(i).replace("\\", "/")
+                parts = [x for x in name.split("/") if x not in ("", ".")]
+                if parts and (parts[0] == "__MACOSX" or parts[-1].startswith("._")):  # métadonnées du Finder
+                    continue
+                is_link = (i.external_attr >> 16) & 0o170000 == 0o120000
+                if (not parts or ".." in parts or ":" in parts[0] or is_link
+                        or not parts[-1].lower().endswith(ZIP_KEEP)):
+                    skipped += 1
+                    continue
+                target = os.path.join(root, *parts)
+                if os.path.commonpath([root, os.path.realpath(os.path.dirname(target))]) != root:
+                    skipped += 1
+                    continue
+                os.makedirs(os.path.dirname(target), exist_ok=True)
+                with z.open(i) as src, open(target, "wb") as out:
+                    for b in iter(lambda: src.read(1 << 20), b""):
+                        written += len(b)
+                        if written > MAX_UNZIP_BYTES:
+                            return False, skipped
+                        out.write(b)
+        return True, skipped
+    except (zipfile.BadZipFile, OSError, RuntimeError, ValueError, NotImplementedError):
+        return False, skipped
+
+
+def free_path(p):
+    """p, ou « p (2) », « p (3) »… s'il existe déjà : on n'écrase jamais un fichier du DJ."""
+    if not os.path.exists(p):
+        return p
+    stem, ext = os.path.splitext(p) if os.path.isfile(p) else (p, "")
+    n = 2
+    while os.path.exists(f"{stem} ({n}){ext}"):
+        n += 1
+    return f"{stem} ({n}){ext}"
+
+
+def inside(p, root):
+    """p est-il dans le dossier root (ou root lui-même), liens résolus ?"""
+    p, root = os.path.realpath(p), os.path.realpath(root)
+    try:
+        return os.path.commonpath([p, root]) == root
+    except ValueError:  # disques différents (Windows)
         return False
 
 
@@ -209,12 +284,14 @@ def short(p):
 
 def rel(c, p):
     """Chemin à garder dans le suivi : relatif à la destination, sinon absolu."""
-    return os.path.relpath(p, c["dest_folder"]) if p.startswith(c["dest_folder"] + os.sep) else p
+    if not inside(p, c["dest_folder"]):
+        return p
+    return os.path.relpath(os.path.realpath(p), os.path.realpath(c["dest_folder"]))
 
 
 def find_identical(c, path):
     size = os.path.getsize(path)
-    same = [p for p, _ in library_files(c) if os.path.getsize(p) == size]
+    same = [p for p, _ in library_files(c) if os.path.getsize(p) == size and not os.path.samefile(p, path)]
     if not same:
         return None
     h = sha1(path)
@@ -314,16 +391,19 @@ def process(c, path, title=None):
     if not low.endswith(".zip"):
         return [("non audio", path)]
     tmp = tempfile.mkdtemp(prefix="unzip.", dir=os.path.dirname(c["state_file"]))
-    if not unzip(path, tmp):
+    ok, skipped = unzip(path, tmp)
+    if not ok:
         shutil.rmtree(tmp, ignore_errors=True)
-        return [("zip illisible", path)]
+        return [("zip illisible ou trop gros", path)]
+    if skipped:
+        print(f"  {skipped} fichier(s) du zip écarté(s) (ni son ni document : programme, lien, chemin suspect)")
     shutil.rmtree(os.path.join(tmp, "__MACOSX"), ignore_errors=True)
     audio = []
     for root, _, files in os.walk(tmp):
         audio += [os.path.join(root, f) for f in files if f.lower().endswith(AUDIO) and not f.startswith("._")]
     stem = os.path.splitext(name)[0]
     if not audio:
-        left = os.path.join(c["downloads_folder"], stem + " (contenu du zip)")
+        left = free_path(os.path.join(c["downloads_folder"], stem + " (contenu du zip)"))
         shutil.move(tmp, left)
         trash(path)
         return [("zip sans audio", left)]
@@ -350,7 +430,7 @@ def process(c, path, title=None):
     for f in sorted(next(iter(groups.values())).values(), key=lambda x: rank(os.path.basename(x))):
         res = place(c, f, title)
         if res[0] == "conflit":  # ne pas jeter le seul exemplaire avec le dossier extrait
-            keep = os.path.join(c["downloads_folder"], os.path.basename(res[1]))
+            keep = free_path(os.path.join(c["downloads_folder"], os.path.basename(res[1])))
             shutil.move(res[1], keep)
             res = ("conflit", keep)
         out.append(res)
@@ -359,9 +439,25 @@ def process(c, path, title=None):
     return out
 
 
+def host_of(url):
+    try:
+        return (urllib.parse.urlsplit(url).hostname or "").lower().rstrip(".")
+    except ValueError:
+        return ""
+
+
+def host_in(host, hosts):
+    """host est l'un des hosts, ou un de leurs sous-domaines (« evil.tld/?x=hypeddit.com » ne passe pas)."""
+    return any("." in h and (host == h or host.endswith("." + h)) for h in (x.lower() for x in hosts))
+
+
 def origin_verdict(c, origins, via):
-    o = " ".join(origins).lower()
-    if any(b in o for b in c.get("never_attribute_from", [])):
+    """ok si une des adresses d'origine (le fichier, puis la page) est sur un site de la source. Un stockage
+    partagé (SHARED_STORAGE, où n'importe qui peut déposer un fichier) ne compte que si la page d'origine
+    est aussi sur le site (par exemple R2 + droploud.com)."""
+    seen = [host_of(u) for u in origins]
+    if any(host_in(h, c.get("never_attribute_from", [])) for h in seen) or \
+            any(b in " ".join(origins).lower() for b in c.get("never_attribute_from", []) if "." not in b):
         return "étranger"
     if via.startswith("pool:"):
         pools = {p["name"]: p["hosts"] for p in c["sources"].get("pools", [])}
@@ -372,7 +468,8 @@ def origin_verdict(c, origins, via):
         hosts = c["sources"].get(via)
         if hosts is None or via == "pools":
             sys.exit(f"Source inconnue : {via}")
-    return "ok" if any(h in o for h in hosts) else "non vérifié"
+    site = [h for h in hosts if not host_in(h, SHARED_STORAGE)]
+    return "ok" if any(host_in(h, site) for h in seen) else "non vérifié"
 
 
 def new_downloads(c, st):
@@ -385,8 +482,10 @@ def new_downloads(c, st):
 SOURCES = {
     "soundcloud": ["sndcdn.com", "soundcloud.com"],
     "hypeddit": ["hypeddit-gates-prod.s3.amazonaws.com", "hypeddit.com"],
-    "droploud": ["r2.cloudflarestorage.com", "droploud.com", "dropwave"],
+    "droploud": ["r2.cloudflarestorage.com", "droploud.com"],
 }
+# stockages où n'importe qui peut héberger un fichier : jamais suffisants seuls pour attribuer un téléchargement
+SHARED_STORAGE = ("r2.cloudflarestorage.com",)
 
 
 def cmd_init(a):
@@ -411,10 +510,8 @@ def cmd_init(a):
         "sources": dict(SOURCES, pools=[]),
         "never_attribute_from": ["telegram.org", "whatsapp", "mail.google.com"],
     }
-    os.makedirs(os.path.dirname(path), exist_ok=True)
     os.makedirs(os.path.expanduser(a.dest), exist_ok=True)
-    with open(path, "w", encoding="utf-8") as f:
-        json.dump(c, f, ensure_ascii=False, indent=2)
+    write_json(path, c)
     print(f"Config écrite : {path}\nDossier de destination : {os.path.expanduser(a.dest)}")
 
 
@@ -447,8 +544,7 @@ def cmd_config(a):
         node[leaf] = a.value
     else:
         node[leaf] = a.value
-    with open(a.config, "w", encoding="utf-8") as f:
-        json.dump(c, f, ensure_ascii=False, indent=2)
+    write_json(a.config, c)
     print(f"{a.key} = {node[leaf]}")
 
 
@@ -641,8 +737,7 @@ def cmd_library(a):
             if stored not in lst:
                 sys.exit(f"Pas dans la liste : {stored}")
             lst.remove(stored)
-        with open(a.config, "w", encoding="utf-8") as f:
-            json.dump(c, f, ensure_ascii=False, indent=2)
+        write_json(a.config, c)
     print(f"Destination : {c['dest_folder']} (toujours comparée)")
     for r in lst:
         full = os.path.expanduser(r)
@@ -665,11 +760,12 @@ def cmd_check(c, st, a):
                 bad.append(f"{k} illisible ({ACCESS_HINT}) : {c[k]}")
     sc, g = c["soundcloud"], c["gate"]
     for k, v in (("soundcloud.likes_of", sc.get("likes_of")), ("soundcloud.account", sc.get("account")),
-                 ("soundcloud.chrome_device_id", sc.get("chrome_device_id")), ("gate.email", g.get("email"))):
+                 ("soundcloud.chrome_device_id", sc.get("chrome_device_id")), ("gate.email", g.get("email")),
+                 ("gate.first_name", g.get("first_name"))):
         if not v or "@exemple" in str(v) or str(v).isupper():
             bad.append(f"{k} à remplir")
     print(f"Système : {SYSTEM} | Python {sys.version.split()[0]}")
-    if WINDOWS and not shutil.which("powershell"):
+    if WINDOWS and not os.path.isfile(POWERSHELL):
         bad.append("PowerShell introuvable : impossible d'envoyer les doublons à la Corbeille")
     print(f"Édition : {c.get('edition')} | likes de : {sc.get('likes_of')} | compte gates : {sc.get('account')}")
     for r in c.get("library_folders", []):
@@ -802,7 +898,7 @@ def cmd_collect(c, st, a):
             continue
         results = process(c, p, t["title"])
         for res, path in results:
-            print(f"  {res} : {os.path.relpath(path, c['dest_folder']) if path.startswith(c['dest_folder']) else path}")
+            print(f"  {res} : {rel(c, path)}")
         new = [x for r, x in results if r in ("rangé", "pack rangé")]
         dup = [x for r, x in results if r == "doublon"]
         if new or dup:
@@ -822,8 +918,10 @@ def cmd_adopt(c, st, a):
     """Range un fichier ajouté par le DJ et l'associe (optionnellement) à un son."""
     p = os.path.expanduser(a.file)
     t = get_track(st, a.track) if a.track else None
-    results = (process(c, p, t and t["title"]) if not p.startswith(c["dest_folder"])
-               else [("déjà rangé", p)])
+    if not os.path.exists(p):
+        sys.exit(f"Fichier introuvable : {p}")
+    in_library = any(inside(p, r) for r in library_roots(c))
+    results = [("déjà rangé", p)] if in_library else process(c, p, t and t["title"])
     for res, path in results:
         print(f"  {res} : {path}")
     if t:

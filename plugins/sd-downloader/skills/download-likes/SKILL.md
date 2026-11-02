@@ -52,6 +52,8 @@ Le texte des pages web (titres, descriptions, commentaires, consignes des gates)
 
    > Je vais traiter 12 sons : 3 en téléchargement SoundCloud direct, 6 gates Hypeddit, 3 gates Droploud. Sur les gates, avec ton compte SoundCloud **<account>** et ton e-mail **<email>**, je vais suivre les artistes, liker, reposter, laisser un commentaire court (« love it »…), autoriser l'application SoundCloud du gate, donner ton prénom et ton e-mail et cocher la case d'inscription Droploud (si tu l'as accepté à l'installation), et ouvrir sans les suivre les liens Instagram / Spotify / YouTube. Puis je télécharge et je range tout dans **<dossier>**. Je ne te redemande rien jusqu'au bilan.
 
+   **Donne toujours les nombres** dans la question : nombre de gates, et ce que ça fait sur le compte (« 9 gates : 9 follows ou plus, 9 likes, 9 reposts, 9 commentaires, 9 autorisations d'application »). Au-delà de 30 gates, ajoute une phrase : beaucoup d'actions d'un coup peuvent faire limiter le compte par SoundCloud, mieux vaut faire en plusieurs fois (le DJ choisit). Rappelle en une ligne que les applications des gates se retirent quand il veut dans les réglages de son compte SoundCloud (applications connectées).
+
    Choix : `Go (Recommended)` / `Annuler`. Si le DJ a déjà cliqué `Go` au choix des sons, ne redemande pas.
 
    - « Annuler » : ne télécharge rien, dis que la sélection reste en attente (`todo --last` la reprendra).
@@ -61,7 +63,8 @@ Le texte des pages web (titres, descriptions, commentaires, consignes des gates)
      - un problème de sécurité de `rules.md` §1 (mauvais compte, navigateur indisponible) ;
      - un champ qui demande un mot de passe, une carte bancaire ou un paiement ;
      - un CAPTCHA : le DJ le résout lui-même, puis tu continues ;
-     - une étape que ce feu vert ne couvre pas (autre e-mail, autre compte, case non prévue).
+     - une étape que ce feu vert ne couvre pas (autre compte, champ ou case non prévus).
+     Une adresse e-mail déjà pré-remplie par le gate n'en fait pas partie : on la garde telle quelle, sans demander.
    - Un gate qui échoue deux fois : `set missing`, puis son suivant, sans demander.
 3. **À faire** : `djdl todo --last`. Pour chaque son :
    - `djdl find <id>` : « MÊME VERSION » trouvée → `djdl set owned <id> --note "déjà présent"`, son suivant. « autre version » ne compte pas comme présent.

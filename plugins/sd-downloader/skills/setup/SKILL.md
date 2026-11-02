@@ -91,7 +91,7 @@ Le DJ ne doit presque rien écrire. **Devine d'abord** ce que tu peux, puis pose
    - `Pas maintenant (Recommended)`
    - `Oui, je colle son lien` : le lien va dans « Other ». Il peut être public ou privé.
 
-**D. En texte, une seule question** : « Dernière chose : quel e-mail et quel prénom je donne aux gates ? » Conseille une adresse secondaire, parce que les artistes y enverront des nouvelles.
+**D. En texte, une seule question** : « Dernière chose : ton e-mail SoundCloud (celui du compte **<compte>**) et ton prénom ? Tu ne les donnes qu'une fois : ensuite je les remplis moi-même sur chaque gate qui les demande. » Garde exactement ce que le DJ écrit. N'invente jamais d'adresse ou de prénom, et n'en propose pas d'autre (adresse de test, secondaire…). Si un gate pré-remplit déjà une adresse, elle sera gardée telle quelle.
 
 Les réglages avancés gardent leur valeur par défaut, sans question :
 - longs sets ignorés au-delà de 45 min ;
