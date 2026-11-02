@@ -75,7 +75,7 @@ export const register: Register = on => {
     const { Box, Button } = $.ui.resolve(e)
 
     return (
-      <Box>
+      <Box gap="md">
         <Button
           key="go"
           label={ready ? t.download : t.setup}
