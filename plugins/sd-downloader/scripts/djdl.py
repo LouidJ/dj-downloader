@@ -349,7 +349,7 @@ def clean_name(name, title=None):
 
     def inside(m):
         if title and re.search(r"[(\[]\s*" + re.escape(m[2].strip()) + r"\s*[)\]]", title, re.I):
-            return m[0]  # parenthèse qui fait partie du titre SoundCloud
+            return f"{m[1]}{m[2].strip()}{m[3]}"  # parenthèse du titre SoundCloud : gardée, sans espaces collés
         txt = FINAL.sub(" ", MASTER.sub(" ", m[2]))
         txt = re.sub(r"\s+", " ", txt).strip(" _-–.")
         return f"{m[1]}{txt}{m[3]}" if txt else " "
