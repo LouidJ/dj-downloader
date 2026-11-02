@@ -43,47 +43,40 @@ Install the sd-downloader plugin from the GitHub repo LouidJ/dj-downloader, turn
 
 In the terminal (Claude Code), one command is enough: `/plugin install sd-downloader --marketplace LouidJ/dj-downloader`.
 
-## 4. Your settings: you just tick boxes
+## 4. Your settings: two clicks, that's it
 
-Type `/sd-downloader:setup`. It shows up as soon as you type `/` and then "sd". If it doesn't show up, open another new session. Claude first checks that everything is ready. **On Windows**, it may ask you to install **Python**: on [python.org](https://www.python.org/downloads/), click Download Python, run the installer and **tick "Add python.exe to PATH"** before clicking Install. Then open a new session and type the command again.
+Click the **🎧 Set up SD Downloader** button above the box where you type (or type `/sd-downloader:setup`). If it doesn't show up, open another new session. Claude first checks that everything is ready. **On Windows**, it may ask you to install **Python**: on [python.org](https://www.python.org/downloads/), click Download Python, run the installer and **tick "Add python.exe to PATH"** before clicking Install. Then open a new session and type the command again.
 
-It first asks for your **language**: everything else happens in your language. Next, Claude **figures out on its own** which SoundCloud account is logged in to Chrome and the folders where you already have tracks. It offers everything as **choices to click**:
-- the account for the gates and the profile whose likes it downloads;
-- Extended version, Radio version, or both;
-- where to save the tracks, and which folders to search for the ones you already have, so nothing gets downloaded twice;
+It first asks for your **language**: everything else happens in your language. Next, Claude **figures out on its own** which SoundCloud account is logged in to Chrome, your email and your first name: nothing to type. It only asks **two questions to click**:
+- where to save the tracks (Music, a new folder on the Desktop, or a folder you pick in a window);
 - optionally, a "To download" playlist.
 
-At the end, Claude offers, **with no obligation**, to follow the plugin's author on SoundCloud. It offers again after a big playlist, unless you pick "Don't ask again". If you already follow him, it doesn't ask.
+The rest is set for you: your account's likes, the Extended version (before the Radio one), and tracks already in your folder are never downloaded again. Change anything with one sentence ("also keep the radio versions", "my email is …").
 
-The only thing to type: **your SoundCloud email and your first name**, once. After that, Claude fills them in on the gates.
+At the end, Claude offers once, **with no obligation**, to follow the plugin's author on SoundCloud, then shows a 3-line summary and a **🚀 Launch** button. The summary tells you: on every download, Claude does the gates (follow, like, repost, comment) with your account, without asking again. If you'd rather it asks each time, say "ask me before the gates".
 
 > **Just one permission.** At the start of setup, Claude warns you, then shows **a single** pop-up: click **Allow**. It covers the plugin for good, even after updates. Then the Chrome extension asks for access to soundcloud.com, hypeddit.com and droploud.com: each time, pick the option that **always** allows the site. On a Mac, if the system asks for access to Downloads or Music, allow it. After that, no more pop-ups while downloading.
 
-## 5. First test
+## 5. First download
 
-Type `/sd-downloader:download-likes` (or just write "download"). Claude shows choices: **nothing to type, you tick, then click Go**.
+Click **🚀 Launch** at the end of setup. Claude asks which tracks (*My new likes*, *Liked today*, *My last 20 likes*, *My playlist*). For your very first try, choose *Other* and type "last 3".
 
-- **Which tracks do I download?** The choices are *My new likes*, *Liked today*, *My last 20 likes* and *My playlist*. With *Other*, you can type a number or a date, or paste a link.
-- **Do I run everything through to the report?** The choices are **Go** and *Show me first*.
-
-For your very first try, choose *Other* and type "last 3".
-
-After you click **Go**:
-1. Claude compares with the tracks already on your computer and tells you which ones it skips.
+Then:
+1. Claude skips the tracks already in your folder.
 2. It keeps going on its own. In Chrome, you can see it open pages and click. The sound on the pages is muted.
-3. At the end, it gives you the report. The files are already filed away.
+3. At the end, a short chime, then the report in tables. The files are already filed away.
 
-The Go button covers the whole run. Its description says what Claude will do in your name: follow, like, repost, comment, give your email. After that, it doesn't ask you anything until the report. The only exceptions: a CAPTCHA (you do it yourself), a password, a payment or the wrong account being logged in.
+It asks you nothing during the run. The only exceptions: a CAPTCHA (you do it yourself), a password, a payment, the wrong account being logged in, or more than 30 gates at once (SoundCloud could limit your account: you choose).
 
 ## Day to day
 
-Always the same: `/sd-downloader:download-likes`, you tick, you click **Go**.
+Click the **🎧 Download my new likes** button above the box where you type. That's it: Claude takes everything you've liked since last time.
 
-If you'd rather type, Claude understands your own words too, and then only asks you the Go question. For example: "download what I've liked since Monday", "download this playlist: link". Add "go for everything" and it starts without even showing the button.
+For anything else, say it in your own words: "download what I've liked since Monday", "download my playlist", "download this playlist: link".
 
-**The playlist trick**: create a "To download" playlist on SoundCloud. While you dig, add tracks to it. In the evening, tick *My playlist*. Tracks you've already downloaded are never done again.
+**The playlist trick**: create a "To download" playlist on SoundCloud. While you dig, add tracks to it. In the evening, say "download my playlist". Tracks you've already downloaded are never done again.
 
-Other phrases: "remove #12 from the list", "also compare with my USB stick", "also keep the radio versions", "show the report".
+Other phrases: "remove #12 from the list", "also keep the radio versions", "show the report".
 
 ## Reading the report
 

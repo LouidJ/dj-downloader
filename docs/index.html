@@ -319,17 +319,16 @@ footer { margin-top: 28px; color: var(--muted); font-size: 14px; }
       answers: [{ l: T('Ça marche maintenant', 'It works now'), go: 'sc', main: true }]
     },
     sc: {
-      kicker: 'SoundCloud', title: T('Quel compte SoundCloud pour les gates ?', 'Which SoundCloud account for the gates?'),
+      kicker: 'SoundCloud', title: T('Connecte-toi à SoundCloud dans Chrome', 'Sign in to SoundCloud in Chrome'),
       body: function () {
-        return T('<p>Pour te donner un son, les gates demandent souvent de suivre l\'artiste, liker, reposter ou commenter. Claude le fait pour toi, avec le compte SoundCloud connecté dans Chrome.</p>' +
-          '<p>Le conseil : un <strong>deuxième compte SoundCloud</strong>, rien que pour ça. Ton compte principal reste propre (pas de reposts en série).</p>',
-          '<p>To give you a track, gates often ask you to follow the artist, like, repost or comment. Claude does it for you, with the SoundCloud account signed in to Chrome.</p>' +
-          '<p>Tip: a <strong>second SoundCloud account</strong>, just for this. Your main account stays clean (no repost sprees).</p>');
+        return T('<p>Dans Chrome, va sur ' + a('https://soundcloud.com', 'soundcloud.com') + ' et connecte-toi. Claude utilise ce compte pour tes likes et pour les gates : il suit l\'artiste, like, reposte ou commente à ta place, et y lit ton e-mail et ton prénom. Tu n\'as rien à écrire.</p>' +
+          '<p>Les reposts et commentaires des gates apparaîtront sur ce profil.</p>',
+          '<p>In Chrome, go to ' + a('https://soundcloud.com', 'soundcloud.com') + ' and sign in. Claude uses this account for your likes and for the gates: it follows the artist, likes, reposts or comments for you, and reads your email and first name there. Nothing to type.</p>' +
+          '<p>The gates\' reposts and comments will show on this profile.</p>');
       },
       answers: [
-        { l: T('J\'ai un 2e compte, connecté dans Chrome', 'I have a 2nd account, signed in to Chrome'), go: 'plugin', main: true },
-        { l: T('Je veux créer un 2e compte', 'I want to create a 2nd account'), go: 'sc-create' },
-        { l: T('J\'utilise mon compte principal', 'I\'ll use my main account'), go: 'sc-main' }
+        { l: T('Je suis connecté', 'I\'m signed in'), go: 'plugin', main: true },
+        { l: T('Je n\'ai pas de compte', 'I don\'t have an account'), go: 'sc-create' }
       ]
     },
     'sc-create': {
@@ -388,19 +387,17 @@ footer { margin-top: 28px; color: var(--muted); font-size: 14px; }
       answers: [{ l: T('Ça marche maintenant', 'It works now'), go: 'setup', main: true }]
     },
     setup: {
-      kicker: T('Tes réglages', 'Your settings'), title: T('Règle le plugin : tu coches, c\'est tout', 'Set up the plugin: just tick boxes'),
+      kicker: T('Tes réglages', 'Your settings'), title: T('Règle le plugin : deux clics', 'Set up the plugin: two clicks'),
       body: function () {
-        return T('<p>Dans la nouvelle session, tape :</p>', '<p>In the new session, type:</p>') + say('/sd-downloader:setup', typeLabel()) +
-          T('<p>La commande s\'affiche dès que tu tapes <code>/</code> puis « sd ». Claude te demande d\'abord ta langue, puis devine ton compte SoundCloud et tes dossiers de sons. Il te les propose en <strong>choix à cliquer</strong> :</p>' +
-            '<ul><li>le compte des gates et le profil dont il télécharge les likes ;</li>' +
-            '<li>Extended version, Radio version, ou les deux ;</li>' +
-            '<li>où ranger les sons, et dans quels dossiers tu en as déjà, pour ne jamais télécharger en double.</li></ul>' +
-            '<p>La seule chose à écrire : ton <strong>e-mail SoundCloud</strong> et ton <strong>prénom</strong>, une seule fois. Ensuite Claude les remplit lui-même sur les gates. À la fin, Claude te propose, sans obligation, de suivre l\'auteur du plugin sur SoundCloud.</p>',
-            '<p>The command shows up as soon as you type <code>/</code> then “sd”. Claude first asks for your language, then guesses your SoundCloud account and your music folders. It offers them as <strong>clickable choices</strong>:</p>' +
-            '<ul><li>the gates account and the profile whose likes it downloads;</li>' +
-            '<li>Extended version, Radio version, or both;</li>' +
-            '<li>where to file the tracks, and which folders already hold some, so nothing is ever downloaded twice.</li></ul>' +
-            '<p>The only thing to type: your <strong>SoundCloud email</strong> and <strong>first name</strong>, once. After that, Claude fills them in on the gates. At the end, Claude offers, with no obligation, to follow the plugin\'s author on SoundCloud.</p>') +
+        return T('<p>Dans la nouvelle session, clique le bouton <strong>🎧 Installer SD Downloader</strong> au-dessus de la zone où tu écris. S\'il n\'apparaît pas, tape :</p>', '<p>In the new session, click the <strong>🎧 Set up SD Downloader</strong> button above the box where you type. If it doesn\'t show up, type:</p>') + say('/sd-downloader:setup', typeLabel()) +
+          T('<p>Claude te demande ta langue, puis devine tout seul ton compte SoundCloud, ton e-mail et ton prénom. Il ne te pose que <strong>deux questions à cliquer</strong> :</p>' +
+            '<ul><li>où ranger les sons (les sons déjà dans ce dossier ne sont jamais retéléchargés) ;</li>' +
+            '<li>en option, une playlist « À télécharger ».</li></ul>' +
+            '<p>À la fin, un résumé de 3 lignes : il te prévient qu\'à chaque téléchargement Claude fera les gates avec ton compte, sans te redemander. Puis un bouton <strong>🚀 Lancer</strong>.</p>',
+            '<p>Claude asks for your language, then works out your SoundCloud account, email and first name on its own. It only asks <strong>two questions to click</strong>:</p>' +
+            '<ul><li>where to file the tracks (tracks already in that folder are never downloaded again);</li>' +
+            '<li>optionally, a “To download” playlist.</li></ul>' +
+            '<p>At the end, a 3-line summary: it tells you Claude will do the gates with your account on every download, without asking again. Then a <strong>🚀 Launch</strong> button.</p>') +
           (S.os !== 'mac' ? tip(T('<strong>Windows :</strong> si Claude te demande d\'installer Python, va sur ' + a('https://www.python.org/downloads/', 'python.org') + ', clique Download Python, lance l\'installateur et <strong>coche « Add python.exe to PATH »</strong> avant Install. Ouvre ensuite une nouvelle session et retape la commande.',
                                   '<strong>Windows:</strong> if Claude asks you to install Python, go to ' + a('https://www.python.org/downloads/', 'python.org') + ', click Download Python, run the installer and <strong>tick “Add python.exe to PATH”</strong> before Install. Then open a new session and type the command again.')) : '') +
           tip(T('<strong>Une seule autorisation.</strong> Au début du réglage, Claude te prévient puis affiche <strong>une seule</strong> fenêtre : clique <strong>Autoriser</strong>. Elle couvre le plugin pour toujours. Ensuite, l\'extension Chrome demande l\'accès à soundcloud.com, hypeddit.com et droploud.com : choisis à chaque fois l\'option qui autorise <strong>toujours</strong> le site.' + (S.os !== 'win' ? ' Sur Mac, accepte aussi l\'accès à Téléchargements et Musique.' : '') + ' Ensuite, plus aucune fenêtre pendant les téléchargements.',
@@ -427,15 +424,13 @@ footer { margin-top: 28px; color: var(--muted); font-size: 14px; }
     test: {
       kicker: T('Premier essai', 'First try'), title: T('Ton premier téléchargement', 'Your first download'),
       body: function () {
-        return T('<p>Tape la commande, ou écris simplement « télécharge » :</p>', '<p>Type the command, or just write “download”:</p>') + say('/sd-downloader:download-likes', typeLabel()) +
-          T('<p>Claude affiche des choix, comme ceci :</p>', '<p>Claude shows choices, like this:</p>') +
+        return T('<p>Clique <strong>🚀 Lancer</strong> à la fin du réglage. Claude te demande quels sons :</p>', '<p>Click <strong>🚀 Launch</strong> at the end of setup. Claude asks which tracks:</p>') +
           '<div class="mock" aria-hidden="true"><b>' + T('Quels sons je télécharge ?', 'Which tracks should I download?') + '</b>' +
-          '<div class="opt">' + T('Mes nouveaux likes', 'My new likes') + '</div><div class="opt">' + T('Likés aujourd\'hui', 'Liked today') + '</div><div class="opt">' + T('Mes 20 derniers likes', 'My last 20 likes') + '</div><div class="opt on">' + T('Autre : 3 derniers', 'Other: last 3') + '</div>' +
-          '<b>' + T('Je fais tout jusqu\'au bilan ?', 'Shall I do everything up to the report?') + '</b><div><span class="gobtn">Go</span></div></div>' +
-          T('<p>Pour ce premier essai, choisis <strong>Autre</strong>, écris « 3 derniers », puis clique <strong>Go</strong>. Regarde Chrome : Claude ouvre les pages et clique tout seul, le son est coupé. À la fin, il te donne le bilan, et les fichiers sont déjà rangés.</p>' +
-            tip('Le bouton Go vaut pour tout le téléchargement : Claude t\'a dit ce qu\'il fera en ton nom. Il ne s\'arrête ensuite que pour un CAPTCHA (tu le fais toi-même), un mot de passe ou un paiement.'),
-            '<p>For this first try, pick <strong>Other</strong>, type “last 3”, then click <strong>Go</strong>. Watch Chrome: Claude opens the pages and clicks on its own, with the sound muted. At the end it gives you the report, and the files are already filed.</p>' +
-            tip('The Go button covers the whole download: Claude has told you what it will do on your behalf. After that it only stops for a CAPTCHA (you solve it yourself), a password or a payment.'));
+          '<div class="opt">' + T('Mes nouveaux likes', 'My new likes') + '</div><div class="opt">' + T('Likés aujourd\'hui', 'Liked today') + '</div><div class="opt">' + T('Mes 20 derniers likes', 'My last 20 likes') + '</div><div class="opt on">' + T('Autre : 3 derniers', 'Other: last 3') + '</div></div>' +
+          T('<p>Pour ce premier essai, choisis <strong>Autre</strong> et écris « 3 derniers ». Regarde Chrome : Claude ouvre les pages et clique tout seul, le son est coupé. À la fin, un petit son, puis le bilan en tableaux. Les fichiers sont déjà rangés.</p>' +
+            tip('Claude ne s\'arrête que pour un CAPTCHA (tu le fais toi-même), un mot de passe, un paiement, ou plus de 30 gates d\'un coup.'),
+            '<p>For this first try, pick <strong>Other</strong> and type “last 3”. Watch Chrome: Claude opens the pages and clicks on its own, with the sound muted. At the end, a short chime, then the report in tables. The files are already filed.</p>' +
+            tip('Claude only stops for a CAPTCHA (you solve it yourself), a password, a payment, or more than 30 gates at once.'));
       },
       answers: [
         { l: T('Ça a marché !', 'It worked!'), go: 'done', main: true },
@@ -445,12 +440,12 @@ footer { margin-top: 28px; color: var(--muted); font-size: 14px; }
     'test-help': {
       main: 'test', kicker: T('Premier essai', 'First try'), title: T('Que se passe-t-il ?', 'What\'s happening?'),
       body: function () {
-        return T('<ul><li><strong>Claude attend :</strong> regarde sous son dernier message s\'il y a des choix ou un bouton <strong>Go</strong> à cliquer.</li>' +
+        return T('<ul><li><strong>Claude attend :</strong> regarde sous son dernier message s\'il y a des choix à cliquer.</li>' +
           '<li><strong>Une fenêtre d\'autorisation s\'affiche :</strong> lis-la et clique <strong>Autoriser</strong>. Si c\'est Chrome qui demande l\'accès à un site, choisis l\'option qui l\'autorise <strong>toujours</strong>.</li>' +
           '<li><strong>Un CAPTCHA s\'affiche :</strong> résous-le dans l\'onglet ouvert, puis écris « c\'est fait ».</li>' +
           '<li><strong>Il s\'est arrêté au milieu :</strong> écris « continue jusqu\'au bout ». Rien n\'est perdu.</li>' +
           '<li><strong>Un son est « manquant » :</strong> le bilan dit pourquoi. Souvent, il n\'y a pas de téléchargement gratuit (Beatport, Bandcamp…).</li></ul>',
-          '<ul><li><strong>Claude is waiting:</strong> look under its last message for choices or a <strong>Go</strong> button to click.</li>' +
+          '<ul><li><strong>Claude is waiting:</strong> look under its last message for choices to click.</li>' +
           '<li><strong>A permission pop-up appears:</strong> read it and click <strong>Allow</strong>. If it\'s Chrome asking for access to a site, pick the option that <strong>always</strong> allows it.</li>' +
           '<li><strong>A CAPTCHA appears:</strong> solve it in the open tab, then type “done”.</li>' +
           '<li><strong>It stopped halfway:</strong> type “keep going until the end”. Nothing is lost.</li>' +
@@ -461,12 +456,12 @@ footer { margin-top: 28px; color: var(--muted); font-size: 14px; }
     done: {
       kicker: T('Terminé', 'Done'), title: T('C\'est installé. Bon digging !', 'You\'re all set. Happy digging!'),
       body: function () {
-        return T('<p>À partir de maintenant, c\'est toujours pareil : tape <code>/sd-downloader:download-likes</code>, coche les sons, clique <strong>Go</strong>.</p>' +
-          '<ul><li><strong>L\'astuce :</strong> crée sur SoundCloud une playlist « À télécharger ». Ajoute-y des sons pendant que tu digs, puis coche <strong>Ma playlist</strong>. Les sons déjà téléchargés ne sont jamais refaits.</li>' +
-          '<li>Tu peux aussi écrire : « retire #12 de la liste », « compare aussi avec ma clé USB », « garde aussi les versions radio », « montre le bilan ».</li></ul>',
-          '<p>From now on it\'s always the same: type <code>/sd-downloader:download-likes</code>, tick the tracks, click <strong>Go</strong>.</p>' +
-          '<ul><li><strong>Tip:</strong> create a “To download” playlist on SoundCloud. Add tracks to it while you dig, then tick <strong>My playlist</strong>. Tracks already downloaded are never done twice.</li>' +
-          '<li>You can also type: “remove #12 from the list”, “also compare with my USB stick”, “keep the radio versions too”, “show the report”.</li></ul>');
+        return T('<p>À partir de maintenant, c\'est toujours pareil : clique <strong>🎧 Télécharger mes nouveaux likes</strong> au-dessus de la zone où tu écris.</p>' +
+          '<ul><li><strong>L\'astuce :</strong> crée sur SoundCloud une playlist « À télécharger ». Ajoute-y des sons pendant que tu digs, puis écris « télécharge ma playlist ». Les sons déjà téléchargés ne sont jamais refaits.</li>' +
+          '<li>Tu peux aussi écrire : « retire #12 de la liste », « garde aussi les versions radio », « montre le bilan ».</li></ul>',
+          '<p>From now on it\'s always the same: click <strong>🎧 Download my new likes</strong> above the box where you type.</p>' +
+          '<ul><li><strong>Tip:</strong> create a “To download” playlist on SoundCloud. Add tracks to it while you dig, then type “download my playlist”. Tracks already downloaded are never done twice.</li>' +
+          '<li>You can also type: “remove #12 from the list”, “keep the radio versions too”, “show the report”.</li></ul>');
       },
       answers: [
         { l: T('Voir le guide complet', 'See the full guide'), full: true, main: true },

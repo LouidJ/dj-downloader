@@ -519,6 +519,7 @@ def cmd_init(a):
         "skip_longer_than_minutes": a.skip_minutes,
         "versions": "both" if a.keep_both == "yes" else a.versions,
         "follow_author": a.follow_author,
+        "go": a.go,
         "language": a.language,
         "sources": dict(SOURCES, pools=[]),
         "never_attribute_from": ["telegram.org", "whatsapp", "mail.google.com"],
@@ -528,11 +529,13 @@ def cmd_init(a):
     print(f"Config écrite : {path}\nDossier de destination : {os.path.expanduser(a.dest)}")
 
 
+# Feu vert des gates : auto = donné une fois pour toutes au réglage, ask = demandé à chaque run.
+GO = ("auto", "ask")
 # Proposition facultative de suivre l'auteur du plugin : ask = la proposer, followed = déjà suivi, no = ne plus proposer.
 FOLLOW_AUTHOR = ("ask", "followed", "no")
 SETTABLE = ("language", "soundcloud.likes_of", "soundcloud.download_playlist", "soundcloud.chrome_device_id", "soundcloud.account",
             "gate.email", "gate.first_name", "dest_folder", "skip_longer_than_minutes", "versions",
-            "follow_author")
+            "follow_author", "go")
 
 
 def cmd_config(a):
@@ -552,9 +555,10 @@ def cmd_config(a):
             sys.exit("Valeur : " + " | ".join(VERSIONS))
         node[leaf] = a.value
         node.pop("keep_radio_and_extended", None)
-    elif leaf == "follow_author":
-        if a.value not in FOLLOW_AUTHOR:
-            sys.exit("Valeur : " + " | ".join(FOLLOW_AUTHOR))
+    elif leaf in ("follow_author", "go"):
+        allowed = FOLLOW_AUTHOR if leaf == "follow_author" else GO
+        if a.value not in allowed:
+            sys.exit("Valeur : " + " | ".join(allowed))
         node[leaf] = a.value
     else:
         node[leaf] = a.value
@@ -820,7 +824,8 @@ def cmd_check(c, st, a):
     for k, v in (("soundcloud.account", sc.get("account")),
                  ("soundcloud.chrome_device_id", sc.get("chrome_device_id")), ("gate.email", g.get("email")),
                  ("gate.first_name", g.get("first_name"))):
-        if not v or "@exemple" in str(v) or str(v).isupper():
+        # valeur d'exemple restée telle quelle (un prénom en majuscules, « JB », est un vrai prénom)
+        if not v or "@exemple" in str(v) or (str(v).isupper() and k != "gate.first_name"):
             bad.append(f"{k} à remplir")
     print(f"Système : {SYSTEM} | Python {sys.version.split()[0]}")
     if WINDOWS and not os.path.isfile(POWERSHELL):
@@ -1258,6 +1263,8 @@ def main():
                    help="quand un son existe en Extended et en Radio : extended, radio, ou both (les deux)")
     p.add_argument("--keep-both", choices=("yes", "no"), default="no", help=argparse.SUPPRESS)  # ancien nom de --versions both
     p.add_argument("--language", default="fr", help="langue du DJ pour parler et pour les questions (fr, en, es, it…)")
+    p.add_argument("--go", choices=GO, default="ask",
+                   help="feu vert des gates : auto = donné au réglage pour tous les runs, ask = demandé à chaque run")
     p.add_argument("--follow-author", choices=FOLLOW_AUTHOR, default="ask",
                    help="proposition facultative de suivre l'auteur du plugin sur SoundCloud")
     p.add_argument("--force", action="store_true")

@@ -8,7 +8,7 @@ A free Claude plugin for DJs on Mac and Windows. You like tracks on SoundCloud, 
 - **Hypeddit and Droploud gates**: follow, like, repost, comment, email… Claude does every step;
 - **filing**: each file goes straight into your folder. For a zip, it keeps the best version (the cut you chose, WAV/AIFF before MP3) and throws away the rest. Extended, Radio or both: you choose during setup, or later ("keep the radio versions too"). Duplicates go to the trash;
 - **report** at the end: what was downloaded, already there, skipped (long sets, duplicates) and what is missing, with the reason;
-- **checks your tracks**: before downloading, Claude looks in your folders (Music, rekordbox, Serato, USB stick…) and skips tracks you already have in the same version;
+- **no duplicates**: before downloading, Claude looks in your folder and skips tracks you already have in the same version; the report tells you which file you had;
 - **never the same track twice**: each track is tracked from one run to the next, even if it comes back in a playlist;
 - **adapts**: if a site changes, Claude finds the new button, finishes, and notes the change for next time.
 
@@ -20,8 +20,7 @@ A free Claude plugin for DJs on Mac and Windows. You like tracks on SoundCloud, 
 - Python 3 (already there on Mac after `xcode-select --install`; on Windows, from python.org, ticking "Add python.exe to PATH"). The guided setup checks and explains.
 - The Claude app (Code tab) or Claude Code, with a Claude subscription.
 - The [**Claude in Chrome**](https://chromewebstore.google.com/detail/fcoeoabgfenejglbffodgkkbkcdhcgfn) extension, signed in.
-- Recommended: a **second SoundCloud account** for the gates (reposts, follows), logged in to that Chrome. Your main account stays clean.
-- Your SoundCloud email and first name: you give them once during setup, then Claude fills them in on the gates.
+- Your SoundCloud account logged in to that Chrome. Claude reads your email and first name there on its own, for the gates.
 
 ## Install
 
@@ -37,17 +36,13 @@ In the Claude app (Code tab), the easiest is to paste: "Install the sd-downloade
 
 To get improvements automatically: `/plugin` → **Marketplaces** → `dj-downloader` → **Enable auto-update**.
 
-Then start the guided setup:
+Then click the **🎧 Set up SD Downloader** button above the box where you type (or type `/sd-downloader:setup`).
 
-```
-/sd-downloader:setup
-```
-
-Claude first asks for your language, then your SoundCloud profile, the gates account, your email, your download folder and the folders where you already have tracks. It never asks for a password: you log in yourself. At the end, one button starts your first download.
+Three questions to click: your language, where to save the tracks, and an optional "To download" playlist. The SoundCloud account, email and first name are read on their own. It never asks for a password: you log in yourself. At the end, one button starts your first download.
 
 ## Usage
 
-Type `/sd-downloader:download-likes`: Claude offers choices (new likes, liked today, last 20, your playlist…). Tick, then click **Go**. Nothing to type.
+Click **🎧 Download my new likes** above the box where you type: Claude takes everything you've liked since last time, does the gates with your account (you agreed once during setup), files everything, plays a short chime and gives you the report.
 
 You can also say what you want in your own words, in any language:
 
@@ -70,12 +65,12 @@ Afterwards:
 - "show the report";
 - "try again tomorrow": for a track to retry later;
 - "my download playlist is <link>": to change it;
-- "also check my USB stick": adds a folder of tracks to compare.
+- "ask me before the gates": Claude asks for your OK on every download again.
 
 ## Good to know
 
 - Droploud gates sometimes require signing up for the artist's news to give you the track: Claude ticks the box, as you would.
-- Optional: Claude offers to follow the plugin's author on SoundCloud, at the end of setup and after a big playlist. It only follows if you say yes, asks nothing if you already follow, and "Don't ask again" stops it for good.
+- Optional: at the end of setup, Claude offers once to follow the plugin's author on SoundCloud. It only follows if you say yes, and asks nothing if you already follow.
 - No limit: take 5 tracks or 500, Claude goes all the way. If SoundCloud blocks a direct download (SoundCloud's own limit), Claude goes straight through the Hypeddit / Droploud gate when there is one.
 - Beatport, Bandcamp and other paid stores are never touched: those tracks are listed as missing.
 - Your settings and tracking stay on your computer (`~/.claude/plugins/data/`). They are deleted if you uninstall the plugin. Your audio files stay in your folder.

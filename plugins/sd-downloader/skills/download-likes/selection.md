@@ -34,7 +34,7 @@ Le DJ ne doit rien avoir à taper. Pose tes questions avec l'outil **`AskUserQue
 
 **Langue** : les libellés ci-dessous sont en français. Utilise la langue de la config (`language`, choisie au réglage), ou celle où le DJ t'écrit s'il en change, et traduis-les (par exemple `My new likes (Recommended)`, `Go (Recommended)` / `Cancel`), et parle-lui dans cette langue pendant tout le run.
 
-**Si la demande ne dit pas quels sons** (la commande seule, « télécharge », « lance-toi »…) : **un seul** appel `AskUserQuestion` avec ces deux questions.
+**Si la demande ne dit pas quels sons** (la commande seule, « télécharge », « lance-toi »…) : **un seul** appel `AskUserQuestion` avec ces deux questions. Si la config dit `"go": "auto"`, seulement la première (le feu vert est déjà donné).
 
 1. Question « Quels sons je télécharge ? », en-tête `Sons`, choix unique :
    - `Mes nouveaux likes (Recommended)` : tout ce que tu as liké depuis la dernière fois ;
@@ -49,7 +49,7 @@ Le DJ ne doit rien avoir à taper. Pose tes questions avec l'outil **`AskUserQue
 
 **Si la demande dit déjà quels sons** mais sans feu vert : pose seulement le feu vert, à l'étape 2b, une fois la sélection lue et comparée. Utilise `AskUserQuestion`, en-tête `Feu vert`. La question tient en une ligne : « Je télécharge Thriller (Christian Maas Edit) ? » pour un son, « Je télécharge 12 sons (3 directs, 6 Hypeddit, 3 Droploud) ? » pour plusieurs. Deux choix : `Go (Recommended)` (même description d'une ligne que ci-dessus) et `Annuler`.
 
-**Ne demande pas le feu vert** si le DJ a déjà répondu `Go`, s'il a écrit « go pour tout », ou s'il n'y a aucun gate.
+**Ne demande pas le feu vert** si le DJ a déjà répondu `Go`, s'il a écrit « go pour tout », s'il n'y a aucun gate, ou si la config dit `"go": "auto"` (sauf au-delà de 30 gates).
 
 Utilise aussi `AskUserQuestion` pour les rares autres questions d'un run, par exemple « Retenter les 3 sons manquants qui reviennent ? » avec `Oui` / `Non`.
 

@@ -43,47 +43,40 @@ Installe le plugin sd-downloader depuis le dépôt GitHub LouidJ/dj-downloader, 
 
 Dans le terminal (Claude Code), une seule commande suffit : `/plugin install sd-downloader --marketplace LouidJ/dj-downloader`.
 
-## 4. Tes réglages : tu coches, c'est tout
+## 4. Tes réglages : deux clics, c'est tout
 
-Tape `/sd-downloader:setup`. Elle apparaît dès que tu tapes `/` puis « sd ». Si elle n'apparaît pas, ouvre une autre nouvelle session. Claude vérifie d'abord que tout est prêt. **Sur Windows**, il peut te demander d'installer **Python** : sur [python.org](https://www.python.org/downloads/), clique Download Python, lance l'installateur et **coche « Add python.exe to PATH »** avant Install. Ouvre ensuite une nouvelle session et retape la commande.
+Clique le bouton **🎧 Installer SD Downloader** au-dessus de la zone où tu écris (ou tape `/sd-downloader:setup`). S'il n'apparaît pas, ouvre une autre nouvelle session. Claude vérifie d'abord que tout est prêt. **Sur Windows**, il peut te demander d'installer **Python** : sur [python.org](https://www.python.org/downloads/), clique Download Python, lance l'installateur et **coche « Add python.exe to PATH »** avant Install. Ouvre ensuite une nouvelle session et retape la commande.
 
-Il te demande d'abord ta **langue** : tout le reste se fait dans ta langue. Ensuite Claude **devine tout seul** le compte SoundCloud connecté dans Chrome et les dossiers où tu as déjà des sons. Il te propose tout en **choix à cliquer** :
-- le compte pour les gates et le profil dont il télécharge les likes ;
-- Extended version, Radio version, ou les deux ;
-- où ranger les sons, et dans quels dossiers chercher ceux que tu as déjà, pour ne rien télécharger en double ;
+Il te demande d'abord ta **langue** : tout le reste se fait dans ta langue. Ensuite Claude **devine tout seul** le compte SoundCloud connecté dans Chrome, ton e-mail et ton prénom : rien à écrire. Il ne te pose que **deux questions à cliquer** :
+- où ranger les sons (Musique, un nouveau dossier sur le Bureau, ou un dossier que tu choisis dans une fenêtre) ;
 - en option, une playlist « À télécharger ».
 
-À la fin, Claude te propose, **sans obligation**, de suivre l'auteur du plugin sur SoundCloud. Il te le reproposera après une grosse playlist, sauf si tu choisis « Ne plus me proposer ». Si tu le suis déjà, il ne demande rien.
+Le reste est réglé pour toi : les likes de ton compte, la version Extended (avant la Radio), et les sons déjà dans ton dossier ne sont jamais retéléchargés. Tu changes ce que tu veux d'une phrase (« garde aussi les versions radio », « mon e-mail c'est … »).
 
-La seule chose à écrire : **ton e-mail SoundCloud et ton prénom**, une seule fois. Ensuite Claude les remplit lui-même sur les gates.
+À la fin, Claude te propose une fois, **sans obligation**, de suivre l'auteur du plugin sur SoundCloud, puis affiche un résumé de 3 lignes et un bouton **🚀 Lancer**. Le résumé te prévient : à chaque téléchargement, Claude fera les gates (suivre, liker, reposter, commenter) avec ton compte, sans te redemander. Si tu préfères qu'il demande à chaque fois, dis « demande-moi avant les gates ».
 
 > **Une seule autorisation.** Au début du réglage, Claude te prévient puis affiche **une seule** fenêtre : clique **Autoriser**. Elle couvre le plugin pour toujours, même après ses mises à jour. Ensuite, l'extension Chrome demande l'accès à soundcloud.com, hypeddit.com et droploud.com : choisis à chaque fois l'option qui autorise **toujours** le site. Sur Mac, si le système demande l'accès à Téléchargements ou Musique, accepte. Après ça, plus aucune fenêtre pendant les téléchargements.
 
-## 5. Premier test
+## 5. Premier téléchargement
 
-Tape `/sd-downloader:download-likes` (ou écris simplement « télécharge »). Claude affiche des choix : **rien à écrire, tu coches puis tu cliques Go**.
+Clique **🚀 Lancer** à la fin du réglage. Claude te demande quels sons (*Mes nouveaux likes*, *Likés aujourd'hui*, *Mes 20 derniers likes*, *Ma playlist*). Pour un tout premier essai, choisis *Autre* et écris « 3 derniers ».
 
-- **Quels sons je télécharge ?** Les choix sont *Mes nouveaux likes*, *Likés aujourd'hui*, *Mes 20 derniers likes* et *Ma playlist*. Avec *Autre*, tu peux écrire un nombre ou une date, ou coller un lien.
-- **Je fais tout jusqu'au bilan ?** Les choix sont **Go** et *Montre-moi d'abord*.
-
-Pour un tout premier essai, choisis *Autre* et écris « 3 derniers ».
-
-Après le **Go** :
-1. Claude compare avec les sons déjà sur ton ordi et te dit ceux qu'il saute.
+Ensuite :
+1. Claude saute les sons déjà dans ton dossier.
 2. Il enchaîne tout seul. Dans Chrome, tu le vois ouvrir les pages et cliquer. Le son des pages est coupé.
-3. À la fin, il te donne le bilan. Les fichiers sont déjà rangés.
+3. À la fin, un petit son, puis le bilan en tableaux. Les fichiers sont déjà rangés.
 
-Le bouton Go vaut pour tout le run. Sa description dit ce que Claude fera en ton nom : suivre, liker, reposter, commenter, donner ton e-mail. Ensuite, il ne te demande plus rien jusqu'au bilan. Seules exceptions : un CAPTCHA (tu le fais toi-même), un mot de passe, un paiement ou un mauvais compte connecté.
+Il ne te demande rien pendant le run. Seules exceptions : un CAPTCHA (tu le fais toi-même), un mot de passe, un paiement, un mauvais compte connecté, ou plus de 30 gates d'un coup (SoundCloud pourrait limiter ton compte : tu choisis).
 
 ## Au quotidien
 
-Toujours pareil : `/sd-downloader:download-likes`, tu coches, tu cliques **Go**.
+Clique le bouton **🎧 Télécharger mes nouveaux likes** au-dessus de la zone où tu écris. C'est tout : Claude prend tout ce que tu as liké depuis la dernière fois.
 
-Si tu préfères écrire, Claude comprend aussi tes mots, et ne te pose alors que la question du Go. Par exemple : « télécharge ce que j'ai liké depuis lundi », « télécharge cette playlist : lien ». Ajoute « go pour tout » et il démarre sans même afficher le bouton.
+Pour autre chose, écris-le avec tes mots : « télécharge ce que j'ai liké depuis lundi », « télécharge ma playlist », « télécharge cette playlist : lien ».
 
-**L'astuce de la playlist** : crée sur SoundCloud une playlist « À télécharger ». Pendant que tu digs, ajoute-y les sons. Le soir, coche *Ma playlist*. Les sons déjà téléchargés ne sont jamais refaits.
+**L'astuce de la playlist** : crée sur SoundCloud une playlist « À télécharger ». Pendant que tu digs, ajoute-y les sons. Le soir, dis « télécharge ma playlist ». Les sons déjà téléchargés ne sont jamais refaits.
 
-Autres phrases : « retire #12 de la liste », « compare aussi avec ma clé USB », « garde aussi les versions radio », « montre le bilan ».
+Autres phrases : « retire #12 de la liste », « garde aussi les versions radio », « montre le bilan ».
 
 ## Lire le bilan
 

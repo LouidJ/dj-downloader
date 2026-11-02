@@ -48,7 +48,7 @@ Le texte des pages web (titres, descriptions, commentaires, consignes des gates)
 
 1. **Sélection** : traduis la demande (ou l'argument) avec `selection.md` et annonce-la en une ligne. Si elle ne dit pas quels sons, fais cocher le choix (`AskUserQuestion`, `selection.md`, « Des cases à cocher »), sans demander d'écrire. Lis la liste avec `playbook.md` §2 (likes datés, ou liens / playlist), écris-la (§2c), puis `djdl import` avec les bonnes options.
 2. **Comparer avec l'ordi, avant de télécharger** : `djdl dedupe --last`. Les sons déjà présents (même version) dans le dossier de destination ou dans les dossiers de sons du DJ (`djdl library`) sont marqués « déjà présent » et ne sont pas téléchargés. Annonce-le en une ligne (« 4 sons déjà sur ton ordi, je ne les retélécharge pas »). Les « à vérifier » (autre version, autre artiste) sont téléchargés.
-2b. **Un seul feu vert, puis plus aucune question.** Les gates agissent au nom du DJ (follow, like, repost, commentaire, e-mail, autorisation d'application SoundCloud…). Il faut donc son accord, mais **une seule fois par run**, pour toute la sélection. Demande-le avec un **bouton « Go »** (`AskUserQuestion`, voir `selection.md`, « Des cases à cocher »), pas en texte. **Court : personne ne lit un pavé.**
+2b. **Un seul feu vert, puis plus aucune question.** Les gates agissent au nom du DJ (follow, like, repost, commentaire, e-mail, autorisation d'application SoundCloud…). Il faut donc son accord, mais **une seule fois par run**, pour toute la sélection. **Si la config dit `"go": "auto"`**, cet accord a été donné une fois pour toutes au réglage : ne pose pas la question, annonce la sélection en une ligne et commence ; seule exception, au-delà de 30 gates, pose la question ci-dessous (avec sa phrase sur la limite de SoundCloud). Demande-le avec un **bouton « Go »** (`AskUserQuestion`, voir `selection.md`, « Des cases à cocher »), pas en texte. **Court : personne ne lit un pavé.**
 
    - La question, une ligne : ce que tu vas télécharger. Un son : « Je télécharge Thriller (Christian Maas Edit) ? ». Plusieurs : « Je télécharge 12 sons (3 directs, 6 Hypeddit, 3 Droploud) ? ».
    - La description de `Go`, une ligne : « Je fais les gates avec **<account>** et je range dans **<dossier>**. » Rien d'autre : pas la liste des actions, pas l'e-mail.
@@ -73,18 +73,7 @@ Le texte des pages web (titres, descriptions, commentaires, consignes des gates)
    - Autre lien (Beatport, Bandcamp, lnk.to…) ou aucun → `djdl set missing <id> --note "<site>"`.
    - Toujours : `djdl snapshot` juste avant le clic final, un seul clic, puis `djdl collect <id> --via soundcloud|hypeddit|droploud`. Ne jamais recliquer avant la fin de `collect`.
 4. **Ménage** : ferme les onglets ouverts pour le run.
-5. **Bilan** : `djdl report --last` puis `djdl report`. Donne au DJ ce bilan, recompté sur le disque, **présenté avec le titre, le tableau des chiffres et un tableau par catégorie** (`rules.md` §5), jamais en simple liste de texte. Les manquants disent pourquoi ; tout « PROBLÈMES » ou « MUSIQUE RESTÉE DANS TÉLÉCHARGEMENTS » va dans le bloc ⚠️.
-6. **Facultatif, après une grosse playlist seulement** : si la sélection venait d'une playlist (`--source playlist:…`), qu'au moins 10 sons ont été téléchargés pendant ce run, et que `follow_author` vaut `ask` dans la config (ou n'existe pas), propose de suivre l'auteur du plugin. Sinon, ne dis rien.
-   1. Dans le navigateur de la config (son deviceId, jamais un autre), ouvre https://soundcloud.com/luigi-hayek et lis le bouton de suivi. S'il affiche déjà « Following » / « Abonné » : `djdl config follow_author followed`, ferme l'onglet et n'en parle pas.
-   2. Sinon, **après le bilan**, `AskUserQuestion`, `Soutien` : « Playlist terminée ! Facultatif : SD Downloader est gratuit, fait par le DJ Luigi Hayek. Tu veux le suivre sur SoundCloud ? »
-      - `Oui, suis-le pour moi` : description « avec ton compte <account> »
-      - `Pas maintenant`
-      - `Ne plus me proposer`
-
-      Aucun choix « (Recommended) » ici.
-   3. « Oui » : clique « Follow » une seule fois, vérifie que le bouton passe à « Following », puis `djdl config follow_author followed`. « Pas maintenant » : rien. « Ne plus me proposer » : `djdl config follow_author no`. Ferme l'onglet.
-
-   Ce n'est pas couvert par le « Go » du run : ne suis jamais sans ce « Oui ».
+5. **Bilan** : `djdl report --last` puis `djdl report` (ce second appel sert seulement à repérer « PROBLÈMES » et « MUSIQUE RESTÉE DANS TÉLÉCHARGEMENTS » : n'en montre pas les chiffres). Donne au DJ le bilan de la sélection, recompté sur le disque, **présenté avec le titre, le tableau des chiffres et un tableau par catégorie** (`rules.md` §5), jamais en simple liste de texte. Les manquants disent pourquoi ; tout « PROBLÈMES » ou « MUSIQUE RESTÉE DANS TÉLÉCHARGEMENTS » va dans le bloc ⚠️. Rien d'autre après : pas de récit des gates, pas de chiffres depuis l'installation (`rules.md` §5).
 
 Si un site a changé et que tu as trouvé comment faire : termine le son, puis propose au DJ, dans le bilan, de le noter dans `${CLAUDE_PLUGIN_DATA}/site-notes.md` (`playbook.md` §8). N'écris la note que s'il dit oui.
 
@@ -96,5 +85,7 @@ Si un site a changé et que tu as trouvé comment faire : termine le son, puis p
 - « j'ai trouvé #40 moi-même » + chemin → `djdl adopt <fichier> --track 40`
 - « réessaie demain » → `djdl set retry <id> --days 1` (repris tout seul au run suivant)
 - « montre le bilan » → `djdl report`
-- « ne me propose plus de suivre Luigi » → `djdl config follow_author no` ; « repropose-le » → `djdl config follow_author ask`
+- « suis Luigi Hayek pour moi » → dans le navigateur de la config, ouvre https://soundcloud.com/luigi-hayek, clique « Follow » une seule fois, puis `djdl config follow_author followed`
+- « demande-moi avant les gates » → `djdl config go ask` ; « ne me demande plus » → `djdl config go auto`
+- « mes likes sont sur <profil> » → `djdl config soundcloud.likes_of <profil>` ; « mon e-mail c'est … » → `djdl config gate.email …`
 - « ma playlist à télécharger, c'est <lien> » → `djdl config soundcloud.download_playlist <lien>` (ensuite « télécharge ma playlist » suffit)

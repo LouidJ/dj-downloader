@@ -6,8 +6,8 @@ Plugin gratuit pour les DJ, sur Mac et Windows. Tu choisis des sons SoundCloud (
 
 ## Utilisation
 
-1. `/sd-downloader:setup` : réglages, une seule fois. Claude détecte ton compte et tes dossiers, tu coches les choix.
-2. `/sd-downloader:download-likes` : tu coches les sons voulus, tu cliques **Go**, Claude fait le reste.
+1. Bouton **🎧 Installer SD Downloader** (ou `/sd-downloader:setup`) : réglages, une seule fois. Claude lit ton compte SoundCloud, ton e-mail et ton prénom ; tu choisis seulement ta langue, ton dossier et, en option, une playlist. Tu donnes ton accord pour les gates une fois pour toutes (« demande-moi avant les gates » pour revenir à une question à chaque fois).
+2. Bouton **🎧 Télécharger mes nouveaux likes** (ou `/sd-downloader:download-likes`, ou tes propres mots) : Claude fait le reste, joue un petit son à la fin et donne le bilan.
 
 Guide pas à pas pour débutants : [louidj.github.io/dj-downloader](https://louidj.github.io/dj-downloader/) (FR / EN), ou en texte : [GUIDE.md](../../GUIDE.md), [GUIDE.en.md](../../GUIDE.en.md).
 
@@ -22,7 +22,7 @@ Guide pas à pas pour débutants : [louidj.github.io/dj-downloader](https://loui
 - Il lit tes likes ou ta playlist sur soundcloud.com. Ce sont les réponses que la page SoundCloud reçoit déjà ; elles ne partent nulle part ailleurs.
 - Il clique sur le bouton de téléchargement SoundCloud quand l'artiste l'a activé.
 - Il remplit les gates Hypeddit et Droploud. Avec ton compte SoundCloud, il suit l'artiste, like, reposte, laisse un commentaire court et autorise l'application SoundCloud du gate. Il donne ton **prénom** et ton **e-mail** aux gates qui les demandent. Tout cela ne se fait qu'après ton **Go**, une fois par session de téléchargement, et le Go te dit combien de follows, reposts, commentaires et autorisations il va faire. Ces actions sont visibles sur ton compte, comme si tu les faisais toi-même ; beaucoup d'un coup peuvent faire limiter le compte par SoundCloud, d'où le conseil d'utiliser un deuxième compte pour les gates. Les applications des gates se retirent quand tu veux dans les réglages de ton compte SoundCloud (applications connectées). Quand un gate Droploud l'exige pour donner le son, il coche aussi la case « recevoir les nouvelles de l'artiste ».
-- **Facultatif** : à la fin du réglage, puis à la fin d'une grosse playlist (10 sons ou plus), il te propose de suivre l'auteur du plugin sur SoundCloud ([Luigi Hayek](https://soundcloud.com/luigi-hayek)). Il ne suit que si tu cliques « Oui ». Si tu le suis déjà, il ne demande rien. « Ne plus me proposer » arrête pour de bon. Le plugin marche pareil quelle que soit ta réponse.
+- **Facultatif** : à la fin du réglage seulement, il te propose une fois de suivre l'auteur du plugin sur SoundCloud ([Luigi Hayek](https://soundcloud.com/luigi-hayek)). Il ne suit que si tu cliques « Oui ». Si tu le suis déjà, il ne demande rien. Le plugin marche pareil quelle que soit ta réponse.
 - Il ne tape jamais de mot de passe, ne crée aucun compte, ne paie rien et ne résout pas les CAPTCHA.
 
 **Sur ton ordinateur**, avec `scripts/djdl.py` (Python, sans aucun accès réseau) :
