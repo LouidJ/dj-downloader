@@ -42,7 +42,9 @@ Le DJ ne doit rien avoir à taper. Pose tes questions avec l'outil **`AskUserQue
      - sinon : `Mes nouveaux likes (Recommended)` : Tout ce que tu as liké depuis la dernière fois ;
    - `Likés aujourd'hui` : Seulement les likes du jour ;
    - `Mes 20 derniers likes` : Les 20 likes les plus récents ;
-   - `Ma playlist` : Ta playlist « À télécharger » (seulement si `soundcloud.download_playlist` est réglé ; sinon, `Likés cette semaine` : depuis lundi).
+   - `Ma playlist` : Ta playlist « À télécharger » (seulement si `soundcloud.download_playlist` est réglé ; sinon, `Les tracks de cette playlist` : Colle le lien d'une playlist dans « Autre chose », je télécharge toutes ses tracks (publique ou privée)).
+
+   `Les tracks de cette playlist` : si le DJ a collé un lien dans « Autre chose », prends-le ; sinon demande-le en une phrase (« Colle le lien de la playlist SoundCloud. »), puis traite-le comme un lien de playlist (tableau ci-dessus). Quatre choix au plus : « cette semaine » et les autres dates s'écrivent dans « Autre chose ».
 
    Dans « Other », le DJ peut écrire un autre nombre, une date, ou coller un lien de playlist ou de sons. Traduis-le avec le tableau ci-dessus.
 2. Question « Je fais tout jusqu'au bilan ? », en-tête `Feu vert`, choix unique :
