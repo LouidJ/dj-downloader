@@ -6,7 +6,7 @@ Commandes : init, scan, pick-folder, open-folder, find-home, perms, check, impor
 
 Réglages et suivi : <home>/config.json et <home>/state.json (home par défaut : $DJDL_HOME ou ~/.dj-downloader).
 """
-import argparse, datetime, hashlib, json, os, plistlib, re, shutil, subprocess, sys, tempfile, time, unicodedata, \
+import argparse, datetime, glob, hashlib, json, os, plistlib, re, shutil, subprocess, sys, tempfile, time, unicodedata, \
     urllib.parse, zipfile
 
 DEFAULT_HOME = os.environ.get("DJDL_HOME") or "~/.dj-downloader"
@@ -14,10 +14,28 @@ AUDIO = (".wav", ".aif", ".aiff", ".mp3", ".flac", ".m4a", ".aac", ".ogg", ".opu
 SKIP_DIRS = {"__MACOSX", ".Trash", "node_modules", "$RECYCLE.BIN", "System Volume Information"}
 WINDOWS = sys.platform == "win32"
 SYSTEM = "Windows" if WINDOWS else ("macOS" if sys.platform == "darwin" else sys.platform)
-# Claude tourne sur un ordi distant (Cowork : machine Linux où les dossiers du DJ sont partagés sous /mnt/user-data).
-# Là-bas, le dossier du plugin n'est pas gardé d'une session à l'autre, et Chrome ne marque pas l'origine des fichiers.
-REMOTE_ROOT = "/mnt/user-data"
-REMOTE = sys.platform.startswith("linux") and os.path.isdir(REMOTE_ROOT)
+# Claude tourne sur un ordi distant (Cowork) : machine Linux où les dossiers partagés par le DJ apparaissent sous
+# /sessions/<tâche>/mnt/<dossier> (ou /mnt/user-data/uploads/<dossier>), et le numéro de tâche change à chaque fois.
+# Là-bas, le dossier du plugin n'est pas gardé d'une tâche à l'autre, et Chrome ne marque pas l'origine des fichiers.
+REMOTE_MOUNTS = ("/sessions/*/mnt", "/mnt/user-data/uploads", "/mnt/user-data")
+REMOTE_PATH = re.compile(r"^(?:/sessions/[^/]+/mnt|/mnt/user-data(?:/uploads)?)/(.+)$")
+
+
+def shared_roots():
+    return [p for pat in REMOTE_MOUNTS for p in sorted(glob.glob(pat)) if os.path.isdir(p)]
+
+
+REMOTE = sys.platform.startswith("linux") and bool(shared_roots())
+
+
+def remap(path):
+    """Ordi distant : un dossier enregistré dans une autre tâche (/sessions/<ancienne>/mnt/Dossier/…) est
+    retrouvé au même endroit dans les dossiers partagés de cette tâche."""
+    m = REMOTE_PATH.match(path) if REMOTE and not os.path.exists(path) else None
+    for root in shared_roots() if m else []:
+        if os.path.exists(os.path.join(root, m[1])):
+            return os.path.join(root, m[1])
+    return path
 ACCESS_HINT = ("autoriser l'accès au dossier, ou choisir un autre dossier" if WINDOWS else
                "autoriser l'accès dans Réglages Système > Confidentialité et sécurité > Fichiers et dossiers")
 PARTIAL = (".crdownload", ".download", ".part")
@@ -67,8 +85,8 @@ def load_config(path):
     with open(path, encoding="utf-8") as f:
         c = json.load(f)
     for k in ("dest_folder", "downloads_folder"):
-        c[k] = os.path.expanduser(c[k])
-    c["library_folders"] = [os.path.expanduser(x) for x in c.get("library_folders", [])]
+        c[k] = remap(os.path.expanduser(c[k]))
+    c["library_folders"] = [remap(os.path.expanduser(x)) for x in c.get("library_folders", [])]
     sf = c.get("state_file", "state.json")
     if not isinstance(sf, str) or os.path.basename(sf) != sf or sf in ("", ".", "..") or "/" in sf:
         sys.exit(f"state_file refusé : {sf!r} (un simple nom de fichier, dans le dossier du plugin).")
@@ -758,12 +776,16 @@ def cmd_open_folder(c):
 
 def cmd_find_home(a):
     """Ordi distant (Cowork) : retrouve le dossier du plugin gardé dans un dossier partagé (<dossier>/.sd-downloader)."""
-    print("Claude tourne sur : " + ("un ordi distant (Cowork), dossiers du DJ partagés sous " + REMOTE_ROOT if REMOTE else "l'ordi du DJ"))
+    print("Claude tourne sur : " + ("un ordi distant (Cowork)" if REMOTE else "l'ordi du DJ"))
+    if REMOTE:
+        shared = [os.path.join(r, d) for r in shared_roots() for d in sorted(os.listdir(r))
+                  if not d.startswith(".") and os.path.isdir(os.path.join(r, d))]
+        print("Dossiers partagés par le DJ : " + (", ".join(shared) or "aucun"))
     if os.path.exists(os.path.join(a.home, "config.json")):
         print(f"Réglages trouvés : {a.home}")
         return 0
     cwd = os.getcwd()  # jamais tout le disque ni tout le dossier perso : seulement un dossier de travail précis
-    roots = ([REMOTE_ROOT] if REMOTE else []) + ([cwd] if cwd not in ("/", os.path.expanduser("~")) else [])
+    roots = (shared_roots() if REMOTE else []) + ([cwd] if cwd not in ("/", os.path.expanduser("~")) else [])
     for root in roots:
         for dirpath, dirs, files in os.walk(root):
             depth = dirpath[len(root):].count(os.sep)
@@ -943,7 +965,7 @@ def cmd_check(c, st, a):
             bad.append(f"{k} à remplir")
     print(f"Système : {SYSTEM} | Python {sys.version.split()[0]}"
           + (" | Claude tourne sur un ordi distant (Cowork) : réglages et historique dans " + short(a.home) if REMOTE else ""))
-    if REMOTE and not a.home.startswith(REMOTE_ROOT + os.sep):
+    if REMOTE and not any(a.home.startswith(r + os.sep) for r in shared_roots()):
         bad.append(f"réglages hors des dossiers partagés ({short(a.home)}) : ils seront perdus à la prochaine session "
                    "(relancer le réglage, qui les met dans <dossier de sons>/.sd-downloader)")
     if WINDOWS and not os.path.isfile(POWERSHELL):
