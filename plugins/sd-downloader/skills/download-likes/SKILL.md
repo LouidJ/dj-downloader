@@ -54,6 +54,13 @@ Le DJ doit avoir l'impression d'une app moderne, pas d'un programme qui parle. T
 2. **Pendant le run, aucun récit.** Après l'annonce de départ (une ligne, ex. « 🎧 12 sons · 3 déjà sur ton ordi »), plus aucun texte entre deux sons : ni « j'ouvre Hypeddit », ni « je clique », ni « le son est rangé ». Seule la liste de progression avance (un son coché à la fois, étape 3). Tu n'écris que pour une vraie interruption (étape 2b) ou pour le bilan.
 3. **Zéro jargon.** Jamais à l'écran : `djdl`, config, deviceId, script, commande, JSON, collect, snapshot, state, skill, playbook, hook, chemin de fichier technique. Parle comme à un DJ : « ton dossier », « ton compte SoundCloud », « tes likes ». Ça vaut aussi pour la description courte des commandes, que l'app affiche : « Je range les sons », « Je regarde ce que tu as déjà », jamais « Lancer djdl collect ».
 
+## ↩️ Revenir en arrière
+
+Toute question qui suit une autre question du DJ a en **dernier** choix `↩️ Revenir en arrière` (description : « Je repose la question d'avant ») : le feu vert `Go` (retour au choix des sons), les questions des modules de « ⚙️ Réglages » (retour à « Qu'est-ce que tu veux régler ? »), « Qu'est-ce que tu veux régler ? » (retour au choix des sons si on en venait), le lien de playlist demandé après `Les tracks de cette playlist`. Il compte dans les 4 choix au plus.
+- Choisi : repose la question précédente telle quelle, puis continue à partir de la nouvelle réponse. Rien n'est téléchargé tant que le DJ n'a pas donné le feu vert.
+- Les réglages déjà enregistrés sont simplement remplacés par la nouvelle réponse. Dans un appel à plusieurs questions, `↩️ Revenir en arrière` annule tout l'appel.
+- Pas de retour sur la toute première question d'un run (« Quels sons je télécharge ? »), ni après le bilan : il n'y a rien avant, ou c'est déjà fait. Pendant le run, le DJ peut toujours arrêter Claude.
+
 ## Déroulé
 
 1. **Sélection** : traduis la demande (ou l'argument) avec `selection.md` et annonce-la en une ligne (après la fenêtre de choix s'il y en a une). Si elle ne dit pas quels sons, fais cocher le choix (`AskUserQuestion`, `selection.md`, « Des cases à cocher »), sans demander d'écrire. Lis la liste avec `playbook.md` §2 (likes datés, ou liens / playlist), écris-la (§2c), puis `djdl import` avec les bonnes options.
@@ -64,7 +71,7 @@ Le DJ doit avoir l'impression d'une app moderne, pas d'un programme qui parle. T
    - La description de `Go`, une ligne : « Je fais les gates avec **<account>** et je range dans **<dossier>**. » Rien d'autre : pas la liste des actions, pas l'e-mail.
    - Au-delà de 30 gates seulement, ajoute à la question : « Beaucoup de gates d'un coup : SoundCloud peut limiter le compte, mieux vaut en faire moins. »
 
-   Choix : `Go (Recommended)` / `Annuler`. Si le DJ a déjà cliqué `Go` au choix des sons, ne redemande pas.
+   Choix : `Go (Recommended)` / `Annuler` / `↩️ Revenir en arrière` (retour au choix des sons, s'il y en a eu un). Si le DJ a déjà cliqué `Go` au choix des sons, ne redemande pas.
 
    - « Annuler » : ne télécharge rien, dis que la sélection reste en attente (`todo --last` la reprendra).
    - Si la demande du DJ contient déjà ce feu vert (« go pour tout », « fais tout sans me demander », « vas-y jusqu'au bout »), ne pose pas la question : annonce le plan en une ligne et commence.

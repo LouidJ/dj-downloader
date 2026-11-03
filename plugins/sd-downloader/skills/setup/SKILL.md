@@ -77,11 +77,16 @@ Lance `djdl find-home` (sans un mot au DJ). La première ligne dit où tourne Cl
 
 Le but : le DJ répond à **deux questions en tout** (la langue, le dossier), et rien d'autre. Tout le reste se devine ou prend sa valeur par défaut. Les questions se posent avec **`AskUserQuestion`**, en choix cliquables (2 à 4 par question, ta recommandation en premier avec « (Recommended) ») ; « Other » reste là pour écrire autre chose. Chaque description de choix commence par une **majuscule** (« Tu choisis… », « Le bouton… »).
 
+**↩️ Revenir en arrière, à chaque question.** Toutes les questions du réglage, sauf la toute première (la langue), ont en **dernier** choix `↩️ Revenir en arrière` (description : « Je repose la question d'avant »). Il compte dans les 4 choix au plus : les listes ci-dessous en tiennent déjà compte.
+- Si le DJ le choisit : repose la question précédente telle quelle (en remontant jusqu'à la langue si besoin, une étape à la fois), puis continue normalement à partir de sa nouvelle réponse. Les réponses d'après restent valables si elles ne dépendent pas de ce qu'il a changé ; sinon repose-les aussi.
+- Ce qui est déjà écrit est simplement remplacé par la nouvelle réponse (`djdl config …`, ou `djdl init --force` si la config existe déjà). Rien d'autre n'est défait : un compte déjà suivi le reste.
+- Dans un appel à plusieurs questions, `↩️ Revenir en arrière` sur l'une d'elles annule tout l'appel : ne garde aucune de ses réponses, repose la question d'avant.
+
 **A. Détecter (une seule question possible : le navigateur)**
 - **Navigateur** : `list_connected_browsers`, sans rien ouvrir. Le DJ peut avoir d'autres profils Chrome (perso, travail, boutique…) : n'y ouvre **aucune** page sans son accord.
   - Consignes du DJ (CLAUDE.md…) : seule une consigne qui désigne un navigateur **pour SoundCloud** (ou ce plugin) décide. Une consigne qui réserve un navigateur à autre chose (Instagram, boutique…) ne dit pas lequel prendre ici : écarte ce navigateur, et pose la question ci-dessous pour les autres. Ne choisis jamais un navigateur parce qu'une consigne l'autorise pour une autre tâche.
   - Un seul navigateur connecté : c'est lui.
-  - Plusieurs : `AskUserQuestion`, `Navigateur` : « Plusieurs navigateurs Chrome sont connectés à Claude. Lequel est celui de SoundCloud ? » Un choix par navigateur (son nom affiché ; 3 au plus, les autres se tapent dans « Other »), plus `Je ne sais pas`. Description : le nom se voit dans l'extension Claude du profil Chrome que tu utilises pour SoundCloud.
+  - Plusieurs : `AskUserQuestion`, `Navigateur` : « Plusieurs navigateurs Chrome sont connectés à Claude. Lequel est celui de SoundCloud ? » Un choix par navigateur (son nom affiché ; 2 au plus, les autres se tapent dans « Other »), plus `Je ne sais pas` et `↩️ Revenir en arrière`. Description : le nom se voit dans l'extension Claude du profil Chrome que tu utilises pour SoundCloud.
   - `Je ne sais pas` : deuxième question, `Vérifier` : « Je peux ouvrir soundcloud.com dans chacun (un onglet, refermé aussitôt) pour trouver celui où tu es connecté ? » `Oui, vérifie` / `Non, je déconnecte l'extension des autres profils`. Seulement après « Oui » : pour chaque navigateur, `select_browser`, ouvrir soundcloud.com, lire le compte (`playbook.md` §1), fermer l'onglet ; rien d'autre. Après « Non » : attendre que le DJ le fasse, puis refaire `list_connected_browsers`.
   - Garde le deviceId choisi. Ensuite, ne touche plus jamais aux autres navigateurs.
 - **Prévenir avant la première page ouverte dans Chrome** : l'app Claude va demander, pour chaque site (soundcloud.com, hypeddit.com, droploud.com), si Claude peut l'ouvrir. Le plugin ne peut pas donner cet accord à la place du DJ. Dis-le en une ligne avant d'ouvrir soundcloud.com : « 3 fenêtres d'autorisation vont s'afficher (SoundCloud, Hypeddit, Droploud) : clique **Toujours autoriser pour ce site web**, et on ne te les redemandera plus. »
@@ -96,8 +101,9 @@ Pas de question sur une playlist « À télécharger » ici : un DJ qui n'a enco
 1. `Rangement` : « Où je range les sons téléchargés ? 📁 »
    - `Musique › SoundCloud Downloads (Recommended)` : description « Nouveau dossier dans Musique » → `~/Music/SoundCloud Downloads`
    - `📁 Nouveau dossier sur le Bureau` : description « Je crée « SoundCloud Downloads » sur ton Bureau ; pour un autre nom, écris-le dans « Autre » » → `~/Desktop/SoundCloud Downloads`
-   - au plus 1 dossier trouvé par `scan` qui ressemble à un dossier de téléchargements (par exemple « … Downloads ») ;
+   - un dossier trouvé par `scan` qui ressemble à un dossier de téléchargements (par exemple « … Downloads ») ne prend pas de place : propose-le dans la description du choix Musique (« Ou ton dossier « … Downloads » : écris-le dans « Autre » ») ;
    - `📂 Choisir un autre dossier…` : description « Une fenêtre s'ouvre, tu cliques sur le dossier (bouton « Nouveau dossier » pour en créer un) ».
+   - `↩️ Revenir en arrière`
 
    Réponse dans « Autre » : un simple nom (sans `/` ni `\`) → nouveau dossier `~/Desktop/<nom>` ; un chemin → tel quel. `djdl init` crée le dossier s'il n'existe pas. Les sons déjà dans ce dossier ne seront jamais retéléchargés.
 
@@ -137,6 +143,7 @@ Le plugin est gratuit, partagé par le DJ Luigi Hayek. Propose une seule fois, s
 2. Sinon, `AskUserQuestion`, `Soutien` : « Facultatif : SD Downloader est gratuit, fait par le DJ Luigi Hayek. Tu veux le suivre sur SoundCloud ? Ça ne change rien au plugin. »
    - `Oui, suis-le pour moi` : description « Avec ton compte <compte> »
    - `Non merci`
+   - `↩️ Revenir en arrière`
 
    Aucun choix « (Recommended) » ici.
 3. « Oui » : clique « Follow » une seule fois, vérifie que le bouton passe à « Following », puis `djdl config follow_author followed`. « Non merci » : ne suis pas, `djdl config follow_author no` (on ne le reproposera plus). Ferme l'onglet.
@@ -155,5 +162,6 @@ Pas de mode d'emploi. Écris ce résumé (traduit dans la langue du DJ), rien de
 Puis un seul `AskUserQuestion`, `Télécharger` : « On lance le premier téléchargement ? 🚀 »
 - `🚀 Lancer (Recommended)` : description « Tu choisis quels sons, je fais le reste »
 - `Plus tard` : description « Le bouton 🎧 au-dessus de la zone de saisie lance tes nouveaux likes quand tu veux »
+- `↩️ Revenir en arrière`
 
 « Lancer » : appelle tout de suite le skill `sd-downloader:download-likes` (outil `Skill`), sans argument : il propose lui-même le choix des sons. « Plus tard » : une phrase pour dire au revoir, rien d'autre.

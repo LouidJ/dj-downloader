@@ -51,7 +51,7 @@ Le DJ ne doit rien avoir à taper. Pose tes questions avec l'outil **`AskUserQue
    - `Go (Recommended)`. Description d'une ligne : « Je fais les gates avec `<account>` et je range dans `<dossier>`. » Pas la liste des actions, pas l'e-mail. C'est le feu vert du run (étape 2b) ;
    - `Montre-moi d'abord` : Je lis la sélection, je te dis combien de sons et de gates, puis tu valides.
 
-**Si la demande dit déjà quels sons** mais sans feu vert : pose seulement le feu vert, à l'étape 2b, une fois la sélection lue et comparée. Utilise `AskUserQuestion`, en-tête `Feu vert`. La question tient en une ligne : « Je télécharge Thriller (Christian Maas Edit) ? » pour un son, « Je télécharge 12 sons (3 directs, 6 Hypeddit, 3 Droploud) ? » pour plusieurs. Deux choix : `Go (Recommended)` (même description d'une ligne que ci-dessus) et `Annuler`.
+**Si la demande dit déjà quels sons** mais sans feu vert : pose seulement le feu vert, à l'étape 2b, une fois la sélection lue et comparée. Utilise `AskUserQuestion`, en-tête `Feu vert`. La question tient en une ligne : « Je télécharge Thriller (Christian Maas Edit) ? » pour un son, « Je télécharge 12 sons (3 directs, 6 Hypeddit, 3 Droploud) ? » pour plusieurs. Choix : `Go (Recommended)` (même description d'une ligne que ci-dessus), `Annuler`, et `↩️ Revenir en arrière` si une question l'a précédée (skill, « ↩️ Revenir en arrière »).
 
 **Ne demande pas le feu vert** si le DJ a déjà répondu `Go`, s'il a écrit « go pour tout », s'il n'y a aucun gate, ou si la config dit `"go": "auto"` (sauf au-delà de 30 gates).
 
