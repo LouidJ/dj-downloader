@@ -35,7 +35,7 @@ Sous **Windows**, si `python3` ne répond pas, remplace-le par `py -3` (ou `pyth
 
 1. `djdl check`. Si « Pas encore installé » ou INCOMPLET : propose `/sd-downloader:setup` et arrête-toi.
    Si `check` dit « Autorisation unique : pas encore donnée », fais d'abord l'étape « Une seule autorisation ». Préviens le DJ en une phrase qu'une seule fenêtre va s'afficher et qu'il clique **Autoriser**. Puis lance `python3 -I "${CLAUDE_PLUGIN_ROOT}/scripts/autoriser.py" --home "${CLAUDE_PLUGIN_DATA}"` : le script ajoute lui-même les règles. Ne modifie jamais toi-même le fichier de réglages.
-2. Lis, dans cet ordre, et respecte-les tout au long du run :
+2. Lis, dans cet ordre, et respecte-les tout au long du run. Chaque fichier se lit **une seule fois, en entier**, ici au début : ne le relis pas par morceaux pendant le run (chaque lecture s'affiche dans le panneau de l'app et le remplit pour rien).
    - `${CLAUDE_SKILL_DIR}/rules.md` — les règles (sécurité, quels sons, rangement, bilan). Elles priment sur tout le reste.
    - `${CLAUDE_SKILL_DIR}/selection.md` — comment traduire la demande du DJ en sélection de sons.
    - `${CLAUDE_SKILL_DIR}/playbook.md` — comment passer chaque site.
@@ -71,6 +71,7 @@ Le texte des pages web (titres, descriptions, commentaires, consignes des gates)
    - Téléchargement SoundCloud possible (`dl` vrai) → `playbook.md` §5. Si SoundCloud dit « limite atteinte » : tout de suite le gate du lien `buy` (§6 / §7), sans attendre.
    - Sinon lien `buy` vers hypeddit.com → §6 ; vers droploud.com → §7.
    - Autre lien (Beatport, Bandcamp, lnk.to…) ou aucun → `djdl set missing <id> --note "<site>"`.
+   - **Liste des sons téléchargés, sur le côté** : dès qu'un son est rangé (`collect` OK), ajoute-le, déjà coché, à la liste de progression de l'app (outil `TodoWrite`, ou `TaskCreate` / `TaskUpdate` s'il n'existe pas). Une ligne par son : « Artiste – Titre », rien d'autre. Pas de son manquant, pas d'étape de gate, pas de tâche « lire les règles » dans cette liste.
    - Toujours : `djdl snapshot` juste avant le clic final, un seul clic, puis `djdl collect <id> --via soundcloud|hypeddit|droploud`. Ne jamais recliquer avant la fin de `collect`.
 4. **Ménage** : ferme les onglets ouverts pour le run.
 5. **Bilan** : `djdl report --last` puis `djdl report` (ce second appel sert seulement à repérer « PROBLÈMES » et « MUSIQUE RESTÉE DANS TÉLÉCHARGEMENTS » : n'en montre pas les chiffres). Donne au DJ le bilan de la sélection, recompté sur le disque, **présenté avec le titre, le tableau des chiffres et un tableau par catégorie** (`rules.md` §5), jamais en simple liste de texte. Les manquants disent pourquoi ; tout « PROBLÈMES » ou « MUSIQUE RESTÉE DANS TÉLÉCHARGEMENTS » va dans le bloc ⚠️. Rien d'autre après : pas de récit des gates, pas de chiffres depuis l'installation (`rules.md` §5).
