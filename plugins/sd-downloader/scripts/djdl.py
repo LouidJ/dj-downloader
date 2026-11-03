@@ -2,7 +2,7 @@
 """DJ Downloader: suivi des likes SoundCloud, rangement des téléchargements, bilan recompté sur disque.
 
 Usage: python3 -I djdl.py [--home DOSSIER] <commande> ...   (Windows : py -3 -I djdl.py …)
-Commandes : init, scan, pick-folder, open-folder, perms, check, import, snapshot, collect, adopt, set, remove, find, todo, sweep, report, show
+Commandes : init, scan, pick-folder, open-folder, find-home, perms, check, import, snapshot, collect, adopt, set, remove, find, todo, sweep, report, show
 
 Réglages et suivi : <home>/config.json et <home>/state.json (home par défaut : $DJDL_HOME ou ~/.dj-downloader).
 """
@@ -14,6 +14,10 @@ AUDIO = (".wav", ".aif", ".aiff", ".mp3", ".flac", ".m4a", ".aac", ".ogg", ".opu
 SKIP_DIRS = {"__MACOSX", ".Trash", "node_modules", "$RECYCLE.BIN", "System Volume Information"}
 WINDOWS = sys.platform == "win32"
 SYSTEM = "Windows" if WINDOWS else ("macOS" if sys.platform == "darwin" else sys.platform)
+# Claude tourne sur un ordi distant (Cowork : machine Linux où les dossiers du DJ sont partagés sous /mnt/user-data).
+# Là-bas, le dossier du plugin n'est pas gardé d'une session à l'autre, et Chrome ne marque pas l'origine des fichiers.
+REMOTE_ROOT = "/mnt/user-data"
+REMOTE = sys.platform.startswith("linux") and os.path.isdir(REMOTE_ROOT)
 ACCESS_HINT = ("autoriser l'accès au dossier, ou choisir un autre dossier" if WINDOWS else
                "autoriser l'accès dans Réglages Système > Confidentialité et sécurité > Fichiers et dossiers")
 PARTIAL = (".crdownload", ".download", ".part")
@@ -752,6 +756,25 @@ def cmd_open_folder(c):
     return 0
 
 
+def cmd_find_home(a):
+    """Ordi distant (Cowork) : retrouve le dossier du plugin gardé dans un dossier partagé (<dossier>/.sd-downloader)."""
+    print("Claude tourne sur : " + ("un ordi distant (Cowork), dossiers du DJ partagés sous " + REMOTE_ROOT if REMOTE else "l'ordi du DJ"))
+    if os.path.exists(os.path.join(a.home, "config.json")):
+        print(f"Réglages trouvés : {a.home}")
+        return 0
+    cwd = os.getcwd()  # jamais tout le disque ni tout le dossier perso : seulement un dossier de travail précis
+    roots = ([REMOTE_ROOT] if REMOTE else []) + ([cwd] if cwd not in ("/", os.path.expanduser("~")) else [])
+    for root in roots:
+        for dirpath, dirs, files in os.walk(root):
+            depth = dirpath[len(root):].count(os.sep)
+            if os.path.basename(dirpath) == ".sd-downloader" and "config.json" in files:
+                print(f"Réglages trouvés : {dirpath}")
+                return 0
+            dirs[:] = [] if depth >= 4 else [d for d in dirs if d == ".sd-downloader" or not d.startswith(".")]
+    print("Aucun réglage trouvé")
+    return 1
+
+
 def claude_settings_path():
     return os.path.join(os.path.expanduser(os.environ.get("CLAUDE_CONFIG_DIR") or "~/.claude"), "settings.json")
 
@@ -918,7 +941,11 @@ def cmd_check(c, st, a):
         # valeur d'exemple restée telle quelle (un prénom en majuscules, « JB », est un vrai prénom)
         if not v or "@exemple" in str(v) or (str(v).isupper() and k != "gate.first_name"):
             bad.append(f"{k} à remplir")
-    print(f"Système : {SYSTEM} | Python {sys.version.split()[0]}")
+    print(f"Système : {SYSTEM} | Python {sys.version.split()[0]}"
+          + (" | Claude tourne sur un ordi distant (Cowork) : réglages et historique dans " + short(a.home) if REMOTE else ""))
+    if REMOTE and not a.home.startswith(REMOTE_ROOT + os.sep):
+        bad.append(f"réglages hors des dossiers partagés ({short(a.home)}) : ils seront perdus à la prochaine session "
+                   "(relancer le réglage, qui les met dans <dossier de sons>/.sd-downloader)")
     if WINDOWS and not os.path.isfile(POWERSHELL):
         bad.append("PowerShell introuvable : impossible d'envoyer les doublons à la Corbeille")
     print(f"Édition : {c.get('edition')} | likes de : {sc.get('likes_of') or 'aucun profil (liens et playlists)'}"
@@ -1053,7 +1080,8 @@ def cmd_collect(c, st, a):
         origins = where_from(p)
         v = origin_verdict(c, origins, a.via)
         host = re.sub(r"^https?://([^/]+).*", r"\1", origins[0]) if origins else "?"
-        if v == "étranger" or (v == "non vérifié" and not a.accept_unverified):
+        # ordi distant : pas d'origine lisible, le fichier est attribué à son arrivée juste après le clic (snapshot)
+        if v == "étranger" or (v == "non vérifié" and not (a.accept_unverified or REMOTE and not origins)):
             print(f"  PAS ATTRIBUÉ ({v}, origine {host}) : {n} — laissé dans Téléchargements")
             continue
         results = process(c, p, t["title"])
@@ -1396,6 +1424,7 @@ def main():
     p.add_argument("--prompt", default="Choisis un dossier")
     p.add_argument("--start", choices=("music", "desktop", "home"), default="music", help="dossier ouvert au départ")
     p.add_argument("--wait", type=int, default=300, help="secondes avant d'abandonner")
+    sp.add_parser("find-home", help="ordi distant (Cowork) : retrouve les réglages gardés dans un dossier partagé")
     sp.add_parser("open-folder", help="fin d'un run : ouvre le dossier des sons dans le Finder / l'Explorateur")
     sp.add_parser("perms", help="installation : règles pour n'autoriser le plugin qu'une seule fois (ajout : autoriser.py)")
     p = sp.add_parser("library", help="dossiers de sons déjà sur l'ordi : list | add <dossier> | remove <dossier>")
@@ -1441,6 +1470,8 @@ def main():
         return cmd_perms(a)
     if a.cmd == "pick-folder":
         return cmd_pick_folder(a)
+    if a.cmd == "find-home":
+        return cmd_find_home(a)
     if not os.path.exists(a.config):
         sys.exit(f"Pas encore installé : {a.config} introuvable (lancer « init »).")
     if a.cmd == "config":

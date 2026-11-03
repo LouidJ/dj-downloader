@@ -84,6 +84,14 @@ Other phrases: "remove #12 from the list", "also keep the radio versions", "WAV 
 - **missing**: no free download (Beatport, Bandcamp…) or the gate is blocked. The reason is written next to it.
 - **to retry**: done again automatically on the next run.
 
+## Without Claude Code: with Cowork
+
+In the Claude app, on the main screen (not the `</>` tab): **Customize → Plugins → Add**, marketplace `LouidJ/dj-downloader`, install **SD Downloader**. Open a new task, pick your music folder in **Project or folder**, then type `/sd-downloader:setup`.
+
+- During setup, Claude asks for access to **Downloads** and your music folder: click **Allow** for each. Your settings and history stay in your music folder (hidden `.sd-downloader` folder).
+- For websites, choose **Always allow for this site** (SoundCloud, Hypeddit, Droploud).
+- Differences from Claude Code: no button above the text box and no end chime, and the folder doesn't open on its own (Claude tells you its name).
+
 ## If you get stuck
 
 - **Claude is waiting**: look under its last message for choices or a **Go** button to click. If it has stopped, type "keep going until the end".

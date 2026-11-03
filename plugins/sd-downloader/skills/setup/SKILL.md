@@ -59,6 +59,19 @@ C'est la **première action** du réglage après la question de langue, avant to
 
 L'extension **Claude in Chrome** doit être installée et connectée dans Chrome. Appelle `list_connected_browsers`. Si rien n'est connecté, donne au DJ le lien direct https://chromewebstore.google.com/detail/fcoeoabgfenejglbffodgkkbkcdhcgfn. Il clique « Ajouter à Chrome », puis se connecte dans l'extension avec le même compte Claude. Attends, puis réessaie.
 
+## 1c. Claude tourne-t-il sur l'ordi du DJ ?
+
+Lance `djdl find-home` (sans un mot au DJ). La première ligne dit où tourne Claude.
+
+- **« l'ordi du DJ »** (Claude Code, ou Cowork qui tourne sur l'ordi) : rien de spécial, suite normale.
+- **« un ordi distant (Cowork) »** : Claude tourne dans le cloud, et seuls les dossiers que le DJ partage avec lui restent d'une session à l'autre. Tout le réglage se fait donc **maintenant**, pour qu'aucun téléchargement ne bloque plus tard :
+  1. **Accès aux dossiers, tout de suite.** En une ligne : « Je dois accéder à 2 dossiers de ton ordi : **Téléchargements** (là où Chrome enregistre les sons) et ton **dossier de sons**. Une fenêtre va s'afficher pour chacun : clique **Autoriser**. » Puis demande l'accès à ces deux dossiers avec l'outil de l'app prévu pour ça (demande d'accès à un dossier de l'ordi). Si le DJ a déjà relié un dossier à la tâche (« Projet ou dossier »), c'est son dossier de sons : ne le redemande pas. Retrouve leurs chemins sous `/mnt/user-data` (`ls`).
+  2. **Le dossier de rangement** est ce dossier de sons partagé : la question `Rangement` du §2 ne se pose pas (pas de Musique ni de Bureau, pas de fenêtre du Finder).
+  3. **Réglages et historique dans le dossier de sons.** À partir de maintenant, toutes les commandes `djdl` de ce réglage utilisent `--home "<dossier de sons partagé>/.sd-downloader"` au lieu de `${CLAUDE_PLUGIN_DATA}`, et `djdl init` reçoit `--dest "<dossier de sons partagé>" --downloads "<Téléchargements partagé>"`. Plus besoin de recopier l'historique : il est déjà au bon endroit (jamais de `cp` à toi).
+  4. Si `find-home` dit « Réglages trouvés : <chemin> » : le réglage existe déjà. Demande seulement s'il faut le refaire (`Garder mes réglages (Recommended)` / `Refaire le réglage`, ce dernier avec `init --force`).
+
+  Dans Cowork, pas de bandeau ni de son de fin : l'app prévient elle-même quand la tâche est finie.
+
 ## 2. Deviner presque tout, puis une question
 
 Le but : le DJ répond à **deux questions en tout** (la langue, le dossier), et rien d'autre. Tout le reste se devine ou prend sa valeur par défaut. Les questions se posent avec **`AskUserQuestion`**, en choix cliquables (2 à 4 par question, ta recommandation en premier avec « (Recommended) ») ; « Other » reste là pour écrire autre chose. Chaque description de choix commence par une **majuscule** (« Tu choisis… », « Le bouton… »).

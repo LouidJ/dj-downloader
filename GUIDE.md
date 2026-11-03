@@ -84,6 +84,14 @@ Autres phrases : « retire #12 de la liste », « garde aussi les versions radio
 - **manquant** : pas de téléchargement gratuit (Beatport, Bandcamp…) ou gate bloqué. La raison est écrite à côté.
 - **à relancer** : refait tout seul au prochain run.
 
+## Sans Claude Code : avec Cowork
+
+Dans l'app Claude, sur l'écran principal (pas l'onglet `</>`) : **Personnalisation → Plugins → Ajouter**, marketplace `LouidJ/dj-downloader`, installe **SD Downloader**. Ouvre une nouvelle tâche, choisis ton dossier de sons dans **Projet ou dossier**, puis tape `/sd-downloader:setup`.
+
+- Au réglage, Claude demande l'accès à **Téléchargements** et à ton dossier de sons : clique **Autoriser** pour chacun. Tes réglages et l'historique restent dans ton dossier de sons (dossier caché `.sd-downloader`).
+- Pour les sites, choisis **Toujours autoriser pour ce site web** (SoundCloud, Hypeddit, Droploud).
+- Différences avec Claude Code : pas de bouton au-dessus de la zone de saisie ni de petit son de fin, et le dossier ne s'ouvre pas tout seul (Claude te donne son nom).
+
 ## Si ça coince
 
 - **Claude attend** : regarde sous son dernier message s'il y a des choix ou un bouton **Go** à cliquer. S'il s'est arrêté, écris « continue jusqu'au bout ».

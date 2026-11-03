@@ -33,7 +33,8 @@ Sous **Windows**, si `python3` ne répond pas, remplace-le par `py -3` (ou `pyth
 
 ## Avant de commencer
 
-1. `djdl check`. Si « Pas encore installé » ou INCOMPLET : propose `/sd-downloader:setup` et arrête-toi.
+1. `djdl find-home`. S'il dit « Réglages trouvés : <chemin> » avec un autre chemin que `${CLAUDE_PLUGIN_DATA}` (Cowork : réglages gardés dans le dossier de sons partagé), **toutes** les commandes `djdl` de ce run utilisent `--home "<chemin>"`. Jamais de `cp` ni de copie de l'historique à toi : il est déjà au bon endroit.
+   Puis `djdl check`. Si « Pas encore installé » ou INCOMPLET pour la config elle-même (compte, e-mail… à remplir, réglages hors des dossiers partagés) : propose `/sd-downloader:setup` et arrête-toi. Si seul un dossier est « introuvable » ou « illisible » (Cowork : Téléchargements pas encore partagé dans cette tâche), **ne bloque pas avant le choix des sons** : pose d'abord la question « Quels sons je télécharge ? », puis demande l'accès au dossier (une ligne pour prévenir, puis l'outil de l'app qui donne accès à un dossier) avant de télécharger.
    Si `check` dit « Autorisation unique : pas encore donnée », fais d'abord l'étape « Une seule autorisation ». Préviens le DJ en une phrase qu'une seule fenêtre va s'afficher et qu'il clique **Autoriser**. Puis lance `python3 -I "${CLAUDE_PLUGIN_ROOT}/scripts/autoriser.py" --home "${CLAUDE_PLUGIN_DATA}"` : le script ajoute lui-même les règles. Ne modifie jamais toi-même le fichier de réglages.
 2. Lis, dans cet ordre, et respecte-les tout au long du run. Chaque fichier se lit **une seule fois, en entier**, ici au début : ne le relis pas par morceaux pendant le run (chaque lecture s'affiche dans le panneau de l'app et le remplit pour rien).
    - `${CLAUDE_SKILL_DIR}/rules.md` — les règles (sécurité, quels sons, rangement, bilan). Elles priment sur tout le reste.
