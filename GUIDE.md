@@ -51,7 +51,7 @@ Il te demande d'abord ta **langue** : tout le reste se fait dans ta langue. Ensu
 
 Le reste est réglé pour toi : les likes de ton compte, la version Extended (avant la Radio), et les sons déjà dans ton dossier ne sont jamais retéléchargés. Tu changes ce que tu veux d'une phrase (« garde aussi les versions radio », « mon e-mail c'est … »).
 
-À la fin, Claude te propose une fois, **sans obligation**, de suivre l'auteur du plugin sur SoundCloud, puis affiche un résumé de 3 lignes et un bouton **🚀 Lancer**. Le résumé te prévient : à chaque téléchargement, Claude fera les gates (suivre, liker, reposter, commenter) avec ton compte, sans te redemander. Si tu préfères qu'il demande à chaque fois, dis « demande-moi avant les gates ».
+À la fin, Claude te propose une fois, **sans obligation**, de suivre l'auteur du plugin sur SoundCloud, puis affiche un résumé de 2 lignes et un bouton **🚀 Lancer**. Le résumé te prévient : à chaque téléchargement, Claude fera les gates (suivre, liker, reposter, commenter) avec ton compte, sans te redemander. Si tu préfères qu'il demande à chaque fois, dis « demande-moi avant les gates ».
 
 > **Une seule autorisation.** Au début du réglage, Claude te prévient puis affiche **une seule** fenêtre : clique **Autoriser**. Elle couvre le plugin pour toujours, même après ses mises à jour. Ensuite, l'extension Chrome demande l'accès à soundcloud.com, hypeddit.com et droploud.com : choisis à chaque fois l'option qui autorise **toujours** le site. Sur Mac, si le système demande l'accès à Téléchargements ou Musique, accepte. Après ça, plus aucune fenêtre pendant les téléchargements.
 
@@ -62,7 +62,7 @@ Clique **🚀 Lancer** à la fin du réglage. Claude te demande quels sons (*Tou
 Ensuite :
 1. Claude saute les sons déjà dans ton dossier.
 2. Il enchaîne tout seul. Dans Chrome, tu le vois ouvrir les pages et cliquer. Le son des pages est coupé.
-3. À la fin, un petit son, puis le bilan en tableaux. Les fichiers sont déjà rangés. Un bouton **📂 Ouvrir le dossier** te montre les sons ; tu peux aussi choisir qu'il s'ouvre tout seul les prochaines fois.
+3. À la fin, un petit son, puis un bilan court : combien de nouveaux sons, et un tableau. Les fichiers sont déjà rangés. Un bouton **📂 Ouvrir le dossier** te montre les sons ; tu peux aussi choisir qu'il s'ouvre tout seul les prochaines fois.
 
 Il ne te demande rien pendant le run. Seules exceptions : un CAPTCHA (tu le fais toi-même), un mot de passe, un paiement, un mauvais compte connecté, ou plus de 30 gates d'un coup (SoundCloud pourrait limiter ton compte : tu choisis).
 

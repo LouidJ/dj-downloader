@@ -28,7 +28,7 @@ allowed-tools:
 
 # Installation de SD Downloader
 
-Parle au DJ simplement, une question à la fois quand c'est possible.
+Parle au DJ simplement, une question à la fois quand c'est possible. Comme pour les téléchargements : rien avant la première question, aucun récit des vérifications (« je lance check », « je lis ton compte »…), zéro jargon à l'écran (`djdl`, config, deviceId, script, commande, JSON, chemin technique), y compris dans la description courte des commandes que l'app affiche (« Je prépare ton dossier », jamais « Lancer djdl init »).
 
 ## 0. Langue, avant tout le reste
 
@@ -129,13 +129,14 @@ Le plugin est gratuit, partagé par le DJ Luigi Hayek. Propose une seule fois, s
 
 Ne suis jamais sans ce « Oui ». Si la page ne charge pas ou si le compte connecté n'est pas `<compte>`, laisse tomber sans en parler.
 
-## 5. Fin : un résumé de 3 lignes et un bouton
+## 5. Fin : un résumé de 2 lignes et un bouton
 
 Pas de mode d'emploi. Écris ce résumé (traduit dans la langue du DJ), rien de plus :
 
-> ✅ **SD Downloader est prêt.**
-> 🎧 Compte **<compte>** · ✉️ <email> · 🙂 <prénom> · 📁 **<dossier>** · Extended
-> 🔓 À chaque téléchargement, je fais les gates avec **<compte>** sans te redemander : suivre, liker, reposter, commenter, et autoriser l'application SoundCloud du gate (Hypeddit, Droploud ; révocable dans SoundCloud › Applications connectées). Pour changer quoi que ce soit, dis-le-moi en une phrase.
+> ## ✅ SD Downloader est prêt
+> 🎧 **<compte>** · ✉️ <email> · 📁 **<dossier>**
+>
+> _Je fais les gates avec ton compte, sans te redemander : suivre, liker, reposter, commenter, connecter le gate à SoundCloud. Pour changer quoi que ce soit, dis-le en une phrase._
 
 Puis un seul `AskUserQuestion`, `Télécharger` : « On lance le premier téléchargement ? 🚀 »
 - `🚀 Lancer (Recommended)` : description « Tu choisis quels sons, je fais le reste »

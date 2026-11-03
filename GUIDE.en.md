@@ -51,7 +51,7 @@ It first asks for your **language**: everything else happens in your language. N
 
 The rest is set for you: your account's likes, the Extended version (before the Radio one), and tracks already in your folder are never downloaded again. Change anything with one sentence ("also keep the radio versions", "my email is …").
 
-At the end, Claude offers once, **with no obligation**, to follow the plugin's author on SoundCloud, then shows a 3-line summary and a **🚀 Launch** button. The summary tells you: on every download, Claude does the gates (follow, like, repost, comment) with your account, without asking again. If you'd rather it asks each time, say "ask me before the gates".
+At the end, Claude offers once, **with no obligation**, to follow the plugin's author on SoundCloud, then shows a 2-line summary and a **🚀 Launch** button. The summary tells you: on every download, Claude does the gates (follow, like, repost, comment) with your account, without asking again. If you'd rather it asks each time, say "ask me before the gates".
 
 > **Just one permission.** At the start of setup, Claude warns you, then shows **a single** pop-up: click **Allow**. It covers the plugin for good, even after updates. Then the Chrome extension asks for access to soundcloud.com, hypeddit.com and droploud.com: each time, pick the option that **always** allows the site. On a Mac, if the system asks for access to Downloads or Music, allow it. After that, no more pop-ups while downloading.
 
@@ -62,7 +62,7 @@ Click **🚀 Launch** at the end of setup. Claude asks which tracks (*All my lik
 Then:
 1. Claude skips the tracks already in your folder.
 2. It keeps going on its own. In Chrome, you can see it open pages and click. The sound on the pages is muted.
-3. At the end, a short chime, then the report in tables. The files are already filed away. A **📂 Open the folder** button shows you the tracks; you can also have it open on its own next time.
+3. At the end, a short chime, then a short report: how many new tracks, and one table. The files are already filed away. A **📂 Open the folder** button shows you the tracks; you can also have it open on its own next time.
 
 It asks you nothing during the run. The only exceptions: a CAPTCHA (you do it yourself), a password, a payment, the wrong account being logged in, or more than 30 gates at once (SoundCloud could limit your account: you choose).
 
