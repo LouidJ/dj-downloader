@@ -41,6 +41,7 @@ Si le DJ a écrit quelque chose avec la commande (ex. `/sd-downloader:setup in E
 « Autre / Other » pour une autre langue. Aucun choix « (Recommended) ». Ensuite, **tout** le réglage se fait dans cette langue : tes phrases, les questions, les libellés et descriptions des choix (ceux ci-dessous sont en français : traduis-les), le bouton de fin. Garde le code de la langue (`fr`, `en`, `es`, `it`…) pour `djdl init --language`. Les messages de `djdl` et d'`autoriser.py` (bilan, erreurs, « À CORRIGER »…) sont écrits en français : pour un DJ d'une autre langue, ne les recopie jamais tels quels, redis-les dans sa langue (noms de fichiers, de dossiers et de sons inchangés). Ne tape jamais de mot de passe et ne crée aucun compte : le DJ se connecte lui-même.
 
 Outil : `python3 -I "${CLAUDE_PLUGIN_ROOT}/scripts/djdl.py" --home "${CLAUDE_PLUGIN_DATA}"` (appelé `djdl` ci-dessous).
+**Si `${CLAUDE_PLUGIN_ROOT}` ou `${CLAUDE_PLUGIN_DATA}` n'est pas remplacé par un chemin** (texte resté tel quel, comme parfois dans Cowork) : ne le cherche pas et ne vérifie pas l'environnement (aucune commande `echo`, `env`, `printenv`, `ls` pour ça). Le dossier du plugin est deux niveaux au-dessus du dossier de ce skill (`<dossier du skill>/../..`, celui qui contient `scripts/djdl.py`) ; pour `--home`, prends ce que donne `djdl find-home`, ou au réglage le dossier du §1c.
 Sous **Windows**, si `python3` ne répond pas, remplace-le par `py -3` (ou `python`). Garde les guillemets autour des chemins.
 
 ## 1. Une seule autorisation, en tout premier

@@ -29,6 +29,7 @@ allowed-tools:
 # Télécharger des sons SoundCloud
 
 Outil : `python3 -I "${CLAUDE_PLUGIN_ROOT}/scripts/djdl.py" --home "${CLAUDE_PLUGIN_DATA}"` (appelé `djdl` ci-dessous).
+**Si `${CLAUDE_PLUGIN_ROOT}` ou `${CLAUDE_PLUGIN_DATA}` n'est pas remplacé par un chemin** (texte resté tel quel, comme parfois dans Cowork) : ne le cherche pas et ne vérifie pas l'environnement (aucune commande `echo`, `env`, `printenv`, `ls` pour ça). Le dossier du plugin est deux niveaux au-dessus du dossier de ce skill (`<dossier du skill>/../..`, celui qui contient `scripts/djdl.py`) ; pour `--home`, prends ce que donne `djdl find-home` (dossier de sons partagé).
 Sous **Windows**, si `python3` ne répond pas, remplace-le par `py -3` (ou `python`). Garde les guillemets autour des chemins.
 
 ## Avant de commencer
