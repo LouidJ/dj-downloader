@@ -62,7 +62,7 @@ Click **🚀 Launch** at the end of setup. Claude asks which tracks (*All my lik
 Then:
 1. Claude skips the tracks already in your folder.
 2. It keeps going on its own. In Chrome, you can see it open pages and click. The sound on the pages is muted.
-3. At the end, a short chime, then the report in tables. The files are already filed away.
+3. At the end, a short chime, then the report in tables. The files are already filed away. A **📂 Open the folder** button shows you the tracks; you can also have it open on its own next time.
 
 It asks you nothing during the run. The only exceptions: a CAPTCHA (you do it yourself), a password, a payment, the wrong account being logged in, or more than 30 gates at once (SoundCloud could limit your account: you choose).
 
@@ -74,7 +74,7 @@ For anything else, say it in your own words: "download what I've liked since Mon
 
 **The playlist trick**: create a "To download" playlist on SoundCloud. While you dig, add tracks to it. In the evening, say "download my playlist". Tracks you've already downloaded are never done again.
 
-Other phrases: "remove #12 from the list", "also keep the radio versions", "show the report".
+Other phrases: "remove #12 from the list", "also keep the radio versions", "WAV only", "show the report". The **⚙️ Settings** choice (from the 2nd launch) sets the format (WAV, AIFF, MP3 or any), the versions (Extended, Radio or both) and whether the folder opens. If the artist only offers another format, the track is kept and flagged in the report.
 
 ## Reading the report
 

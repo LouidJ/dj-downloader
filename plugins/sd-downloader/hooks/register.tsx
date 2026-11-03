@@ -8,20 +8,20 @@ const isReady = atom({ plugin: 'sd-downloader', key: 'isReady' } as const, false
 const lang = atom({ plugin: 'sd-downloader', key: 'lang' } as const, '')
 const isHidden = atom({ plugin: 'sd-downloader', key: 'isHidden' } as const, false)
 
-type Labels = { setup: string; download: string; ask: string; hide: string; done: (n: number) => string }
+type Labels = { setup: string; download: string; ask: string; settings: string; hide: string; done: (n: number) => string }
 
 const LABELS: Record<string, Labels> = {
-  fr: { setup: '🎧 Installer SD Downloader', download: '🎧 Télécharger mes nouveaux likes', ask: 'mes nouveaux likes', hide: 'Masquer',
+  fr: { setup: '🎧 Installer SD Downloader', download: '🎧 Télécharger mes nouveaux likes', ask: 'mes nouveaux likes', settings: '⚙️ Réglages', hide: 'Masquer',
         done: n => `✅ Téléchargement terminé : ${n} son${n > 1 ? 's' : ''}` },
-  en: { setup: '🎧 Set up SD Downloader', download: '🎧 Download my new likes', ask: 'my new likes', hide: 'Hide',
+  en: { setup: '🎧 Set up SD Downloader', download: '🎧 Download my new likes', ask: 'my new likes', settings: '⚙️ Settings', hide: 'Hide',
         done: n => `✅ Download finished: ${n} track${n > 1 ? 's' : ''}` },
-  es: { setup: '🎧 Instalar SD Downloader', download: '🎧 Descargar mis nuevos likes', ask: 'mis nuevos likes', hide: 'Ocultar',
+  es: { setup: '🎧 Instalar SD Downloader', download: '🎧 Descargar mis nuevos likes', ask: 'mis nuevos likes', settings: '⚙️ Ajustes', hide: 'Ocultar',
         done: n => `✅ Descarga terminada: ${n} tema${n > 1 ? 's' : ''}` },
-  it: { setup: '🎧 Installa SD Downloader', download: '🎧 Scarica i miei nuovi like', ask: 'i miei nuovi like', hide: 'Nascondi',
+  it: { setup: '🎧 Installa SD Downloader', download: '🎧 Scarica i miei nuovi like', ask: 'i miei nuovi like', settings: '⚙️ Impostazioni', hide: 'Nascondi',
         done: n => `✅ Download completato: ${n} bran${n > 1 ? 'i' : 'o'}` },
 }
 // Langue encore inconnue (avant le réglage) : un libellé que tout le monde comprend
-const UNKNOWN: Labels = { setup: '🎧 SD Downloader : installer / set up', download: '🎧 SD Downloader', ask: 'new likes', hide: '✕',
+const UNKNOWN: Labels = { setup: '🎧 SD Downloader : installer / set up', download: '🎧 SD Downloader', ask: 'new likes', settings: '⚙️ Settings', hide: '✕',
   done: n => `✅ SD Downloader : ${n}` }
 
 const DJDL = /djdl\.py/
@@ -84,6 +84,16 @@ export const register: Register = on => {
             await $.command.run(ready ? { command: 'sd-downloader:download-likes', args: t.ask } : { command: 'sd-downloader:setup' })
           }}
         />
+        {ready ? (
+          <Button
+            key="settings"
+            label={t.settings}
+            onPress={async () => {
+              // Menu ⚙️ Réglages du skill (format, versions, dossier)
+              await $.command.run({ command: 'sd-downloader:download-likes', args: t.settings.replace('⚙️ ', '') })
+            }}
+          />
+        ) : null}
         <Button key="hide" label={t.hide} onPress={() => update($, isHidden, () => true)} />
       </Box>
     )

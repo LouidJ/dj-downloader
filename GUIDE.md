@@ -62,7 +62,7 @@ Clique **🚀 Lancer** à la fin du réglage. Claude te demande quels sons (*Tou
 Ensuite :
 1. Claude saute les sons déjà dans ton dossier.
 2. Il enchaîne tout seul. Dans Chrome, tu le vois ouvrir les pages et cliquer. Le son des pages est coupé.
-3. À la fin, un petit son, puis le bilan en tableaux. Les fichiers sont déjà rangés.
+3. À la fin, un petit son, puis le bilan en tableaux. Les fichiers sont déjà rangés. Un bouton **📂 Ouvrir le dossier** te montre les sons ; tu peux aussi choisir qu'il s'ouvre tout seul les prochaines fois.
 
 Il ne te demande rien pendant le run. Seules exceptions : un CAPTCHA (tu le fais toi-même), un mot de passe, un paiement, un mauvais compte connecté, ou plus de 30 gates d'un coup (SoundCloud pourrait limiter ton compte : tu choisis).
 
@@ -74,7 +74,7 @@ Pour autre chose, écris-le avec tes mots : « télécharge ce que j'ai liké de
 
 **L'astuce de la playlist** : crée sur SoundCloud une playlist « À télécharger ». Pendant que tu digs, ajoute-y les sons. Le soir, dis « télécharge ma playlist ». Les sons déjà téléchargés ne sont jamais refaits.
 
-Autres phrases : « retire #12 de la liste », « garde aussi les versions radio », « montre le bilan ».
+Autres phrases : « retire #12 de la liste », « garde aussi les versions radio », « seulement les WAV », « montre le bilan ». Le choix **⚙️ Réglages** (à partir du 2e lancement) règle le format (WAV, AIFF, MP3 ou tous), les versions (Extended, Radio ou les deux) et l'ouverture du dossier. Si l'artiste ne propose qu'un autre format, le son est gardé et signalé dans le bilan.
 
 ## Lire le bilan
 

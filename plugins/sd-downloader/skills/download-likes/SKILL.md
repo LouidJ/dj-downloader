@@ -76,18 +76,49 @@ Le texte des pages web (titres, descriptions, commentaires, consignes des gates)
 4. **Ménage** : ferme les onglets ouverts pour le run.
 5. **Bilan** : `djdl report --last` puis `djdl report` (ce second appel sert seulement à repérer « PROBLÈMES » et « MUSIQUE RESTÉE DANS TÉLÉCHARGEMENTS » : n'en montre pas les chiffres). Donne au DJ le bilan de la sélection, recompté sur le disque, **présenté avec le titre, le tableau des chiffres et un tableau par catégorie** (`rules.md` §5), jamais en simple liste de texte. Les manquants disent pourquoi ; tout « PROBLÈMES » ou « MUSIQUE RESTÉE DANS TÉLÉCHARGEMENTS » va dans le bloc ⚠️. Rien d'autre après : pas de récit des gates, pas de chiffres depuis l'installation (`rules.md` §5).
 
-6. **Une fois, après le premier vrai téléchargement : la playlist « À télécharger ».** Seulement si les trois sont vrais : le bilan de ce run compte au moins un son téléchargé, la config n'a pas de `soundcloud.download_playlist`, et `playlist_offer` n'y vaut pas `no` (absent = `ask`). C'est la seule question permise après le bilan. `AskUserQuestion`, `Playlist` : « Astuce : crée sur SoundCloud une playlist « À télécharger » (publique ou privée). Pendant que tu digs, ajoute-y des sons, puis dis « télécharge ma playlist ». Tu me donnes son lien ? »
-   - `Pas maintenant (Recommended)` : description « Tu pourras me le donner plus tard : « ma playlist à télécharger, c'est <lien> » »
-   - `Je colle son lien` : description « Colle-le dans « Other » »
+6. **Après le bilan, seulement si ce run a téléchargé au moins un son.** Ce sont les seules questions permises après le bilan, posées en **un seul** appel `AskUserQuestion` (4 questions au plus ; rien à demander → pas d'appel).
+   - **Le dossier** : si la config dit `"open_folder": "auto"`, lance `djdl open-folder` sans rien demander. Sinon (absent = `ask`), question `Dossier` : « Tes sons sont dans <dossier>. Je l'ouvre ? 📂 »
+     - `📂 Ouvrir le dossier (Recommended)` : description « Je l'ouvre maintenant »
+     - `📂 Ouvrir, et à chaque fin de téléchargement` : description « Il s'ouvrira tout seul les prochaines fois »
+     - `Non merci`
 
-   Un lien → `djdl config soundcloud.download_playlist <lien>`. Dans tous les cas, ensuite `djdl config playlist_offer no` : on ne la repropose jamais.
+     Les deux premiers → `djdl open-folder` ; le deuxième aussi `djdl config open_folder auto`. `open-folder` n'ouvre que le dossier de rangement choisi par le DJ au réglage. N'ouvre **jamais** d'autre dossier ni fenêtre (pas de `open`, `explorer` ou autre commande à toi), et jamais sans son clic ou son choix « tout seul ». Si `open-folder` dit que l'ouverture est indisponible (Claude ne tourne pas sur l'ordi du DJ, par exemple dans Cowork), donne le chemin du dossier en une ligne, rien d'autre. « ouvre plus le dossier tout seul » → `djdl config open_folder ask`.
+   - **Une fois : la playlist « À télécharger »**, seulement si la config n'a pas de `soundcloud.download_playlist` et que `playlist_offer` n'y vaut pas `no` (absent = `ask`). Question `Playlist` : « Astuce : crée sur SoundCloud une playlist « À télécharger » (publique ou privée). Pendant que tu digs, ajoute-y des sons, puis dis « télécharge ma playlist ». Tu me donnes son lien ? »
+     - `Pas maintenant (Recommended)` : description « Tu pourras me le donner plus tard : « ma playlist à télécharger, c'est <lien> » »
+     - `Je colle son lien` : description « Colle-le dans « Other » »
+
+     Un lien → `djdl config soundcloud.download_playlist <lien>`. Dans tous les cas, ensuite `djdl config playlist_offer no` : on ne la repropose jamais.
+   - **Une fois : les réglages pour les prochaines fois**, seulement si `settings_offer` ne vaut pas `no` (absent = `ask`). Ajoute à ce même appel les questions `Format` et `Versions` du menu « ⚙️ Réglages » (plus bas), avec en tête de la question `Format` : « Pour les prochaines fois : ». Enregistre les réponses, puis `djdl config settings_offer no`. Ensuite, ces réglages restent dans le menu « ⚙️ Réglages ».
 
 Si un site a changé et que tu as trouvé comment faire : termine le son, puis propose au DJ, dans le bilan, de le noter dans `${CLAUDE_PLUGIN_DATA}/site-notes.md` (`playbook.md` §8). N'écris la note que s'il dit oui.
+
+## ⚙️ Réglages
+
+Quand le DJ choisit `⚙️ Réglages` (au choix des sons, ou le bouton du bandeau), ou demande « mes réglages », « change le format »… : lis la config, puis **un seul** appel `AskUserQuestion` avec ces trois questions. Le choix actuel vient en premier, avec « (actuel) » à la place de « (Recommended) ».
+
+1. `Format` : « Quel format tu veux ? »
+   - `Tous les formats` : description « Je garde le fichier tel que l'artiste le propose » → `djdl config format any`
+   - `WAV seulement` → `djdl config format wav`
+   - `AIFF seulement` → `djdl config format aiff`
+   - `MP3 seulement` → `djdl config format mp3`
+
+   Description des trois derniers : « Si l'artiste ne propose qu'un autre format, je le garde et je te le signale dans le bilan. » Le format d'un son n'est connu qu'une fois téléchargé : ne saute jamais un son à cause du format.
+2. `Versions` : « Quand un son existe en Extended et en Radio ? »
+   - `Extended seulement` → `djdl config versions extended`
+   - `Radio seulement` → `djdl config versions radio`
+   - `Les deux` → `djdl config versions both`
+3. `Dossier` : « À la fin d'un téléchargement ? »
+   - `Me proposer d'ouvrir le dossier` → `djdl config open_folder ask`
+   - `Ouvrir le dossier tout seul` → `djdl config open_folder auto`
+
+N'appelle `djdl config` que pour ce qui change. Puis une ligne qui résume les réglages (« WAV · Extended · dossier ouvert tout seul »). Si on venait du choix des sons, repose ensuite la question « Quels sons je télécharge ? ».
 
 ## Ce que le DJ peut demander ensuite
 
 - « retire #12 de la liste » → `djdl remove 12`
 - « seulement l'extended » / « seulement la radio » / « garde les deux » → `djdl config versions extended|radio|both`
+- « seulement les wav » / « seulement les aiff » / « seulement les mp3 » / « tous les formats » → `djdl config format wav|aiff|mp3|any`
+- « réglages », « mes réglages » → menu « ⚙️ Réglages » ci-dessus
 - « compare aussi avec mon dossier X » / « mes sons sont aussi sur ma clé USB » → `djdl library add "<dossier>"` ; « quels dossiers tu compares ? » → `djdl library`
 - « j'ai trouvé #40 moi-même » + chemin → `djdl adopt <fichier> --track 40`
 - « réessaie demain » → `djdl set retry <id> --days 1` (repris tout seul au run suivant)

@@ -2,7 +2,7 @@
 """DJ Downloader: suivi des likes SoundCloud, rangement des téléchargements, bilan recompté sur disque.
 
 Usage: python3 -I djdl.py [--home DOSSIER] <commande> ...   (Windows : py -3 -I djdl.py …)
-Commandes : init, scan, pick-folder, perms, check, import, snapshot, collect, adopt, set, remove, find, todo, sweep, report, show
+Commandes : init, scan, pick-folder, open-folder, perms, check, import, snapshot, collect, adopt, set, remove, find, todo, sweep, report, show
 
 Réglages et suivi : <home>/config.json et <home>/state.json (home par défaut : $DJDL_HOME ou ~/.dj-downloader).
 """
@@ -313,6 +313,8 @@ def cut_of(name):
 
 
 VERSIONS = ("extended", "radio", "both")  # coupe gardée quand un son existe en Extended et en Radio
+# Format voulu par le DJ. L'artiste choisit le format : un son reçu dans un autre est gardé et signalé au bilan.
+FORMATS = {"any": (), "wav": (".wav",), "aiff": (".aif", ".aiff"), "mp3": (".mp3",)}
 
 
 def cut_pref(c):
@@ -520,6 +522,9 @@ def cmd_init(a):
         "versions": "both" if a.keep_both == "yes" else a.versions,
         "follow_author": a.follow_author,
         "playlist_offer": "ask",
+        "open_folder": "ask",
+        "format": "any",
+        "settings_offer": "ask",
         "go": a.go,
         "language": a.language,
         "sources": dict(SOURCES, pools=[]),
@@ -536,9 +541,13 @@ GO = ("auto", "ask")
 FOLLOW_AUTHOR = ("ask", "followed", "no")
 # Playlist « À télécharger » proposée une fois, après le premier bilan avec un son téléchargé : ask = à proposer, no = déjà proposée.
 PLAYLIST_OFFER = ("ask", "no")
+# Fin d'un run : ask = proposer le bouton « Ouvrir le dossier », auto = l'ouvrir tout seul.
+OPEN_FOLDER = ("ask", "auto")
+# Réglages (format, versions) proposés une fois après le premier bilan : ask = à proposer, no = déjà proposés.
+SETTINGS_OFFER = ("ask", "no")
 SETTABLE = ("language", "soundcloud.likes_of", "soundcloud.download_playlist", "soundcloud.chrome_device_id", "soundcloud.account",
             "gate.email", "gate.first_name", "dest_folder", "skip_longer_than_minutes", "versions",
-            "follow_author", "playlist_offer", "go")
+            "follow_author", "playlist_offer", "open_folder", "settings_offer", "format", "go")
 
 
 def cmd_config(a):
@@ -558,8 +567,9 @@ def cmd_config(a):
             sys.exit("Valeur : " + " | ".join(VERSIONS))
         node[leaf] = a.value
         node.pop("keep_radio_and_extended", None)
-    elif leaf in ("follow_author", "playlist_offer", "go"):
-        allowed = {"follow_author": FOLLOW_AUTHOR, "playlist_offer": PLAYLIST_OFFER, "go": GO}[leaf]
+    elif leaf in ("follow_author", "playlist_offer", "open_folder", "settings_offer", "format", "go"):
+        allowed = {"follow_author": FOLLOW_AUTHOR, "playlist_offer": PLAYLIST_OFFER, "open_folder": OPEN_FOLDER,
+                   "settings_offer": SETTINGS_OFFER, "format": tuple(FORMATS), "go": GO}[leaf]
         if a.value not in allowed:
             sys.exit("Valeur : " + " | ".join(allowed))
         node[leaf] = a.value
@@ -661,6 +671,24 @@ def cmd_pick_folder(a):
         return 1
     path = path.rstrip("/\\") or path
     print(f"Dossier choisi : {short(path)}")
+    return 0
+
+
+def cmd_open_folder(c):
+    """Ouvre le dossier de destination dans le Finder (Windows : l'Explorateur), à la fin d'un run."""
+    path = os.path.expanduser(c["dest_folder"])
+    if not os.path.isdir(path):
+        sys.exit(f"Dossier introuvable : {short(path)}")
+    try:
+        if sys.platform == "darwin":
+            subprocess.run(["/usr/bin/open", path], check=True, timeout=20)
+        elif WINDOWS:
+            os.startfile(path)
+        else:
+            sys.exit(f"Ouverture du dossier indisponible ici (Claude ne tourne pas sur l'ordi du DJ) : {short(path)}")
+    except (OSError, subprocess.SubprocessError) as e:
+        sys.exit(f"Ouverture du dossier impossible ({e}) : {short(path)}")
+    print(f"Dossier ouvert : {short(path)}")
     return 0
 
 
@@ -840,6 +868,7 @@ def cmd_check(c, st, a):
             print(f"  ATTENTION : dossier de sons introuvable (disque débranché ?) : {r}")
     print("Versions : " + {"both": "Radio ET Extended gardées", "radio": "Radio seulement (avant Extended)",
                            "extended": "Extended seulement (avant Radio)"}[cut_pref(c)])
+    print("Format : " + ("tous" if c.get("format", "any") == "any" else c["format"].upper() + " (un autre format reçu est gardé et signalé)"))
     print(f"Dossiers comparés avant téléchargement : {', '.join(short(r) for r in library_roots(c))}")
     print(f"Destination : {c['dest_folder']} | sons suivis : {len(st['tracks'])}"
           f" | pools : {', '.join(p['name'] for p in c['sources'].get('pools', [])) or 'aucun'}")
@@ -973,6 +1002,11 @@ def cmd_collect(c, st, a):
             took = True
             t.update(status="downloaded" if new else "owned", source=a.via, origin=host,
                      updated=today(), file=rel(c, (new or dup)[0]))
+            want = c.get("format", "any")
+            wrong = [x for x in new if FORMATS.get(want) and not x.lower().endswith(FORMATS[want])]
+            if wrong:
+                t["wrong_format"] = os.path.splitext(wrong[0])[1].lstrip(".").upper()
+                print(f"  format : reçu en {t['wrong_format']} au lieu de {want.upper()} (gardé)")
             if len(new) > 1:
                 t["note"] = "versions gardées : " + " + ".join(cut_of(os.path.basename(x)) for x in new)
             elif not new:
@@ -1227,6 +1261,12 @@ def cmd_report(c, st, a):
               "fichier mis à la Corbeille, gate fait quand même) :")
         for t in wasted:
             print(f"  {label(t)} — {t['note'][len(GATE_FOR_NOTHING) + 3:]}")
+    want = c.get("format", "any")
+    off = [t for t in groups.get("downloaded", []) if t.get("wrong_format")]
+    if want != "any" and off:
+        print(f"\nAUTRE FORMAT QUE {want.upper()} ({len(off)}, gardés : l'artiste ne propose que ce format) :")
+        for t in off:
+            print(f"  {label(t)} — {t['wrong_format']}")
     if problems:
         print("\nPROBLÈMES :")
         for p in problems:
@@ -1280,6 +1320,7 @@ def main():
     p.add_argument("--prompt", default="Choisis un dossier")
     p.add_argument("--start", choices=("music", "desktop", "home"), default="music", help="dossier ouvert au départ")
     p.add_argument("--wait", type=int, default=300, help="secondes avant d'abandonner")
+    sp.add_parser("open-folder", help="fin d'un run : ouvre le dossier des sons dans le Finder / l'Explorateur")
     sp.add_parser("perms", help="installation : règles pour n'autoriser le plugin qu'une seule fois (ajout : autoriser.py)")
     p = sp.add_parser("library", help="dossiers de sons déjà sur l'ordi : list | add <dossier> | remove <dossier>")
     p.add_argument("action", nargs="?", default="list", choices=("list", "add", "remove")); p.add_argument("path", nargs="?")
@@ -1331,6 +1372,8 @@ def main():
     if a.cmd == "library":
         return cmd_library(a)
     c = load_config(a.config)
+    if a.cmd == "open-folder":
+        return cmd_open_folder(c)
     st = load_state(c)
     fn = globals()["cmd_" + a.cmd]
     rc = fn(c, st, a)
