@@ -74,7 +74,7 @@ Pour autre chose, écris-le avec tes mots : « télécharge ce que j'ai liké de
 
 **L'astuce de la playlist** : crée sur SoundCloud une playlist « À télécharger ». Pendant que tu digs, ajoute-y les sons. Le soir, dis « télécharge ma playlist ». Les sons déjà téléchargés ne sont jamais refaits.
 
-Autres phrases : « retire #12 de la liste », « garde aussi les versions radio », « seulement les WAV », « montre le bilan ». Le choix **⚙️ Réglages** (à partir du 2e lancement) règle le format (WAV, AIFF, MP3 ou tous), les versions (Extended, Radio ou les deux) et l'ouverture du dossier. Si l'artiste ne propose qu'un autre format, le son est gardé et signalé dans le bilan.
+Autres phrases : « retire #12 de la liste », « garde aussi les versions radio », « seulement les WAV », « montre le bilan ». Le choix **⚙️ Réglages** (à partir du 2e lancement) règle les formats (WAV, AIFF, MP3, un ou plusieurs, ou tous), les versions (Extended, Radio ou les deux), le nettoyage des noms de fichiers (V2, master…) et les zips (Corbeille ou gardés). Si l'artiste ne propose qu'un autre format, le son est gardé et signalé dans le bilan.
 
 ## Lire le bilan
 

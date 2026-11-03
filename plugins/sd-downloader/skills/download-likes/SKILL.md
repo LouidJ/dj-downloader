@@ -96,36 +96,46 @@ Le DJ doit avoir l'impression d'une app moderne, pas d'un programme qui parle. T
      - `Je colle son lien` : description « Colle-le dans « Other » »
 
      Un lien → `djdl config soundcloud.download_playlist <lien>`. Dans tous les cas, ensuite `djdl config playlist_offer no` : on ne la repropose jamais.
-   - **Une fois : les réglages pour les prochaines fois**, seulement si `settings_offer` ne vaut pas `no` (absent = `ask`). Ajoute à ce même appel les questions `Format` et `Versions` du menu « ⚙️ Réglages » (plus bas), avec en tête de la question `Format` : « Pour les prochaines fois : ». Enregistre les réponses, puis `djdl config settings_offer no`. Ensuite, ces réglages restent dans le menu « ⚙️ Réglages ».
+   - **Une fois : personnaliser le plugin**, seulement si `settings_offer` ne vaut pas `no` (absent = `ask`). Question `Réglages` : « Tu veux personnaliser le plugin pour les prochaines fois ? (formats, versions, noms de fichiers, zips…) »
+     - `⚙️ Personnaliser` : description « Je te montre les options, tu coches ce que tu veux »
+     - `Plus tard (Recommended)` : description « Le choix ⚙️ Réglages reste là à chaque lancement »
+
+     Dans tous les cas `djdl config settings_offer no`. `⚙️ Personnaliser` → menu « ⚙️ Réglages » ci-dessous, après les autres réponses.
 
 Si un site a changé et que tu as trouvé comment faire : termine le son, puis propose au DJ, dans le bilan, de le noter dans `${CLAUDE_PLUGIN_DATA}/site-notes.md` (`playbook.md` §8). N'écris la note que s'il dit oui.
 
 ## ⚙️ Réglages
 
-Quand le DJ choisit `⚙️ Réglages` (au choix des sons, ou le bouton du bandeau), ou demande « mes réglages », « change le format »… : lis la config, puis **un seul** appel `AskUserQuestion` avec ces trois questions. Le choix actuel vient en premier, avec « (actuel) » à la place de « (Recommended) ».
+Quand le DJ choisit `⚙️ Réglages` ou `⚙️ Personnaliser` (au choix des sons, après le premier bilan, ou le bouton du bandeau), ou demande « mes réglages », « change le format »… : lis la config, sans un mot. Puis deux temps, en cases à cocher (`AskUserQuestion`), jamais de texte à écrire.
 
-1. `Format` : « Quel format tu veux ? »
-   - `Tous les formats` : description « Je garde le fichier tel que l'artiste le propose » → `djdl config format any`
-   - `WAV seulement` → `djdl config format wav`
-   - `AIFF seulement` → `djdl config format aiff`
-   - `MP3 seulement` → `djdl config format mp3`
+**1. Quoi régler ?** Une question `Réglages`, **choix multiples** (`multiSelect: true`) : « Qu'est-ce que tu veux régler ? » Chaque choix montre le réglage actuel dans sa description.
+   - `🎚️ Formats` : « Actuel : <tous / WAV / WAV + AIFF…> »
+   - `✂️ Versions` : « Actuel : <Extended / Radio / les deux> »
+   - `🏷️ Noms de fichiers` : « Actuel : <nettoyés / tels quels> »
+   - `🗜️ Zips` : « Actuel : <à la Corbeille / gardés> »
 
-   Description des trois derniers : « Si l'artiste ne propose qu'un autre format, je le garde et je te le signale dans le bilan. » Le format d'un son n'est connu qu'une fois téléchargé : ne saute jamais un son à cause du format.
-2. `Versions` : « Quand un son existe en Extended et en Radio ? »
-   - `Extended seulement` → `djdl config versions extended`
-   - `Radio seulement` → `djdl config versions radio`
-   - `Les deux` → `djdl config versions both`
-3. `Dossier` : « À la fin d'un téléchargement ? »
-   - `Me proposer d'ouvrir le dossier` → `djdl config open_folder ask`
-   - `Ouvrir le dossier tout seul` → `djdl config open_folder auto`
+   Dans « Other », le DJ peut demander autre chose : `📂 Dossier à la fin` (ouvrir tout seul ou proposer), la playlist « À télécharger », le dossier de rangement, la durée des longs sets, le feu vert des gates. Fais-le avec les phrases de « Ce que le DJ peut demander ensuite ».
 
-N'appelle `djdl config` que pour ce qui change. Puis une ligne qui résume les réglages (« WAV · Extended · dossier ouvert tout seul »). Si on venait du choix des sons, repose ensuite la question « Quels sons je télécharge ? ».
+**2. Les modules cochés**, en **un seul** appel (4 questions au plus ; le choix actuel en premier, avec « (actuel) » à la place de « (Recommended) ») :
+   - `Formats`, **choix multiples** : « Quels formats tu veux ? » `WAV` / `AIFF` / `MP3` / `Tous les formats` (description : « Je garde le fichier tel que l'artiste le propose »). Description de WAV, AIFF, MP3 : « Si l'artiste ne propose qu'un autre format, je le garde et je te le signale dans le bilan. » Réponse → `djdl config format wav,aiff` (formats cochés, séparés par des virgules) ou `djdl config format any` (« Tous », ou rien de coché). Le format n'est connu qu'une fois téléchargé : ne saute jamais un son à cause du format.
+   - `Versions` : « Quand un son existe en Extended et en Radio ? » `Extended` / `Radio` / `Les deux` → `djdl config versions extended|radio|both`
+   - `Noms` : « Je nettoie les noms de fichiers ? » 
+     - `Oui, nettoyer` : description « Je retire V1, V2, master, final, version finale… s'ils ne sont pas dans le titre SoundCloud, et les espaces en trop » → `djdl config clean_names on`
+     - `Non, garder le nom de l'artiste` → `djdl config clean_names off`
+   - `Zips` : « Quand un son arrive en zip, une fois les sons sortis du zip ? »
+     - `Zip à la Corbeille` : description « Il reste récupérable dans la Corbeille » → `djdl config zips trash`
+     - `Garder le zip` : description « Dans un dossier Zips de ton dossier de sons » → `djdl config zips keep`
+
+N'appelle `djdl config` que pour ce qui change. Puis une ligne qui résume (« ✅ WAV + AIFF · Extended · noms nettoyés · zips à la Corbeille »). Si on venait du choix des sons, repose ensuite la question « Quels sons je télécharge ? ».
 
 ## Ce que le DJ peut demander ensuite
 
 - « retire #12 de la liste » → `djdl remove 12`
 - « seulement l'extended » / « seulement la radio » / « garde les deux » → `djdl config versions extended|radio|both`
-- « seulement les wav » / « seulement les aiff » / « seulement les mp3 » / « tous les formats » → `djdl config format wav|aiff|mp3|any`
+- « seulement les wav » / « wav et aiff » / « seulement les mp3 » / « tous les formats » → `djdl config format wav` / `wav,aiff` / `mp3` / `any`
+- « ne touche pas aux noms de fichiers » / « nettoie les noms » → `djdl config clean_names off|on`
+- « garde les zips » / « mets les zips à la Corbeille » → `djdl config zips keep|trash`
+- « ouvre le dossier tout seul à la fin » / « demande-moi » → `djdl config open_folder auto|ask`
 - « réglages », « mes réglages » → menu « ⚙️ Réglages » ci-dessus
 - « compare aussi avec mon dossier X » / « mes sons sont aussi sur ma clé USB » → `djdl library add "<dossier>"` ; « quels dossiers tu compares ? » → `djdl library`
 - « j'ai trouvé #40 moi-même » + chemin → `djdl adopt <fichier> --track 40`

@@ -43,8 +43,8 @@ Les valeurs personnelles (e-mail, compte, dossiers…) sont dans `<home>/config.
 ## 4. Rangement des fichiers (fait par `djdl.py collect`)
 
 - Le fichier va **directement** dans `dest_folder` dès qu'il arrive (Téléchargements doit rester vide de musique).
-- **Zip d'un seul son** : garder un seul fichier, la coupe choisie au réglage (`versions` : **Extended** par défaut, ou **Radio**), puis **WAV / AIF avant MP3** ; jeter le zip et le dossier extrait. Si le DJ a choisi les deux (`versions` = `both`) : garder la Radio **et** l'Extended (chacune dans son meilleur format).
-- **Nom du fichier nettoyé** au rangement : « V1 », « V2 »…, « version finale » et « master » sont retirés, sauf si « master » est dans le titre SoundCloud du son (« Master of Puppets » reste) ; un nom tout en MAJUSCULES passe en Majuscules Initiales, sauf DJ, VIP et MC qui restent en capitales.
+- **Zip d'un seul son** : garder un seul fichier, la coupe choisie au réglage (`versions` : **Extended** par défaut, ou **Radio**), puis **WAV / AIF avant MP3** ; jeter le zip (à la Corbeille, ou dans `<dest_folder>/Zips` si le DJ a choisi de garder les zips) et le dossier extrait. Si le DJ a choisi les deux (`versions` = `both`) : garder la Radio **et** l'Extended (chacune dans son meilleur format).
+- **Nom du fichier nettoyé** au rangement (sauf si le DJ l'a désactivé, `clean_names` = `off`) : « V1 », « V2 »…, « version finale », « master » et « final » sont retirés, sauf s'ils sont dans le titre SoundCloud du son (« Master of Puppets » reste, un seul « master » en trop part) ; les espaces collés aux parenthèses partent ; un nom tout en MAJUSCULES passe en Majuscules Initiales, sauf DJ, VIP et MC qui restent en capitales.
 - **Pack de plusieurs sons** : garder le dossier tel quel dans `dest_folder`.
 - **Zip sans audio** (instructions, PDF « payant », DM Instagram…) : ne rien jeter, le signaler.
 - **Doublon** (contenu identique à un fichier déjà présent) : le nouveau va à la Corbeille.

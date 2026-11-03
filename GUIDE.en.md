@@ -74,7 +74,7 @@ For anything else, say it in your own words: "download what I've liked since Mon
 
 **The playlist trick**: create a "To download" playlist on SoundCloud. While you dig, add tracks to it. In the evening, say "download my playlist". Tracks you've already downloaded are never done again.
 
-Other phrases: "remove #12 from the list", "also keep the radio versions", "WAV only", "show the report". The **⚙️ Settings** choice (from the 2nd launch) sets the format (WAV, AIFF, MP3 or any), the versions (Extended, Radio or both) and whether the folder opens. If the artist only offers another format, the track is kept and flagged in the report.
+Other phrases: "remove #12 from the list", "also keep the radio versions", "WAV only", "show the report". The **⚙️ Settings** choice (from the 2nd launch) sets the formats (WAV, AIFF, MP3, one or several, or any), the versions (Extended, Radio or both), file-name cleaning (V2, master…) and zips (Trash or kept). If the artist only offers another format, the track is kept and flagged in the report.
 
 ## Reading the report
 

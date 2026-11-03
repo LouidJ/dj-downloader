@@ -313,8 +313,23 @@ def cut_of(name):
 
 
 VERSIONS = ("extended", "radio", "both")  # coupe gardée quand un son existe en Extended et en Radio
-# Format voulu par le DJ. L'artiste choisit le format : un son reçu dans un autre est gardé et signalé au bilan.
-FORMATS = {"any": (), "wav": (".wav",), "aiff": (".aif", ".aiff"), "mp3": (".mp3",)}
+# Formats voulus par le DJ (« any », ou un ou plusieurs : « wav,aiff »). L'artiste choisit le format :
+# un son reçu dans un autre est gardé et signalé au bilan.
+FORMATS = {"wav": (".wav",), "aiff": (".aif", ".aiff"), "mp3": (".mp3",)}
+# Nettoyage des noms de fichiers (V2, master, final… absents du titre SoundCloud) : on | off
+CLEAN_NAMES = ("on", "off")
+# Zip reçu, une fois les sons extraits : trash = à la Corbeille, keep = gardé dans <destination>/Zips
+ZIPS = ("trash", "keep")
+
+
+def wanted_formats(c):
+    """Formats voulus, en liste (vide = tous)."""
+    v = c.get("format", "any")
+    return [] if v == "any" else v.split(",")
+
+
+def format_label(c):
+    return " / ".join(f.upper() for f in wanted_formats(c)) or "tous"
 
 
 def cut_pref(c):
@@ -344,10 +359,11 @@ def clean_name(name, title=None):
     sont pas dans le titre SoundCloud (`title` ; sans titre connu : seulement entre parenthèses), et en
     Majuscules Initiales si tout est en capitales."""
     stem, ext = os.path.splitext(name)
-    s = ANYWHERE.sub(" ", stem)
+    s = ANYWHERE.sub(lambda m: m[0] if title and re.search(W0 + re.escape(m[0]) + W1, title, re.I) else " ", stem)
     for word in (MASTER, FINAL):
-        if title is not None and not word.search(title):
-            s = word.sub(" ", s)
+        if title is not None:  # autant de « master » / « final » que dans le titre SoundCloud, pas plus
+            allowed = iter(range(len(word.findall(title))))
+            s = word.sub(lambda m: m[0] if next(allowed, None) is not None else " ", s)
 
     def inside(m):
         if title and re.search(r"[(\[]\s*" + re.escape(m[2].strip()) + r"\s*[)\]]", title, re.I):
@@ -385,7 +401,7 @@ def place(c, src, title=None):
     if same:
         trash(src)
         return "doublon", same
-    name = clean_name(os.path.basename(src), title)
+    name = clean_name(os.path.basename(src), title) if c.get("clean_names", "on") == "on" else os.path.basename(src)
     if name != os.path.basename(src):
         print(f"  renommé : {os.path.basename(src)} → {name}")
     target = os.path.join(c["dest_folder"], name)
@@ -393,6 +409,15 @@ def place(c, src, title=None):
         return "conflit", src  # même nom, contenu différent : on laisse, on signale
     shutil.move(src, target)
     return "rangé", target
+
+
+def drop_zip(c, path):
+    """Zip dont les sons sont extraits : à la Corbeille, ou gardé dans <destination>/Zips selon le réglage."""
+    if c.get("zips") != "keep":
+        return trash(path)
+    keep = os.path.join(c["dest_folder"], "Zips")
+    os.makedirs(keep, exist_ok=True)
+    shutil.move(path, free_path(os.path.join(keep, os.path.basename(path))))
 
 
 def process(c, path, title=None):
@@ -438,7 +463,7 @@ def process(c, path, title=None):
             return [("conflit pack", path)]
         shutil.move(inner, target)
         shutil.rmtree(tmp, ignore_errors=True)
-        trash(path)
+        drop_zip(c, path)
         return [("pack rangé", target)]
     out = []
     for f in sorted(next(iter(groups.values())).values(), key=lambda x: rank(os.path.basename(x), pref)):
@@ -449,7 +474,7 @@ def process(c, path, title=None):
             res = ("conflit", keep)
         out.append(res)
     trash(tmp)
-    trash(path)
+    drop_zip(c, path)
     return out
 
 
@@ -524,6 +549,8 @@ def cmd_init(a):
         "playlist_offer": "ask",
         "open_folder": "ask",
         "format": "any",
+        "clean_names": "on",
+        "zips": "trash",
         "settings_offer": "ask",
         "go": a.go,
         "language": a.language,
@@ -547,7 +574,7 @@ OPEN_FOLDER = ("ask", "auto")
 SETTINGS_OFFER = ("ask", "no")
 SETTABLE = ("language", "soundcloud.likes_of", "soundcloud.download_playlist", "soundcloud.chrome_device_id", "soundcloud.account",
             "gate.email", "gate.first_name", "dest_folder", "skip_longer_than_minutes", "versions",
-            "follow_author", "playlist_offer", "open_folder", "settings_offer", "format", "go")
+            "follow_author", "playlist_offer", "open_folder", "settings_offer", "format", "clean_names", "zips", "go")
 
 
 def cmd_config(a):
@@ -567,9 +594,14 @@ def cmd_config(a):
             sys.exit("Valeur : " + " | ".join(VERSIONS))
         node[leaf] = a.value
         node.pop("keep_radio_and_extended", None)
-    elif leaf in ("follow_author", "playlist_offer", "open_folder", "settings_offer", "format", "go"):
+    elif leaf == "format":
+        picked = [f.strip().lower() for f in a.value.split(",") if f.strip()]
+        if picked != ["any"] and (not picked or any(f not in FORMATS for f in picked)):
+            sys.exit("Valeur : any, ou un ou plusieurs formats séparés par des virgules parmi " + ", ".join(FORMATS))
+        node[leaf] = ",".join(dict.fromkeys(picked))
+    elif leaf in ("follow_author", "playlist_offer", "open_folder", "settings_offer", "clean_names", "zips", "go"):
         allowed = {"follow_author": FOLLOW_AUTHOR, "playlist_offer": PLAYLIST_OFFER, "open_folder": OPEN_FOLDER,
-                   "settings_offer": SETTINGS_OFFER, "format": tuple(FORMATS), "go": GO}[leaf]
+                   "settings_offer": SETTINGS_OFFER, "clean_names": CLEAN_NAMES, "zips": ZIPS, "go": GO}[leaf]
         if a.value not in allowed:
             sys.exit("Valeur : " + " | ".join(allowed))
         node[leaf] = a.value
@@ -868,7 +900,10 @@ def cmd_check(c, st, a):
             print(f"  ATTENTION : dossier de sons introuvable (disque débranché ?) : {r}")
     print("Versions : " + {"both": "Radio ET Extended gardées", "radio": "Radio seulement (avant Extended)",
                            "extended": "Extended seulement (avant Radio)"}[cut_pref(c)])
-    print("Format : " + ("tous" if c.get("format", "any") == "any" else c["format"].upper() + " (un autre format reçu est gardé et signalé)"))
+    print("Format : " + format_label(c) + ("" if not wanted_formats(c) else " (un autre format reçu est gardé et signalé)"))
+    print("Noms de fichiers : " + ("nettoyés (V2, master, final… retirés s'ils ne sont pas dans le titre SoundCloud)"
+                                   if c.get("clean_names", "on") == "on" else "gardés tels quels"))
+    print("Zips : " + ("gardés dans Zips" if c.get("zips") == "keep" else "mis à la Corbeille une fois les sons extraits"))
     print(f"Dossiers comparés avant téléchargement : {', '.join(short(r) for r in library_roots(c))}")
     print(f"Destination : {c['dest_folder']} | sons suivis : {len(st['tracks'])}"
           f" | pools : {', '.join(p['name'] for p in c['sources'].get('pools', [])) or 'aucun'}")
@@ -1002,11 +1037,11 @@ def cmd_collect(c, st, a):
             took = True
             t.update(status="downloaded" if new else "owned", source=a.via, origin=host,
                      updated=today(), file=rel(c, (new or dup)[0]))
-            want = c.get("format", "any")
-            wrong = [x for x in new if FORMATS.get(want) and not x.lower().endswith(FORMATS[want])]
+            exts = tuple(e for f in wanted_formats(c) for e in FORMATS[f])
+            wrong = [x for x in new if exts and os.path.isfile(x) and not x.lower().endswith(exts)]
             if wrong:
                 t["wrong_format"] = os.path.splitext(wrong[0])[1].lstrip(".").upper()
-                print(f"  format : reçu en {t['wrong_format']} au lieu de {want.upper()} (gardé)")
+                print(f"  format : reçu en {t['wrong_format']} au lieu de {format_label(c)} (gardé)")
             if len(new) > 1:
                 t["note"] = "versions gardées : " + " + ".join(cut_of(os.path.basename(x)) for x in new)
             elif not new:
@@ -1261,10 +1296,9 @@ def cmd_report(c, st, a):
               "fichier mis à la Corbeille, gate fait quand même) :")
         for t in wasted:
             print(f"  {label(t)} — {t['note'][len(GATE_FOR_NOTHING) + 3:]}")
-    want = c.get("format", "any")
     off = [t for t in groups.get("downloaded", []) if t.get("wrong_format")]
-    if want != "any" and off:
-        print(f"\nAUTRE FORMAT QUE {want.upper()} ({len(off)}, gardés : l'artiste ne propose que ce format) :")
+    if wanted_formats(c) and off:
+        print(f"\nAUTRE FORMAT QUE {format_label(c)} ({len(off)}, gardés : l'artiste ne propose que ce format) :")
         for t in off:
             print(f"  {label(t)} — {t['wrong_format']}")
     if problems:
