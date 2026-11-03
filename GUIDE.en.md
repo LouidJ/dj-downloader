@@ -90,6 +90,7 @@ In the Claude app, on the main screen (not the `</>` tab): **Customize → Plugi
 
 - During setup, Claude asks for access to **Downloads** and your music folder: click **Allow** for each. Your settings and history stay in your music folder (hidden `.sd-downloader` folder).
 - For websites, choose **Always allow for this site** (SoundCloud, Hypeddit, Droploud).
+- Switch the task to **Auto** mode (bottom right, instead of **Manual**): otherwise Cowork asks you to allow every batch of clicks in Chrome.
 - Differences from Claude Code: no button above the text box and no end chime, and the folder doesn't open on its own (Claude tells you its name).
 
 ## If you get stuck

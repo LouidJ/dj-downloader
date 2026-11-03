@@ -90,6 +90,7 @@ Dans l'app Claude, sur l'écran principal (pas l'onglet `</>`) : **Personnalisat
 
 - Au réglage, Claude demande l'accès à **Téléchargements** et à ton dossier de sons : clique **Autoriser** pour chacun. Tes réglages et l'historique restent dans ton dossier de sons (dossier caché `.sd-downloader`).
 - Pour les sites, choisis **Toujours autoriser pour ce site web** (SoundCloud, Hypeddit, Droploud).
+- Passe la tâche en mode **Auto** (en bas à droite, à la place de **Manuel**) : sinon, Cowork te demande d'autoriser chaque série de clics dans Chrome.
 - Différences avec Claude Code : pas de bouton au-dessus de la zone de saisie ni de petit son de fin, et le dossier ne s'ouvre pas tout seul (Claude te donne son nom).
 
 ## Si ça coince

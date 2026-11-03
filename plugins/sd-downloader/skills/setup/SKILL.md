@@ -66,6 +66,7 @@ Lance `djdl find-home` (sans un mot au DJ). La première ligne dit où tourne Cl
 
 - **« l'ordi du DJ »** (Claude Code, ou Cowork qui tourne sur l'ordi) : rien de spécial, suite normale.
 - **« un ordi distant (Cowork) »** : Claude tourne dans le cloud, et seuls les dossiers que le DJ partage avec lui restent d'une session à l'autre. Tout le réglage se fait donc **maintenant**, pour qu'aucun téléchargement ne bloque plus tard :
+  0. **Mode Auto, d'abord.** Dans Cowork, l'autorisation unique du §1 ne couvre pas tout : en mode **Manuel**, chaque série d'actions dans Chrome ouvre une fenêtre « Autoriser une fois ». En une ligne : « Pour que je ne te demande pas la permission à chaque clic dans Chrome, passe en mode **Auto** en bas à droite de la zone de message (à la place de **Manuel**). » Tu ne peux pas changer ce mode toi-même ; continue sans attendre.
   1. **Téléchargements, tout de suite.** En une ligne : « Je dois accéder à ton dossier **Téléchargements** (là où Chrome enregistre les sons) : clique **Autoriser**. » Puis l'outil de l'app qui donne accès à un dossier de l'ordi, avec le chemin `~/Downloads` (Windows : le dossier Téléchargements du DJ).
   2. **Le dossier de sons.** Si le DJ a déjà relié un dossier à la tâche (« Projet ou dossier »), c'est lui : ne demande rien. Sinon, pose la question `Rangement` du §2 (B), avec ces choix :
      - `Musique › SoundCloud Downloads (Recommended)` → accès demandé avec le chemin `~/Music` (Windows : le dossier Musique), puis `djdl init` crée `SoundCloud Downloads` dedans ;
