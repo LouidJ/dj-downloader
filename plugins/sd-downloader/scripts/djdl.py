@@ -624,7 +624,8 @@ OPEN_FOLDER = ("ask", "auto")
 SETTINGS_OFFER = ("ask", "no")
 SETTABLE = ("language", "soundcloud.likes_of", "soundcloud.download_playlist", "soundcloud.chrome_device_id", "soundcloud.account",
             "gate.email", "gate.first_name", "dest_folder", "skip_longer_than_minutes", "versions",
-            "follow_author", "playlist_offer", "open_folder", "settings_offer", "format", "clean_names", "zips", "go")
+            "follow_author", "playlist_offer", "open_folder", "settings_offer", "format", "clean_names", "zips", "go",
+            "gate.comments")
 
 
 def cmd_config(a):
@@ -649,6 +650,11 @@ def cmd_config(a):
         if picked != ["any"] and (not picked or any(f not in FORMATS for f in picked)):
             sys.exit("Valeur : any, ou un ou plusieurs formats séparés par des virgules parmi " + ", ".join(FORMATS))
         node[leaf] = ",".join(dict.fromkeys(picked))
+    elif leaf == "comments":
+        picked = [x.strip() for x in a.value.split("|") if x.strip()]
+        if not picked or any(len(x) > 80 or "\n" in x for x in picked):
+            sys.exit("Valeur : un ou plusieurs commentaires courts (80 caractères au plus), séparés par |")
+        node[leaf] = list(dict.fromkeys(picked))
     elif leaf in ("follow_author", "playlist_offer", "open_folder", "settings_offer", "clean_names", "zips", "go"):
         allowed = {"follow_author": FOLLOW_AUTHOR, "playlist_offer": PLAYLIST_OFFER, "open_folder": OPEN_FOLDER,
                    "settings_offer": SETTINGS_OFFER, "clean_names": CLEAN_NAMES, "zips": ZIPS, "go": GO}[leaf]
@@ -1365,6 +1371,8 @@ def cmd_report(c, st, a):
     total = sum(len(v) for v in groups.values())
     what = f"sélection « {st['batches'][-1]['selection']} », " if a.last else ""
     print(f"BILAN ({what}{total} sons, recompté sur le disque le {today()})")
+    ever = sum(1 for t in st["tracks"] if t["status"] in ("downloaded", "user_added"))
+    print(f"  Depuis le début : {ever} sons téléchargés")
     for s in STATUSES:
         if s in groups:
             print(f"  {STATUSES[s]:<24} {len(groups[s])}")

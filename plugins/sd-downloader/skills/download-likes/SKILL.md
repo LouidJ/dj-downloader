@@ -112,7 +112,7 @@ Toute question qui suit une autre question du DJ a en **dernier** choix `↩️ 
      - `Je colle son lien` : description « Colle-le dans « Other » »
 
      Un lien → `djdl config soundcloud.download_playlist <lien>`. Dans tous les cas, ensuite `djdl config playlist_offer no` : on ne la repropose jamais.
-   - **Une fois : personnaliser le plugin**, seulement si `settings_offer` ne vaut pas `no` (absent = `ask`). Question `Réglages` : « Tu veux personnaliser le plugin pour les prochaines fois ? (formats, versions, noms de fichiers, zips…) »
+   - **Une fois : personnaliser le plugin**, seulement si `settings_offer` ne vaut pas `no` (absent = `ask`). Question `Réglages` : « Tu veux personnaliser le plugin pour les prochaines fois ? (formats, versions, fichiers, commentaire…) »
      - `⚙️ Personnaliser` : description « Je te montre les options, tu coches ce que tu veux »
      - `Plus tard (Recommended)` : description « Le choix ⚙️ Réglages reste là à chaque lancement »
 
@@ -127,22 +127,30 @@ Quand le DJ choisit `⚙️ Réglages` ou `⚙️ Personnaliser` (au choix des s
 **1. Quoi régler ?** Une question `Réglages`, **choix multiples** (`multiSelect: true`) : « Qu'est-ce que tu veux régler ? » Chaque choix montre le réglage actuel dans sa description.
    - `🎚️ Formats` : « Actuel : <tous / WAV / WAV + AIFF…> »
    - `✂️ Versions` : « Actuel : <Extended / Radio / les deux> »
-   - `🏷️ Noms de fichiers` : « Actuel : <nettoyés / tels quels> »
-   - `🗜️ Zips` : « Actuel : <à la Corbeille / gardés> »
+   - `🗂️ Fichiers` : « Noms : <nettoyés / tels quels> · Zips : <à la Corbeille / gardés> »
+   - `💬 Commentaire` : « Actuel : <les commentaires de `gate.comments`, entre guillemets> »
 
    Dans « Other », le DJ peut demander autre chose : `📂 Dossier à la fin` (ouvrir tout seul ou proposer), la playlist « À télécharger », le dossier de rangement, la durée des longs sets, le feu vert des gates. Fais-le avec les phrases de « Ce que le DJ peut demander ensuite ».
 
 **2. Les modules cochés**, en **un seul** appel (4 questions au plus ; le choix actuel en premier, avec « (actuel) » à la place de « (Recommended) ») :
    - `Formats`, **choix multiples** : « Quels formats tu veux ? » `WAV` / `AIFF` / `MP3` / `Tous les formats` (description : « Je garde le fichier tel que l'artiste le propose »). Description de WAV, AIFF, MP3 : « Si l'artiste ne propose qu'un autre format, je le garde et je te le signale dans le bilan. » Réponse → `djdl config format wav,aiff` (formats cochés, séparés par des virgules) ou `djdl config format any` (« Tous », ou rien de coché). Le format n'est connu qu'une fois téléchargé : ne saute jamais un son à cause du format.
    - `Versions` : « Quand un son existe en Extended et en Radio ? » `Extended` / `Radio` / `Les deux` → `djdl config versions extended|radio|both`
+   - `🗂️ Fichiers` coché : deux questions, `Noms` et `Zips` (les modules cochés font alors 5 questions au plus : pose `Zips` dans un second appel si besoin).
    - `Noms` : « Je nettoie les noms de fichiers ? » 
      - `Oui, nettoyer` : description « Je retire V1, V2, master, final, version finale… s'ils ne sont pas dans le titre SoundCloud, et les espaces en trop » → `djdl config clean_names on`
      - `Non, garder le nom de l'artiste` → `djdl config clean_names off`
    - `Zips` : « Quand un son arrive en zip, une fois les sons sortis du zip ? »
      - `Zip à la Corbeille` : description « Il reste récupérable dans la Corbeille » → `djdl config zips trash`
      - `Garder le zip` : description « Dans un dossier Zips de ton dossier de sons » → `djdl config zips keep`
+   - `Commentaire` : « Quel commentaire je laisse sur SoundCloud pour les gates ? » (s'il y en a plusieurs, un au hasard à chaque gate)
+     - `<les commentaires actuels> (actuel)` ;
+     - `🔥 Fire · Love it · Wow` ;
+     - `Nice! · Big tune · Banger` ;
+     - « Other » : le DJ écrit les siens, séparés par des virgules.
 
-N'appelle `djdl config` que pour ce qui change. Puis une ligne qui résume (« ✅ WAV + AIFF · Extended · noms nettoyés · zips à la Corbeille »). Si on venait du choix des sons, repose ensuite la question « Quels sons je télécharge ? ».
+     Réponse → `djdl config gate.comments "fire|love it|wow"` (commentaires séparés par `|`, courts, sans lien, sans e-mail, sans @). Un texte écrit par le DJ est gardé tel quel, sauf s'il contient un lien, une adresse e-mail ou plus de 80 caractères : alors redemande.
+
+N'appelle `djdl config` que pour ce qui change. Puis une ligne qui résume (« ✅ WAV + AIFF · Extended · noms nettoyés · zips à la Corbeille · 💬 Big tune »). Si on venait du choix des sons, repose ensuite la question « Quels sons je télécharge ? ».
 
 ## Ce que le DJ peut demander ensuite
 
@@ -151,6 +159,7 @@ N'appelle `djdl config` que pour ce qui change. Puis une ligne qui résume (« �
 - « seulement les wav » / « wav et aiff » / « seulement les mp3 » / « tous les formats » → `djdl config format wav` / `wav,aiff` / `mp3` / `any`
 - « ne touche pas aux noms de fichiers » / « nettoie les noms » → `djdl config clean_names off|on`
 - « garde les zips » / « mets les zips à la Corbeille » → `djdl config zips keep|trash`
+- « commente plutôt « Big tune » » / « change le commentaire » → `djdl config gate.comments "Big tune"` (plusieurs : séparés par `|`)
 - « ouvre le dossier tout seul à la fin » / « demande-moi » → `djdl config open_folder auto|ask`
 - « réglages », « mes réglages » → menu « ⚙️ Réglages » ci-dessus
 - « compare aussi avec mon dossier X » / « mes sons sont aussi sur ma clé USB » → `djdl library add "<dossier>"` ; « quels dossiers tu compares ? » → `djdl library`
