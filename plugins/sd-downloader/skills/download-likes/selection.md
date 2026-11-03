@@ -8,7 +8,7 @@ Aucune limite de nombre ni de jour : on prend tout ce que la demande couvre. Ré
 
 | Le DJ dit… | Lecture | Import |
 |---|---|---|
-| « mes nouveaux likes », « mets à jour », le choix `Mes nouveaux likes` | likes §2a : `N=Infinity`, `STOP=` sortie de `djdl known` | `djdl import F --new` (premier passage : tous ses likes, l'annoncer avec le nombre) |
+| « mes nouveaux likes », « mets à jour », le choix `Mes nouveaux likes` ou `Tous mes likes` | likes §2a : `N=Infinity`, `STOP=` sortie de `djdl known` | `djdl import F --new` (premier passage : tous ses likes, l'annoncer avec le nombre) |
 | « tous mes likes » | likes §2a : `N=Infinity` | `djdl import F` |
 | « les 20 derniers », « mes 20 derniers likes » | likes §2a : `N=20` | `djdl import F --limit 20` |
 | « likés aujourd'hui » | likes §2a : `SINCE='<aujourd'hui>'` | `djdl import F --since <aujourd'hui>` |
@@ -37,7 +37,9 @@ Le DJ ne doit rien avoir à taper. Pose tes questions avec l'outil **`AskUserQue
 **Si la demande ne dit pas quels sons** (la commande seule, « télécharge », « lance-toi »…) : **un seul** appel `AskUserQuestion` avec ces deux questions. Si la config dit `"go": "auto"`, seulement la première (le feu vert est déjà donné).
 
 1. Question « Quels sons je télécharge ? », en-tête `Sons`, choix unique :
-   - `Mes nouveaux likes (Recommended)` : Tout ce que tu as liké depuis la dernière fois ;
+   - premier choix, selon `djdl known` (lancé avant la question) :
+     - `[]` (aucun like encore suivi, première utilisation) : `Tous mes likes (Recommended)` : Je télécharge tous tes likes ;
+     - sinon : `Mes nouveaux likes (Recommended)` : Tout ce que tu as liké depuis la dernière fois ;
    - `Likés aujourd'hui` : Seulement les likes du jour ;
    - `Mes 20 derniers likes` : Les 20 likes les plus récents ;
    - `Ma playlist` : Ta playlist « À télécharger » (seulement si `soundcloud.download_playlist` est réglé ; sinon, `Likés cette semaine` : depuis lundi).

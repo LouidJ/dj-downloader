@@ -57,7 +57,7 @@ At the end, Claude offers once, **with no obligation**, to follow the plugin's a
 
 ## 5. First download
 
-Click **🚀 Launch** at the end of setup. Claude asks which tracks (*My new likes*, *Liked today*, *My last 20 likes*, *Liked this week*). For your very first try, choose *Other* and type "last 3".
+Click **🚀 Launch** at the end of setup. Claude asks which tracks (*All my likes*, *Liked today*, *My last 20 likes*, *Liked this week*). For your very first try, choose *Other* and type "last 3".
 
 Then:
 1. Claude skips the tracks already in your folder.

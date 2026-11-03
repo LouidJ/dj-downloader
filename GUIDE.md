@@ -57,7 +57,7 @@ Le reste est réglé pour toi : les likes de ton compte, la version Extended (av
 
 ## 5. Premier téléchargement
 
-Clique **🚀 Lancer** à la fin du réglage. Claude te demande quels sons (*Mes nouveaux likes*, *Likés aujourd'hui*, *Mes 20 derniers likes*, *Likés cette semaine*). Pour un tout premier essai, choisis *Autre* et écris « 3 derniers ».
+Clique **🚀 Lancer** à la fin du réglage. Claude te demande quels sons (*Tous mes likes*, *Likés aujourd'hui*, *Mes 20 derniers likes*, *Likés cette semaine*). Pour un tout premier essai, choisis *Autre* et écris « 3 derniers ».
 
 Ensuite :
 1. Claude saute les sons déjà dans ton dossier.
