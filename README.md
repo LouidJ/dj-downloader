@@ -40,7 +40,7 @@ Pour recevoir les améliorations toutes seules : `/plugin` → **Marketplaces** 
 
 Puis clique le bouton **🎧 Installer SD Downloader** au-dessus de la zone où tu écris (ou tape `/sd-downloader:setup`).
 
-Trois questions à cliquer : ta langue, où ranger les sons, et une playlist « À télécharger » en option. Le compte SoundCloud, l'e-mail et le prénom sont lus tout seuls. Il ne te demande jamais de mot de passe : tu te connectes toi-même. À la fin, un bouton lance ton premier téléchargement.
+Deux questions à cliquer : ta langue et où ranger les sons. Le compte SoundCloud, l'e-mail et le prénom sont lus tout seuls. Il ne te demande jamais de mot de passe : tu te connectes toi-même. À la fin, un bouton lance ton premier téléchargement.
 
 ## Utilisation
 
@@ -53,7 +53,7 @@ Tu peux aussi dire ce que tu veux avec tes mots :
 | « Télécharge mes nouveaux likes » | tout ce que tu as liké depuis la dernière fois |
 | « Télécharge les 20 derniers » | tes 20 derniers likes |
 | « Télécharge ce que j'ai liké aujourd'hui » | les likes du jour (marche aussi avec « hier », « depuis lundi », « depuis le 20 octobre ») |
-| « Télécharge ma playlist » | ta playlist « À télécharger » (donnée à l'installation) |
+| « Télécharge ma playlist » | ta playlist « À télécharger » (proposée après ton premier téléchargement) |
 | « Télécharge cette playlist : <lien> » | une playlist entière, même privée avec son lien privé |
 | « Télécharge ces sons : <liens> » | les sons collés |
 

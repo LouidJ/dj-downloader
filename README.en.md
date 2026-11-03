@@ -38,7 +38,7 @@ To get improvements automatically: `/plugin` → **Marketplaces** → `dj-downlo
 
 Then click the **🎧 Set up SD Downloader** button above the box where you type (or type `/sd-downloader:setup`).
 
-Three questions to click: your language, where to save the tracks, and an optional "To download" playlist. The SoundCloud account, email and first name are read on their own. It never asks for a password: you log in yourself. At the end, one button starts your first download.
+Two questions to click: your language and where to save the tracks. The SoundCloud account, email and first name are read on their own. It never asks for a password: you log in yourself. At the end, one button starts your first download.
 
 ## Usage
 
@@ -51,7 +51,7 @@ You can also say what you want in your own words, in any language:
 | "Download my new likes" | everything you liked since last time |
 | "Download the last 20" | your last 20 likes |
 | "Download what I liked today" | today's likes (also works with "yesterday", "since Monday", "since October 20") |
-| "Download my playlist" | your "To download" playlist (given during setup) |
+| "Download my playlist" | your "To download" playlist (offered after your first download) |
 | "Download this playlist: <link>" | a whole playlist, even a private one with its private link |
 | "Download these tracks: <links>" | the pasted tracks |
 

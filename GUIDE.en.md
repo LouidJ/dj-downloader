@@ -47,9 +47,7 @@ In the terminal (Claude Code), one command is enough: `/plugin install sd-downlo
 
 Click the **🎧 Set up SD Downloader** button above the box where you type (or type `/sd-downloader:setup`). If it doesn't show up, open another new session. Claude first checks that everything is ready. **On Windows**, it may ask you to install **Python**: on [python.org](https://www.python.org/downloads/), click Download Python, run the installer and **tick "Add python.exe to PATH"** before clicking Install. Then open a new session and type the command again.
 
-It first asks for your **language**: everything else happens in your language. Next, Claude **figures out on its own** which SoundCloud account is logged in to Chrome, your email and your first name: nothing to type. It only asks **two questions to click**:
-- where to save the tracks (Music, a new folder on the Desktop, or a folder you pick in a window);
-- optionally, a "To download" playlist.
+It first asks for your **language**: everything else happens in your language. Next, Claude **figures out on its own** which SoundCloud account is logged in to Chrome, your email and your first name: nothing to type. It only asks **one question to click**: where to save the tracks (Music, a new folder on the Desktop, or a folder you pick in a window). After your first download, it will suggest the "To download" playlist trick once.
 
 The rest is set for you: your account's likes, the Extended version (before the Radio one), and tracks already in your folder are never downloaded again. Change anything with one sentence ("also keep the radio versions", "my email is …").
 
@@ -59,7 +57,7 @@ At the end, Claude offers once, **with no obligation**, to follow the plugin's a
 
 ## 5. First download
 
-Click **🚀 Launch** at the end of setup. Claude asks which tracks (*My new likes*, *Liked today*, *My last 20 likes*, *My playlist*). For your very first try, choose *Other* and type "last 3".
+Click **🚀 Launch** at the end of setup. Claude asks which tracks (*My new likes*, *Liked today*, *My last 20 likes*, *Liked this week*). For your very first try, choose *Other* and type "last 3".
 
 Then:
 1. Claude skips the tracks already in your folder.

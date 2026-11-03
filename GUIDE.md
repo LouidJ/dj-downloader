@@ -47,9 +47,7 @@ Dans le terminal (Claude Code), une seule commande suffit : `/plugin install sd-
 
 Clique le bouton **🎧 Installer SD Downloader** au-dessus de la zone où tu écris (ou tape `/sd-downloader:setup`). S'il n'apparaît pas, ouvre une autre nouvelle session. Claude vérifie d'abord que tout est prêt. **Sur Windows**, il peut te demander d'installer **Python** : sur [python.org](https://www.python.org/downloads/), clique Download Python, lance l'installateur et **coche « Add python.exe to PATH »** avant Install. Ouvre ensuite une nouvelle session et retape la commande.
 
-Il te demande d'abord ta **langue** : tout le reste se fait dans ta langue. Ensuite Claude **devine tout seul** le compte SoundCloud connecté dans Chrome, ton e-mail et ton prénom : rien à écrire. Il ne te pose que **deux questions à cliquer** :
-- où ranger les sons (Musique, un nouveau dossier sur le Bureau, ou un dossier que tu choisis dans une fenêtre) ;
-- en option, une playlist « À télécharger ».
+Il te demande d'abord ta **langue** : tout le reste se fait dans ta langue. Ensuite Claude **devine tout seul** le compte SoundCloud connecté dans Chrome, ton e-mail et ton prénom : rien à écrire. Il ne te pose qu'**une question à cliquer** : où ranger les sons (Musique, un nouveau dossier sur le Bureau, ou un dossier que tu choisis dans une fenêtre). Après ton premier téléchargement, il te proposera une fois l'astuce de la playlist « À télécharger ».
 
 Le reste est réglé pour toi : les likes de ton compte, la version Extended (avant la Radio), et les sons déjà dans ton dossier ne sont jamais retéléchargés. Tu changes ce que tu veux d'une phrase (« garde aussi les versions radio », « mon e-mail c'est … »).
 
@@ -59,7 +57,7 @@ Le reste est réglé pour toi : les likes de ton compte, la version Extended (av
 
 ## 5. Premier téléchargement
 
-Clique **🚀 Lancer** à la fin du réglage. Claude te demande quels sons (*Mes nouveaux likes*, *Likés aujourd'hui*, *Mes 20 derniers likes*, *Ma playlist*). Pour un tout premier essai, choisis *Autre* et écris « 3 derniers ».
+Clique **🚀 Lancer** à la fin du réglage. Claude te demande quels sons (*Mes nouveaux likes*, *Likés aujourd'hui*, *Mes 20 derniers likes*, *Likés cette semaine*). Pour un tout premier essai, choisis *Autre* et écris « 3 derniers ».
 
 Ensuite :
 1. Claude saute les sons déjà dans ton dossier.

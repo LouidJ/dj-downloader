@@ -59,9 +59,9 @@ C'est la **première action** du réglage après la question de langue, avant to
 
 L'extension **Claude in Chrome** doit être installée et connectée dans Chrome. Appelle `list_connected_browsers`. Si rien n'est connecté, donne au DJ le lien direct https://chromewebstore.google.com/detail/fcoeoabgfenejglbffodgkkbkcdhcgfn. Il clique « Ajouter à Chrome », puis se connecte dans l'extension avec le même compte Claude. Attends, puis réessaie.
 
-## 2. Deviner presque tout, puis deux questions
+## 2. Deviner presque tout, puis une question
 
-Le but : le DJ répond à **trois questions en tout** (la langue, le dossier, la playlist), et rien d'autre. Tout le reste se devine ou prend sa valeur par défaut. Les questions se posent avec **`AskUserQuestion`**, en choix cliquables (2 à 4 par question, ta recommandation en premier avec « (Recommended) ») ; « Other » reste là pour écrire autre chose. Chaque description de choix commence par une **majuscule** (« Tu choisis… », « Le bouton… »).
+Le but : le DJ répond à **deux questions en tout** (la langue, le dossier), et rien d'autre. Tout le reste se devine ou prend sa valeur par défaut. Les questions se posent avec **`AskUserQuestion`**, en choix cliquables (2 à 4 par question, ta recommandation en premier avec « (Recommended) ») ; « Other » reste là pour écrire autre chose. Chaque description de choix commence par une **majuscule** (« Tu choisis… », « Le bouton… »).
 
 **A. Détecter (une seule question possible : le navigateur)**
 - **Navigateur** : `list_connected_browsers`, sans rien ouvrir. Le DJ peut avoir d'autres profils Chrome (perso, travail, boutique…) : n'y ouvre **aucune** page sans son accord.
@@ -70,11 +70,15 @@ Le but : le DJ répond à **trois questions en tout** (la langue, le dossier, la
   - Plusieurs : `AskUserQuestion`, `Navigateur` : « Plusieurs navigateurs Chrome sont connectés à Claude. Lequel est celui de SoundCloud ? » Un choix par navigateur (son nom affiché ; 3 au plus, les autres se tapent dans « Other »), plus `Je ne sais pas`. Description : le nom se voit dans l'extension Claude du profil Chrome que tu utilises pour SoundCloud.
   - `Je ne sais pas` : deuxième question, `Vérifier` : « Je peux ouvrir soundcloud.com dans chacun (un onglet, refermé aussitôt) pour trouver celui où tu es connecté ? » `Oui, vérifie` / `Non, je déconnecte l'extension des autres profils`. Seulement après « Oui » : pour chaque navigateur, `select_browser`, ouvrir soundcloud.com, lire le compte (`playbook.md` §1), fermer l'onglet ; rien d'autre. Après « Non » : attendre que le DJ le fasse, puis refaire `list_connected_browsers`.
   - Garde le deviceId choisi. Ensuite, ne touche plus jamais aux autres navigateurs.
+- **Prévenir avant la première page ouverte dans Chrome** : l'app Claude va demander, pour chaque site (soundcloud.com, hypeddit.com, droploud.com), si Claude peut l'ouvrir. Le plugin ne peut pas donner cet accord à la place du DJ. Dis-le en une ligne avant d'ouvrir soundcloud.com : « 3 fenêtres d'autorisation vont s'afficher (SoundCloud, Hypeddit, Droploud) : clique **Toujours autoriser pour ce site web**, et on ne te les redemandera plus. »
 - **Compte SoundCloud, e-mail, prénom, sans question** : dans ce navigateur seulement, ouvrir soundcloud.com et lire le compte connecté (`playbook.md` §1). Pas connecté : demander au DJ de se connecter lui-même, puis relire. Ce compte sert pour les gates **et** pour les likes. Sur la même page, lire l'e-mail et le prénom du compte : `const me = (window.__sc_hydration||[]).find(h=>h.hydratable==='meUser')?.data; ({email: me?.primary_email, prenom: me?.first_name})`. Ils vont dans la config tels quels et s'affichent dans le résumé de fin. Seulement s'il en manque un, demande-le en texte (une phrase). N'invente jamais d'adresse ou de prénom (ni adresse de test, ni « au hasard »). Si un gate pré-remplit déjà une adresse, elle sera gardée telle quelle.
 - **Accès de Chrome aux sites, une fois pour toutes** : dans ce navigateur, ouvre aussi hypeddit.com et droploud.com. Si l'extension demande l'accès à un site (soundcloud.com, hypeddit.com, droploud.com), dis au DJ de choisir l'option qui autorise **toujours** ce site. Les commandes du plugin, elles, sont déjà autorisées par l'étape 1 : pendant les téléchargements, plus aucune fenêtre d'autorisation.
 - **Dossiers** : `djdl scan`, seulement pour proposer au choix `Rangement` un dossier de téléchargements qui existe déjà.
 
-**B. Un seul appel `AskUserQuestion`, deux questions**
+**B. Un seul appel `AskUserQuestion`, une question**
+
+Pas de question sur une playlist « À télécharger » ici : un DJ qui n'a encore rien téléchargé la comprend mal. Elle est proposée une seule fois, après le premier bilan avec un son téléchargé (skill `download-likes`, étape 6).
+
 1. `Rangement` : « Où je range les sons téléchargés ? 📁 »
    - `Musique › SoundCloud Downloads (Recommended)` : description « Nouveau dossier dans Musique » → `~/Music/SoundCloud Downloads`
    - `📁 Nouveau dossier sur le Bureau` : description « Je crée « SoundCloud Downloads » sur ton Bureau ; pour un autre nom, écris-le dans « Autre » » → `~/Desktop/SoundCloud Downloads`
@@ -82,9 +86,6 @@ Le but : le DJ répond à **trois questions en tout** (la langue, le dossier, la
    - `📂 Choisir un autre dossier…` : description « Une fenêtre s'ouvre, tu cliques sur le dossier (bouton « Nouveau dossier » pour en créer un) ».
 
    Réponse dans « Autre » : un simple nom (sans `/` ni `\`) → nouveau dossier `~/Desktop/<nom>` ; un chemin → tel quel. `djdl init` crée le dossier s'il n'existe pas. Les sons déjà dans ce dossier ne seront jamais retéléchargés.
-2. `Playlist` : « Tu veux une playlist SoundCloud « À télécharger » ? Tu y ajoutes des sons pendant que tu digs, puis un clic suffit pour tout télécharger. »
-   - `Pas maintenant (Recommended)`
-   - `Oui, je colle son lien` : le lien va dans « Other ». Il peut être public ou privé.
 
 **Choisir un dossier dans une fenêtre** (après cet appel, si le DJ a pris `📂 Choisir un autre dossier…`) : dis-lui en une ligne qu'une fenêtre du Finder (Windows : de l'Explorateur) va s'ouvrir, peut-être derrière les autres fenêtres. Puis lance, avec un délai de Bash de 6 minutes (`timeout: 360000`) :
 
@@ -109,7 +110,7 @@ Le DJ peut tout changer plus tard d'une phrase (« garde aussi les versions radi
 ```bash
 djdl init --likes-of <compte> --account <compte> --device <deviceId> \
   --email <email> --first-name <prénom> --language <code> \
-  --dest "<dossier>" [--playlist <lien>] --go auto
+  --dest "<dossier>" --go auto
 ```
 
 (`--force` pour remplacer une config existante.) Puis `djdl check` : tout doit être OK. Si un dossier est « illisible » : sur **Mac**, le DJ autorise l'accès (Réglages Système → Confidentialité et sécurité → Fichiers et dossiers, ou Accès complet au disque) pour l'application qui fait tourner Claude ; sur **Windows**, il choisit un dossier de son profil (Musique, Documents) ou vérifie que le disque externe est branché. Sur Windows, les chemins se donnent tels quels (ex. `D:\Musique\Sets`).

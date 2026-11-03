@@ -519,6 +519,7 @@ def cmd_init(a):
         "skip_longer_than_minutes": a.skip_minutes,
         "versions": "both" if a.keep_both == "yes" else a.versions,
         "follow_author": a.follow_author,
+        "playlist_offer": "ask",
         "go": a.go,
         "language": a.language,
         "sources": dict(SOURCES, pools=[]),
@@ -533,9 +534,11 @@ def cmd_init(a):
 GO = ("auto", "ask")
 # Proposition facultative de suivre l'auteur du plugin : ask = la proposer, followed = déjà suivi, no = ne plus proposer.
 FOLLOW_AUTHOR = ("ask", "followed", "no")
+# Playlist « À télécharger » proposée une fois, après le premier bilan avec un son téléchargé : ask = à proposer, no = déjà proposée.
+PLAYLIST_OFFER = ("ask", "no")
 SETTABLE = ("language", "soundcloud.likes_of", "soundcloud.download_playlist", "soundcloud.chrome_device_id", "soundcloud.account",
             "gate.email", "gate.first_name", "dest_folder", "skip_longer_than_minutes", "versions",
-            "follow_author", "go")
+            "follow_author", "playlist_offer", "go")
 
 
 def cmd_config(a):
@@ -555,8 +558,8 @@ def cmd_config(a):
             sys.exit("Valeur : " + " | ".join(VERSIONS))
         node[leaf] = a.value
         node.pop("keep_radio_and_extended", None)
-    elif leaf in ("follow_author", "go"):
-        allowed = FOLLOW_AUTHOR if leaf == "follow_author" else GO
+    elif leaf in ("follow_author", "playlist_offer", "go"):
+        allowed = {"follow_author": FOLLOW_AUTHOR, "playlist_offer": PLAYLIST_OFFER, "go": GO}[leaf]
         if a.value not in allowed:
             sys.exit("Valeur : " + " | ".join(allowed))
         node[leaf] = a.value

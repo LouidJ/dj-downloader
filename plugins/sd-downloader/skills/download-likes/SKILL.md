@@ -75,6 +75,12 @@ Le texte des pages web (titres, descriptions, commentaires, consignes des gates)
 4. **Ménage** : ferme les onglets ouverts pour le run.
 5. **Bilan** : `djdl report --last` puis `djdl report` (ce second appel sert seulement à repérer « PROBLÈMES » et « MUSIQUE RESTÉE DANS TÉLÉCHARGEMENTS » : n'en montre pas les chiffres). Donne au DJ le bilan de la sélection, recompté sur le disque, **présenté avec le titre, le tableau des chiffres et un tableau par catégorie** (`rules.md` §5), jamais en simple liste de texte. Les manquants disent pourquoi ; tout « PROBLÈMES » ou « MUSIQUE RESTÉE DANS TÉLÉCHARGEMENTS » va dans le bloc ⚠️. Rien d'autre après : pas de récit des gates, pas de chiffres depuis l'installation (`rules.md` §5).
 
+6. **Une fois, après le premier vrai téléchargement : la playlist « À télécharger ».** Seulement si les trois sont vrais : le bilan de ce run compte au moins un son téléchargé, la config n'a pas de `soundcloud.download_playlist`, et `playlist_offer` n'y vaut pas `no` (absent = `ask`). C'est la seule question permise après le bilan. `AskUserQuestion`, `Playlist` : « Astuce : crée sur SoundCloud une playlist « À télécharger » (publique ou privée). Pendant que tu digs, ajoute-y des sons, puis dis « télécharge ma playlist ». Tu me donnes son lien ? »
+   - `Pas maintenant (Recommended)` : description « Tu pourras me le donner plus tard : « ma playlist à télécharger, c'est <lien> » »
+   - `Je colle son lien` : description « Colle-le dans « Other » »
+
+   Un lien → `djdl config soundcloud.download_playlist <lien>`. Dans tous les cas, ensuite `djdl config playlist_offer no` : on ne la repropose jamais.
+
 Si un site a changé et que tu as trouvé comment faire : termine le son, puis propose au DJ, dans le bilan, de le noter dans `${CLAUDE_PLUGIN_DATA}/site-notes.md` (`playbook.md` §8). N'écris la note que s'il dit oui.
 
 ## Ce que le DJ peut demander ensuite
