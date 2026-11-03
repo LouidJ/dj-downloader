@@ -19,32 +19,23 @@ Plugin gratuit pour Claude, pour les DJ sur Mac et Windows. Tu likes des sons su
 ## Ce qu'il te faut
 
 - Un Mac ou un PC Windows, avec Google Chrome.
-- Python 3 (déjà là sur Mac après `xcode-select --install` ; sur Windows, depuis python.org en cochant « Add python.exe to PATH »). L'installation guidée vérifie et t'explique.
-- L'app Claude (onglet Code) ou Claude Code, avec un abonnement Claude.
+- L'app Claude (Cowork), avec un abonnement Claude payant.
 - L'extension [**Claude in Chrome**](https://chromewebstore.google.com/detail/fcoeoabgfenejglbffodgkkbkcdhcgfn), connectée.
 - Ton compte SoundCloud connecté dans ce Chrome. Claude y lit tout seul ton e-mail et ton prénom pour les gates.
 
 ## Installation
 
-Dans Claude (onglet Code ou terminal), tape :
+Dans l'app Claude, écran principal : **Personnalisation → Plugins → Ajouter**, marketplace `LouidJ/dj-downloader`, puis installe **SD Downloader**.
 
-```
-/plugin install sd-downloader --marketplace LouidJ/dj-downloader
-```
+À chaque nouvelle tâche : ajoute tes dossiers **Téléchargements** et de sons avec **+ → Ajouter un dossier**, puis passe en mode **Auto** (en bas à droite, à la place de **Manuel**). Pour le réglage, tape `/sd-downloader:setup`.
 
-(Claude Code v2.1.275 ou plus récent. Sinon : `/plugin marketplace add LouidJ/dj-downloader` puis `/plugin install sd-downloader@dj-downloader`.)
+Une question à cliquer : ta langue. Le navigateur, le compte SoundCloud, l'e-mail et le prénom sont trouvés tout seuls. Il ne te demande jamais de mot de passe : tu te connectes toi-même. À la fin, un bouton lance ton premier téléchargement.
 
-Dans l'app Claude (onglet Code), le plus simple est de coller : « Installe le plugin sd-downloader depuis le dépôt GitHub LouidJ/dj-downloader ». Claude s'occupe du reste. Ouvre ensuite une nouvelle session.
-
-Pour recevoir les améliorations toutes seules : `/plugin` → **Marketplaces** → `dj-downloader` → **Enable auto-update**.
-
-Puis clique le bouton **🎧 Installer SD Downloader** au-dessus de la zone où tu écris (ou tape `/sd-downloader:setup`).
-
-Deux questions à cliquer : ta langue et où ranger les sons. Le compte SoundCloud, l'e-mail et le prénom sont lus tout seuls. Il ne te demande jamais de mot de passe : tu te connectes toi-même. À la fin, un bouton lance ton premier téléchargement.
+Avec Claude Code (onglet Code ou terminal) : `/plugin install sd-downloader --marketplace LouidJ/dj-downloader`, puis le bouton **🎧 Installer SD Downloader**. Il faut Python 3 (sur Windows, depuis python.org en cochant « Add python.exe to PATH »).
 
 ## Utilisation
 
-Clique **🎧 Télécharger mes nouveaux likes** au-dessus de la zone où tu écris : Claude prend tout ce que tu as liké depuis la dernière fois, fait les gates avec ton compte (tu as donné ton accord une fois au réglage), range tout, joue un petit son et te donne le bilan.
+Écris « télécharge mes nouveaux likes » (avec Claude Code : bouton **🎧 Télécharger mes nouveaux likes**) : Claude prend tout ce que tu as liké depuis la dernière fois, fait les gates avec ton compte (tu as donné ton accord une fois au réglage), range tout et te donne le bilan.
 
 Tu peux aussi dire ce que tu veux avec tes mots :
 

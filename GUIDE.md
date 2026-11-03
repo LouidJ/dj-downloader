@@ -2,22 +2,18 @@
 
 *[English version](GUIDE.en.md) · Guide interactif, une question à la fois : [ouvrir](https://louidj.github.io/dj-downloader/)*
 
-Installation : ~20 minutes, une seule fois. Ensuite, une phrase à chaque fois. Aucun code à écrire.
+Installation : ~15 minutes, une seule fois. Ensuite, une phrase à chaque fois. Aucun code à écrire.
 
 ## 0. Ce qu'il te faut
 
 - Un **Mac** ou un **PC Windows** (10 ou 11), avec **Google Chrome**.
-- Un **abonnement Claude payant** (Pro ou Max) : il donne accès à l'onglet « Code » de l'app, où vit le plugin.
+- Un **abonnement Claude payant** (Pro ou Max) : le plugin marche dans l'app Claude (Cowork), et l'extension Chrome en a aussi besoin.
 - Conseillé : un **deuxième compte SoundCloud** pour les gates (ils demandent de suivre, reposter, commenter). Ton compte principal reste propre.
-- Ton **e-mail SoundCloud** : tu le donnes une fois au réglage, les gates le transmettent aux artistes.
 
 ## 1. Installer l'app Claude
 
 1. Télécharge l'app sur [claude.ai/download](https://claude.ai/download) et installe-la : sur Mac, glisse-la dans Applications ; sur Windows, lance l'installateur.
-2. Ouvre-la et connecte-toi.
-3. En haut de la fenêtre, clique sur l'onglet **Code**. C'est là que tout se passe.
-4. Si l'app demande un dossier de travail, crée un dossier `DJ` dans Documents et choisis-le. Ta musique n'ira pas là.
-5. **Windows** : si l'app te demande d'installer **Git pour Windows**, accepte et suis l'installation proposée (options par défaut). Elle en a besoin pour lancer les commandes.
+2. Ouvre-la et connecte-toi. Tu arrives sur l'écran principal (icône bulle en haut à gauche) : c'est là que tout se passe.
 
 > **Parler à Claude** : tu écris en bas, dans la zone de texte, comme dans une messagerie, puis Entrée. En français, normalement. Un message qui commence par `/` est une commande : en tapant `/`, la liste s'affiche.
 
@@ -32,43 +28,46 @@ Pendant les téléchargements, laisse Chrome ouvert et ne touche pas aux onglets
 
 ## 3. Installer le plugin
 
-Dans l'onglet Code, ouvre une nouvelle session et colle :
+1. Dans l'app, sur l'écran principal, clique **Personnalisation** dans la barre de gauche, puis **Plugins**.
+2. Clique **Ajouter**, puis l'option pour ajouter une marketplace, et colle `LouidJ/dj-downloader`.
+3. Installe **SD Downloader** dans la liste.
 
-```
-Installe le plugin sd-downloader depuis le dépôt GitHub LouidJ/dj-downloader, active-le avec la mise à jour automatique, puis dis-moi quand c'est prêt.
-```
+## 4. Avant chaque tâche : tes dossiers et le mode Auto
 
-1. Claude demande la permission de modifier ses réglages : clique **Autoriser**. Il fait tout le reste.
-2. Quand c'est prêt, **ouvre une nouvelle session** : le plugin se charge au démarrage.
+À faire à **chaque** nouvelle tâche SD Downloader (réglage compris) :
 
-Dans le terminal (Claude Code), une seule commande suffit : `/plugin install sd-downloader --marketplace LouidJ/dj-downloader`.
+1. Clique **Créer** en haut à gauche : une nouvelle tâche s'ouvre.
+2. Clique **+** à côté de la zone de texte, puis **Ajouter un dossier**, et choisis **Téléchargements**. Recommence pour le dossier où ranger tes sons (par exemple **Musique**).
+3. En bas à droite de la zone de texte, clique **Manuel** et choisis **Auto**.
 
-## 4. Tes réglages : deux clics, c'est tout
+> **Pourquoi Auto ?** En mode Manuel, Claude te demande la permission à chaque série de clics dans Chrome : des dizaines de fenêtres. En Auto, il agit seul pour les actions courantes et ne demande que pour ce qui est risqué. N'utilise pas le mode qui saute toutes les autorisations.
 
-Clique le bouton **🎧 Installer SD Downloader** au-dessus de la zone où tu écris (ou tape `/sd-downloader:setup`). S'il n'apparaît pas, ouvre une autre nouvelle session. Claude vérifie d'abord que tout est prêt. **Sur Windows**, il peut te demander d'installer **Python** : sur [python.org](https://www.python.org/downloads/), clique Download Python, lance l'installateur et **coche « Add python.exe to PATH »** avant Install. Ouvre ensuite une nouvelle session et retape la commande.
+## 5. Tes réglages
 
-Il te demande d'abord ta **langue** : tout le reste se fait dans ta langue. Ensuite Claude **devine tout seul** le compte SoundCloud connecté dans Chrome, ton e-mail et ton prénom : rien à écrire. Il ne te pose qu'**une question à cliquer** : où ranger les sons (Musique, un nouveau dossier sur le Bureau, ou un dossier que tu choisis dans une fenêtre). Après ton premier téléchargement, il te proposera une fois l'astuce de la playlist « À télécharger ».
+Dans la tâche, tape `/sd-downloader:setup`.
 
-Le reste est réglé pour toi : les likes de ton compte, la version Extended (avant la Radio), et les sons déjà dans ton dossier ne sont jamais retéléchargés. Tu changes ce que tu veux d'une phrase (« garde aussi les versions radio », « mon e-mail c'est … »).
+Claude te demande ta **langue** : tout le reste se fait dans ta langue. Ensuite il trouve **tout seul** le Chrome où SoundCloud est ouvert, le compte connecté, ton e-mail et ton prénom : rien à écrire. Il range les sons dans le dossier que tu as ajouté (dans Musique, il crée « SoundCloud Downloads »). Un bouton **↩️ Revenir en arrière** te laisse toujours changer d'avis.
+
+Le reste est réglé pour toi : les likes de ton compte, la version Extended (avant la Radio), et les sons déjà dans ton dossier ne sont jamais retéléchargés. Tes réglages et l'historique restent dans ton dossier de sons (dossier caché `.sd-downloader`).
 
 À la fin, Claude te propose une fois, **sans obligation**, de suivre l'auteur du plugin sur SoundCloud, puis affiche un résumé de 2 lignes et un bouton **🚀 Lancer**. Le résumé te prévient : à chaque téléchargement, Claude fera les gates (suivre, liker, reposter, commenter) avec ton compte, sans te redemander. Si tu préfères qu'il demande à chaque fois, dis « demande-moi avant les gates ».
 
-> **Une seule autorisation.** Au début du réglage, Claude te prévient puis affiche **une seule** fenêtre : clique **Autoriser**. Elle couvre le plugin pour toujours, même après ses mises à jour. Ensuite, l'extension Chrome demande l'accès à soundcloud.com, hypeddit.com et droploud.com : choisis à chaque fois l'option qui autorise **toujours** le site. Sur Mac, si le système demande l'accès à Téléchargements ou Musique, accepte. Après ça, plus aucune fenêtre pendant les téléchargements.
+> **Les fenêtres à accepter, une seule fois** : pour soundcloud.com, hypeddit.com et droploud.com, choisis **Toujours autoriser pour ce site web** ; pour la connexion à ton Chrome, **Autoriser**.
 
-## 5. Premier téléchargement
+## 6. Premier téléchargement
 
 Clique **🚀 Lancer** à la fin du réglage. Claude te demande quels sons (*Tous mes likes*, *Likés aujourd'hui*, *Mes 20 derniers likes*, *Les tracks de cette playlist*). Pour un tout premier essai, choisis *Autre* et écris « 3 derniers ».
 
 Ensuite :
 1. Claude saute les sons déjà dans ton dossier.
 2. Il enchaîne tout seul. Dans Chrome, tu le vois ouvrir les pages et cliquer. Le son des pages est coupé.
-3. À la fin, un petit son, puis un bilan court : combien de nouveaux sons, et un tableau. Les fichiers sont déjà rangés. Un bouton **📂 Ouvrir le dossier** te montre les sons ; tu peux aussi choisir qu'il s'ouvre tout seul les prochaines fois.
+3. À la fin, un bilan court : combien de nouveaux sons, et un tableau. Les fichiers sont déjà rangés dans ton dossier.
 
 Il ne te demande rien pendant le run. Seules exceptions : un CAPTCHA (tu le fais toi-même), un mot de passe, un paiement, un mauvais compte connecté, ou plus de 30 gates d'un coup (SoundCloud pourrait limiter ton compte : tu choisis).
 
 ## Au quotidien
 
-Clique le bouton **🎧 Télécharger mes nouveaux likes** au-dessus de la zone où tu écris. C'est tout : Claude prend tout ce que tu as liké depuis la dernière fois.
+Nouvelle tâche, tes deux dossiers avec **+**, mode **Auto**, puis écris « télécharge mes nouveaux likes ». Claude prend tout ce que tu as liké depuis la dernière fois.
 
 Pour autre chose, écris-le avec tes mots : « télécharge ce que j'ai liké depuis lundi », « télécharge ma playlist », « télécharge cette playlist : lien ».
 
@@ -84,19 +83,15 @@ Autres phrases : « retire #12 de la liste », « garde aussi les versions radio
 - **manquant** : pas de téléchargement gratuit (Beatport, Bandcamp…) ou gate bloqué. La raison est écrite à côté.
 - **à relancer** : refait tout seul au prochain run.
 
-## Sans Claude Code : avec Cowork
+## Tu as aussi Claude Code ?
 
-Dans l'app Claude, sur l'écran principal (pas l'onglet `</>`) : **Personnalisation → Plugins → Ajouter**, marketplace `LouidJ/dj-downloader`, installe **SD Downloader**. Ouvre une nouvelle tâche, choisis ton dossier de sons dans **Projet ou dossier**, puis tape `/sd-downloader:setup`.
-
-- Au réglage, Claude demande l'accès à **Téléchargements** et à ton dossier de sons : clique **Autoriser** pour chacun. Tes réglages et l'historique restent dans ton dossier de sons (dossier caché `.sd-downloader`).
-- Pour les sites, choisis **Toujours autoriser pour ce site web** (SoundCloud, Hypeddit, Droploud).
-- Passe la tâche en mode **Auto** (en bas à droite, à la place de **Manuel**) : sinon, Cowork te demande d'autoriser chaque série de clics dans Chrome.
-- Différences avec Claude Code : pas de bouton au-dessus de la zone de saisie ni de petit son de fin, et le dossier ne s'ouvre pas tout seul (Claude te donne son nom).
+Le plugin marche aussi dans l'onglet **Code** (`</>`) : `/plugin install sd-downloader --marketplace LouidJ/dj-downloader`, puis le bouton **🎧** au-dessus de la zone de texte. Là, il y a moins de fenêtres d'autorisation, un petit son à la fin, et un bouton **📂 Ouvrir le dossier**. **Windows** : l'app peut demander **Git pour Windows**, et Claude peut demander **Python** ([python.org](https://www.python.org/downloads/), cocher « Add python.exe to PATH »).
 
 ## Si ça coince
 
 - **Claude attend** : regarde sous son dernier message s'il y a des choix ou un bouton **Go** à cliquer. S'il s'est arrêté, écris « continue jusqu'au bout ».
-- **Une fenêtre d'autorisation s'affiche** : lis-la et clique **Autoriser**. Si c'est Chrome qui demande l'accès à un site, choisis l'option qui l'autorise **toujours**.
+- **Une fenêtre à chaque clic** : la tâche est en mode Manuel. Passe-la en **Auto**, en bas à droite.
+- **Claude ne trouve pas ton dossier** : clique **+**, puis **Ajouter un dossier**, et choisis-le. Puis « c'est fait ».
 - **Chrome pas connecté** : Chrome ouvert, extension Claude connectée au même compte, puis « réessaie ».
 - **La connexion à Chrome saute souvent** (surtout sur Droploud) : pendant un téléchargement, une seule conversation Claude dans Chrome à la fois ; garde la fenêtre Chrome ouverte et le Mac/PC éveillé ; mets à jour Chrome et l'extension Claude. Si un gate est resté sur « Drop unlocked! », clique toi-même sur **Download**, puis dis « range le fichier ».
 - **« Pas encore installé »** : tape `/sd-downloader:setup`.
@@ -106,9 +101,9 @@ Dans l'app Claude, sur l'écran principal (pas l'onglet `</>`) : **Personnalisat
 
 ## Ce que Claude fait en ton nom
 
-- Avec le compte des gates : suivre, liker, reposter, commenter court, seulement quand un gate l'exige et après ton « go ».
+- Avec le compte des gates : suivre, liker, reposter, commenter court, seulement quand un gate l'exige.
 - Donner ton prénom et ton e-mail aux gates qui les demandent.
-- Jamais : taper un mot de passe, créer un compte, payer.
-- Tes réglages et ton suivi restent sur ton ordi. Tes fichiers audio restent dans ton dossier, même si tu désinstalles le plugin.
+- Jamais : taper un mot de passe, créer un compte, payer, ouvrir un lien trouvé dans un fichier téléchargé.
+- Tes réglages et ton suivi restent dans ton dossier de sons. Tes fichiers audio restent dans ton dossier, même si tu désinstalles le plugin.
 
 Respecte les artistes : ne télécharge que ce qu'ils offrent gratuitement.

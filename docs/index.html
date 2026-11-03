@@ -116,7 +116,7 @@ footer { margin-top: 28px; color: var(--muted); font-size: 14px; }
   var hist = ['lang'];               // étapes vues, pour revenir en arrière
 
   // Les grandes étapes, dans l'ordre (pour la barre de progression et le guide complet). Le choix de langue n'en fait pas partie.
-  var MAIN = ['os', 'plan', 'app', 'code', 'chrome', 'ext', 'sc', 'plugin', 'setup', 'test', 'done'];
+  var MAIN = ['os', 'plan', 'app', 'chrome', 'ext', 'sc', 'plugin', 'task', 'setup', 'test', 'done'];
 
   var nav = (navigator.language || '').toLowerCase().indexOf('fr') === 0 ? 'fr' : 'en';
   function T(fr, en) { return (S.lang || nav) === 'en' ? en : fr; }
@@ -178,8 +178,8 @@ footer { margin-top: 28px; color: var(--muted); font-size: 14px; }
     plan: {
       kicker: T('Ton compte Claude', 'Your Claude account'), title: T('As-tu un abonnement Claude payant (Pro ou Max) ?', 'Do you have a paid Claude plan (Pro or Max)?'),
       body: function () {
-        return T('<p>Le plugin fonctionne dans l\'onglet « Code » de l\'app Claude, réservé aux abonnements payants. L\'extension pour Chrome demande aussi un abonnement payant.</p>',
-          '<p>The plugin runs in the “Code” tab of the Claude app, which needs a paid plan. The Chrome extension needs a paid plan too.</p>');
+        return T('<p>Le plugin fonctionne dans l\'app Claude (Cowork), réservée aux abonnements payants. L\'extension pour Chrome demande aussi un abonnement payant.</p>',
+          '<p>The plugin runs in the Claude app (Cowork), which needs a paid plan. The Chrome extension needs a paid plan too.</p>');
       },
       answers: [
         { l: T('Oui', 'Yes'), go: 'app', main: true },
@@ -222,7 +222,7 @@ footer { margin-top: 28px; color: var(--muted); font-size: 14px; }
       kicker: T('L\'app Claude', 'The Claude app'), title: T('L\'app Claude est-elle installée sur ton ordi ?', 'Is the Claude app installed on your computer?'),
       body: function () { return T('<p>Pas le site internet : l\'application, qu\'on ouvre comme une autre app.</p>', '<p>Not the website: the desktop app, which you open like any other app.</p>'); },
       answers: [
-        { l: T('Oui', 'Yes'), go: 'code', main: true },
+        { l: T('Oui', 'Yes'), go: 'chrome', main: true },
         { l: T('Non', 'No'), go: 'app-install' }
       ]
     },
@@ -236,33 +236,7 @@ footer { margin-top: 28px; color: var(--muted); font-size: 14px; }
                T('<ol><li>Ouvre le fichier téléchargé : l\'installation se lance.</li><li>Suis les étapes, puis ouvre Claude depuis le menu Démarrer.</li><li>Connecte-toi.</li></ol>',
                  '<ol><li>Open the downloaded file: the installer starts.</li><li>Follow the steps, then open Claude from the Start menu.</li><li>Sign in.</li></ol>'));
       },
-      answers: [{ l: T('C\'est fait, l\'app est ouverte', 'Done, the app is open'), go: 'code', main: true }]
-    },
-    code: {
-      kicker: T('L\'onglet Code', 'The Code tab'), title: T('Vois-tu l\'onglet « Code » en haut de l\'app ?', 'Do you see the “Code” tab at the top of the app?'),
-      body: function () {
-        return T('<p>Dans l\'app Claude, il y a des onglets en haut de la fenêtre. Clique sur <strong>Code</strong> : c\'est là que vit le plugin.</p>' +
-          '<p>Si l\'app te demande un dossier pour travailler, crée un dossier <code>DJ</code> dans Documents et choisis-le. Ta musique n\'ira pas là.</p>',
-          '<p>The Claude app has tabs at the top of the window. Click <strong>Code</strong>: that\'s where the plugin lives.</p>' +
-          '<p>If the app asks for a folder to work in, create a <code>DJ</code> folder in Documents and pick it. Your music won\'t go there.</p>') +
-          (S.os !== 'mac' ? tip(T('<strong>Windows :</strong> si l\'app te propose d\'installer <strong>Git pour Windows</strong>, accepte et garde les options par défaut. Elle en a besoin pour lancer des commandes.',
-                                  '<strong>Windows:</strong> if the app offers to install <strong>Git for Windows</strong>, accept and keep the default options. It needs it to run commands.')) : '');
-      },
-      answers: [
-        { l: T('Oui, je suis dans l\'onglet Code', 'Yes, I\'m in the Code tab'), go: 'chrome', main: true },
-        { l: T('Non, je ne le vois pas', 'No, I don\'t see it'), go: 'code-help' }
-      ]
-    },
-    'code-help': {
-      main: 'code', kicker: T('L\'onglet Code', 'The Code tab'), title: T('Faisons apparaître l\'onglet Code', 'Let\'s make the Code tab appear'),
-      body: function () {
-        return T('<ol><li>Vérifie que tu es connecté avec le compte qui a l\'abonnement Pro ou Max.</li><li>Mets l\'app à jour : ',
-                 '<ol><li>Check that you\'re signed in with the account that has the Pro or Max plan.</li><li>Update the app: ') +
-          byOs(T('menu <strong>Claude</strong> en haut à gauche, puis <strong>Rechercher des mises à jour</strong>.', 'the <strong>Claude</strong> menu at the top left, then <strong>Check for Updates</strong>.'),
-               T('menu de l\'app, puis <strong>Rechercher des mises à jour</strong>.', 'the app menu, then <strong>Check for Updates</strong>.')).replace(/<\/?p>/g, '') + '</li>' +
-          T('<li>Quitte complètement l\'app, puis rouvre-la.</li></ol>', '<li>Quit the app completely, then open it again.</li></ol>');
-      },
-      answers: [{ l: T('Je le vois maintenant', 'I see it now'), go: 'chrome', main: true }]
+      answers: [{ l: T('C\'est fait, l\'app est ouverte', 'Done, the app is open'), go: 'chrome', main: true }]
     },
     chrome: {
       kicker: 'Chrome', title: T('As-tu Google Chrome ?', 'Do you have Google Chrome?'),
@@ -358,46 +332,61 @@ footer { margin-top: 28px; color: var(--muted); font-size: 14px; }
     plugin: {
       kicker: T('Le plugin', 'The plugin'), title: T('Installe le plugin dans Claude', 'Install the plugin in Claude'),
       body: function () {
-        return T('<p>Dans l\'app Claude, onglet <strong>Code</strong>, ouvre une nouvelle session, colle ce message et envoie-le :</p>',
-                 '<p>In the Claude app, <strong>Code</strong> tab, open a new session, paste this message and send it:</p>') +
-          say(T('Installe le plugin sd-downloader depuis le dépôt GitHub LouidJ/dj-downloader, active-le avec la mise à jour automatique, puis dis-moi quand c\'est prêt.',
-                'Install the sd-downloader plugin from the GitHub repo LouidJ/dj-downloader, turn on auto-update, then tell me when it\'s ready.')) +
-          T('<ol><li>Claude demande la permission de modifier ses réglages : clique <strong>Autoriser</strong>. Il fait le reste.</li>' +
-            '<li>Quand il dit que c\'est prêt, <strong>ouvre une nouvelle session</strong> : le plugin se charge au démarrage.</li></ol>' +
-            tip('<strong>Comment parler à Claude :</strong> tu écris en bas, dans la zone de texte, comme dans une messagerie, puis Entrée. En français, normalement.'),
-            '<ol><li>Claude asks permission to change its settings: click <strong>Allow</strong>. It does the rest.</li>' +
-            '<li>When it says it\'s ready, <strong>open a new session</strong>: the plugin loads at startup.</li></ol>' +
-            tip('<strong>How to talk to Claude:</strong> type at the bottom, in the text box, like in a chat app, then press Enter. Plain English is fine.'));
+        return T('<ol><li>Dans l\'app Claude, reste sur l\'écran principal (l\'icône bulle en haut à gauche, pas <code>&lt;/&gt;</code>).</li>' +
+          '<li>Dans la barre de gauche, clique <strong>Personnalisation</strong>, puis <strong>Plugins</strong>.</li>' +
+          '<li>Clique <strong>Ajouter</strong>, puis l\'option pour ajouter une marketplace, et colle :</li></ol>',
+          '<ol><li>In the Claude app, stay on the main screen (the speech-bubble icon at the top left, not <code>&lt;/&gt;</code>).</li>' +
+          '<li>In the left sidebar, click <strong>Customize</strong>, then <strong>Plugins</strong>.</li>' +
+          '<li>Click <strong>Add</strong>, then the option to add a marketplace, and paste:</li></ol>') +
+          say('LouidJ/dj-downloader', T('À coller', 'Paste')) +
+          T('<ol start="4"><li>Installe <strong>SD Downloader</strong> dans la liste qui s\'affiche.</li></ol>' +
+            tip('<strong>Tu as l\'onglet Code</strong> (<code>&lt;/&gt;</code>) ? Le plugin y marche aussi, avec moins de fenêtres d\'autorisation : dans une session, tape <code>/plugin install sd-downloader --marketplace LouidJ/dj-downloader</code>.'),
+            '<ol start="4"><li>Install <strong>SD Downloader</strong> from the list that appears.</li></ol>' +
+            tip('<strong>You have the Code tab</strong> (<code>&lt;/&gt;</code>)? The plugin works there too, with fewer permission pop-ups: in a session, type <code>/plugin install sd-downloader --marketplace LouidJ/dj-downloader</code>.'));
       },
       answers: [
-        { l: T('C\'est fait, nouvelle session ouverte', 'Done, new session open'), go: 'setup', main: true },
-        { l: T('Ça ne marche pas', 'It doesn\'t work'), go: 'plugin-help' }
+        { l: T('C\'est installé', 'It\'s installed'), go: 'task', main: true },
+        { l: T('Je ne trouve pas', 'I can\'t find it'), go: 'plugin-help' }
       ]
     },
     'plugin-help': {
       main: 'plugin', kicker: T('Le plugin', 'The plugin'), title: T('Débloquons l\'installation', 'Let\'s fix the install'),
       body: function () {
-        return T('<ul><li><strong>Claude ne trouve pas le dépôt :</strong> recopie le message avec le bouton Copier, sans le modifier.</li>' +
-          '<li><strong>Tu as refusé la permission :</strong> renvoie le message et clique <strong>Autoriser</strong> cette fois.</li>' +
-          '<li><strong>Le plugin n\'apparaît pas :</strong> dans une nouvelle session, tape <code>/</code> puis « sd ». Si rien ne s\'affiche, quitte complètement l\'app et rouvre-la.</li></ul>',
-          '<ul><li><strong>Claude can\'t find the repo:</strong> copy the message again with the Copy button, without changing it.</li>' +
-          '<li><strong>You denied the permission:</strong> send the message again and click <strong>Allow</strong> this time.</li>' +
-          '<li><strong>The plugin doesn\'t show up:</strong> in a new session, type <code>/</code> then “sd”. If nothing appears, quit the app completely and open it again.</li></ul>');
+        return T('<ul><li><strong>Pas de « Personnalisation » :</strong> mets l\'app à jour (menu de l\'app, <strong>Rechercher des mises à jour</strong>), puis quitte-la complètement et rouvre-la.</li>' +
+          '<li><strong>La marketplace n\'est pas trouvée :</strong> recopie <code>LouidJ/dj-downloader</code> avec le bouton Copier, sans espace.</li>' +
+          '<li><strong>Le plugin n\'apparaît pas dans une tâche :</strong> ouvre une nouvelle tâche et tape <code>/</code> puis « sd ».</li></ul>',
+          '<ul><li><strong>No “Customize”:</strong> update the app (app menu, <strong>Check for Updates</strong>), then quit it completely and open it again.</li>' +
+          '<li><strong>The marketplace isn\'t found:</strong> copy <code>LouidJ/dj-downloader</code> again with the Copy button, with no spaces.</li>' +
+          '<li><strong>The plugin doesn\'t show in a task:</strong> open a new task and type <code>/</code> then “sd”.</li></ul>');
       },
-      answers: [{ l: T('Ça marche maintenant', 'It works now'), go: 'setup', main: true }]
+      answers: [{ l: T('Ça marche maintenant', 'It works now'), go: 'task', main: true }]
+    },
+    task: {
+      kicker: T('Avant tout', 'First things first'), title: T('Ouvre une tâche : tes dossiers et le mode Auto', 'Open a task: your folders and Auto mode'),
+      body: function () {
+        return T('<ol><li>Clique <strong>Créer</strong> en haut à gauche : une nouvelle tâche s\'ouvre.</li>' +
+          '<li>Clique <strong>+</strong> à côté de la zone où tu écris, puis <strong>Ajouter un dossier</strong>, et choisis ton dossier <strong>Téléchargements</strong>. Recommence pour le dossier où ranger tes sons (par exemple <strong>Musique</strong>).</li>' +
+          '<li>En bas à droite de la zone où tu écris, clique <strong>Manuel</strong> et choisis <strong>Auto</strong>.</li></ol>' +
+          '<p>Fais ces étapes à chaque nouvelle tâche SD Downloader.</p>' +
+          tip('<strong>Pourquoi Auto ?</strong> En mode Manuel, Claude te demande la permission à chaque série de clics dans Chrome : des dizaines de fenêtres. En Auto, il agit seul pour les actions courantes et ne demande que pour ce qui est risqué. N\'utilise pas le mode qui saute toutes les autorisations.'),
+          '<ol><li>Click <strong>Create</strong> at the top left: a new task opens.</li>' +
+          '<li>Click <strong>+</strong> next to the box where you type, then <strong>Add folder</strong>, and pick your <strong>Downloads</strong> folder. Do it again for the folder where your tracks go (for example <strong>Music</strong>).</li>' +
+          '<li>At the bottom right of the box where you type, click <strong>Manual</strong> and pick <strong>Auto</strong>.</li></ol>' +
+          '<p>Do these steps for every new SD Downloader task.</p>' +
+          tip('<strong>Why Auto?</strong> In Manual mode, Claude asks permission for every batch of clicks in Chrome: dozens of pop-ups. In Auto, it acts on its own for routine actions and only asks for risky ones. Don\'t use the mode that skips all permissions.'));
+      },
+      answers: [{ l: T('C\'est fait : dossiers ajoutés, mode Auto', 'Done: folders added, Auto mode'), go: 'setup', main: true }]
     },
     setup: {
-      kicker: T('Tes réglages', 'Your settings'), title: T('Règle le plugin : deux clics', 'Set up the plugin: two clicks'),
+      kicker: T('Tes réglages', 'Your settings'), title: T('Règle le plugin', 'Set up the plugin'),
       body: function () {
-        return T('<p>Dans la nouvelle session, clique le bouton <strong>🎧 Installer SD Downloader</strong> au-dessus de la zone où tu écris. S\'il n\'apparaît pas, tape :</p>', '<p>In the new session, click the <strong>🎧 Set up SD Downloader</strong> button above the box where you type. If it doesn\'t show up, type:</p>') + say('/sd-downloader:setup', typeLabel()) +
-          T('<p>Claude te demande ta langue, puis devine tout seul ton compte SoundCloud, ton e-mail et ton prénom. Il ne te pose qu\'<strong>une question à cliquer</strong> : où ranger les sons (les sons déjà dans ce dossier ne sont jamais retéléchargés).</p>' +
+        return T('<p>Dans cette tâche, tape :</p>', '<p>In this task, type:</p>') + say('/sd-downloader:setup', typeLabel()) +
+          T('<p>Claude te demande ta langue, puis trouve tout seul le Chrome où SoundCloud est ouvert, ton compte, ton e-mail et ton prénom. Il range les sons dans le dossier que tu as ajouté (dans Musique, il crée « SoundCloud Downloads »). Un bouton <strong>↩️ Revenir en arrière</strong> permet toujours de changer d\'avis.</p>' +
             '<p>À la fin, un résumé de 2 lignes : il te prévient qu\'à chaque téléchargement Claude fera les gates avec ton compte, sans te redemander. Puis un bouton <strong>🚀 Lancer</strong>.</p>',
-            '<p>Claude asks for your language, then works out your SoundCloud account, email and first name on its own. It only asks <strong>one question to click</strong>: where to file the tracks (tracks already in that folder are never downloaded again).</p>' +
+            '<p>Claude asks for your language, then finds on its own the Chrome where SoundCloud is open, your account, email and first name. It files the tracks in the folder you added (in Music, it creates “SoundCloud Downloads”). A <strong>↩️ Go back</strong> button always lets you change your mind.</p>' +
             '<p>At the end, a 2-line summary: it tells you Claude will do the gates with your account on every download, without asking again. Then a <strong>🚀 Launch</strong> button.</p>') +
-          (S.os !== 'mac' ? tip(T('<strong>Windows :</strong> si Claude te demande d\'installer Python, va sur ' + a('https://www.python.org/downloads/', 'python.org') + ', clique Download Python, lance l\'installateur et <strong>coche « Add python.exe to PATH »</strong> avant Install. Ouvre ensuite une nouvelle session et retape la commande.',
-                                  '<strong>Windows:</strong> if Claude asks you to install Python, go to ' + a('https://www.python.org/downloads/', 'python.org') + ', click Download Python, run the installer and <strong>tick “Add python.exe to PATH”</strong> before Install. Then open a new session and type the command again.')) : '') +
-          tip(T('<strong>Une seule autorisation.</strong> Au début du réglage, Claude te prévient puis affiche <strong>une seule</strong> fenêtre : clique <strong>Autoriser</strong>. Elle couvre le plugin pour toujours. Ensuite, l\'extension Chrome demande l\'accès à soundcloud.com, hypeddit.com et droploud.com : choisis à chaque fois l\'option qui autorise <strong>toujours</strong> le site.' + (S.os !== 'win' ? ' Sur Mac, accepte aussi l\'accès à Téléchargements et Musique.' : '') + ' Ensuite, plus aucune fenêtre pendant les téléchargements.',
-                '<strong>Just one permission.</strong> At the start of setup, Claude warns you, then shows <strong>a single</strong> pop-up: click <strong>Allow</strong>. It covers the plugin for good. Then the Chrome extension asks for access to soundcloud.com, hypeddit.com and droploud.com: each time, pick the option that <strong>always</strong> allows the site.' + (S.os !== 'win' ? ' On a Mac, also allow access to Downloads and Music.' : '') + ' After that, no more pop-ups while downloading.'));
+          tip(T('<strong>Les fenêtres à accepter, une seule fois :</strong> pour soundcloud.com, hypeddit.com et droploud.com, <strong>Toujours autoriser pour ce site web</strong> ; et la connexion à ton navigateur Chrome (<strong>Autoriser</strong>).',
+                '<strong>The pop-ups to accept, once:</strong> for soundcloud.com, hypeddit.com and droploud.com, <strong>Always allow for this site</strong>; and the connection to your Chrome browser (<strong>Allow</strong>).'));
       },
       answers: [
         { l: T('Réglages terminés', 'Setup done'), go: 'test', main: true },
@@ -407,13 +396,12 @@ footer { margin-top: 28px; color: var(--muted); font-size: 14px; }
     'setup-help': {
       main: 'setup', kicker: T('Tes réglages', 'Your settings'), title: T('Ce qui bloque le plus souvent', 'What usually gets stuck'),
       body: function () {
-        return T('<ul><li><strong>« Chrome n\'est pas connecté » :</strong> Chrome doit être ouvert, l\'extension connectée avec le même compte que l\'app. Puis écris « réessaie ».</li><li><strong>Python manquant :</strong> ',
-                 '<ul><li><strong>“Chrome isn\'t connected”:</strong> Chrome must be open, with the extension signed in to the same account as the app. Then type “try again”.</li><li><strong>Python missing:</strong> ') +
-          byOs(T('Claude te donne une commande à lancer dans le Terminal (<code>xcode-select --install</code>). Lance-la, accepte l\'installation, puis reviens.', 'Claude gives you a command to run in Terminal (<code>xcode-select --install</code>). Run it, accept the install, then come back.'),
-               T('installe-le depuis ' + a('https://www.python.org/downloads/', 'python.org') + ' en cochant « Add python.exe to PATH ».', 'install it from ' + a('https://www.python.org/downloads/', 'python.org') + ', ticking “Add python.exe to PATH”.')).replace(/<\/?p>/g, ' ') + '</li>' +
-          T('<li><strong>Un dossier « illisible » :</strong> ', '<li><strong>A folder is “unreadable”:</strong> ') +
-          byOs(T('Réglages Système, puis Confidentialité et sécurité, puis Fichiers et dossiers : autorise Claude.', 'System Settings, then Privacy &amp; Security, then Files and Folders: allow Claude.'),
-               T('choisis un dossier de ton profil (Musique, Documents), ou branche le disque externe.', 'pick a folder in your user profile (Music, Documents), or plug in the external drive.')).replace(/<\/?p>/g, ' ') + '</li></ul>';
+        return T('<ul><li><strong>« Chrome n\'est pas connecté » :</strong> Chrome doit être ouvert, l\'extension connectée avec le même compte que l\'app. Puis écris « réessaie ».</li>' +
+          '<li><strong>Claude ne trouve pas ton dossier :</strong> clique <strong>+</strong> à côté de la zone de message, puis <strong>Ajouter un dossier</strong>, et choisis-le.</li>' +
+          '<li><strong>Une fenêtre à chaque clic :</strong> la tâche est encore en mode Manuel. Passe-la en <strong>Auto</strong>, en bas à droite.</li></ul>',
+          '<ul><li><strong>“Chrome isn\'t connected”:</strong> Chrome must be open, with the extension signed in to the same account as the app. Then type “try again”.</li>' +
+          '<li><strong>Claude can\'t find your folder:</strong> click <strong>+</strong> next to the message box, then <strong>Add folder</strong>, and pick it.</li>' +
+          '<li><strong>A pop-up on every click:</strong> the task is still in Manual mode. Switch it to <strong>Auto</strong>, at the bottom right.</li></ul>');
       },
       answers: [{ l: T('Ça marche maintenant', 'It works now'), go: 'test', main: true }]
     },
@@ -423,9 +411,9 @@ footer { margin-top: 28px; color: var(--muted); font-size: 14px; }
         return T('<p>Clique <strong>🚀 Lancer</strong> à la fin du réglage. Claude te demande quels sons :</p>', '<p>Click <strong>🚀 Launch</strong> at the end of setup. Claude asks which tracks:</p>') +
           '<div class="mock" aria-hidden="true"><b>' + T('Quels sons je télécharge ?', 'Which tracks should I download?') + '</b>' +
           '<div class="opt">' + T('Tous mes likes', 'All my likes') + '</div><div class="opt">' + T('Likés aujourd\'hui', 'Liked today') + '</div><div class="opt">' + T('Mes 20 derniers likes', 'My last 20 likes') + '</div><div class="opt on">' + T('Autre : 3 derniers', 'Other: last 3') + '</div></div>' +
-          T('<p>Pour ce premier essai, choisis <strong>Autre</strong> et écris « 3 derniers ». Regarde Chrome : Claude ouvre les pages et clique tout seul, le son est coupé. À la fin, un petit son, puis le bilan en tableaux. Les fichiers sont déjà rangés.</p>' +
+          T('<p>Pour ce premier essai, choisis <strong>Autre</strong> et écris « 3 derniers ». Regarde Chrome : Claude ouvre les pages et clique tout seul, le son est coupé. À la fin, un bilan court : combien de nouveaux sons, et un tableau. Les fichiers sont déjà rangés dans ton dossier.</p>' +
             tip('Claude ne s\'arrête que pour un CAPTCHA (tu le fais toi-même), un mot de passe, un paiement, ou plus de 30 gates d\'un coup.'),
-            '<p>For this first try, pick <strong>Other</strong> and type “last 3”. Watch Chrome: Claude opens the pages and clicks on its own, with the sound muted. At the end, a short chime, then the report in tables. The files are already filed.</p>' +
+            '<p>For this first try, pick <strong>Other</strong> and type “last 3”. Watch Chrome: Claude opens the pages and clicks on its own, with the sound muted. At the end, a short report: how many new tracks, and one table. The files are already in your folder.</p>' +
             tip('Claude only stops for a CAPTCHA (you solve it yourself), a password, a payment, or more than 30 gates at once.'));
       },
       answers: [
@@ -452,11 +440,13 @@ footer { margin-top: 28px; color: var(--muted); font-size: 14px; }
     done: {
       kicker: T('Terminé', 'Done'), title: T('C\'est installé. Bon digging !', 'You\'re all set. Happy digging!'),
       body: function () {
-        return T('<p>À partir de maintenant, c\'est toujours pareil : clique <strong>🎧 Télécharger mes nouveaux likes</strong> au-dessus de la zone où tu écris.</p>' +
+        return T('<p>À partir de maintenant, c\'est toujours pareil : nouvelle tâche, tes deux dossiers avec <strong>+</strong>, mode <strong>Auto</strong>, puis écris « télécharge mes nouveaux likes ».</p>' +
           '<ul><li><strong>L\'astuce :</strong> crée sur SoundCloud une playlist « À télécharger ». Ajoute-y des sons pendant que tu digs, puis écris « télécharge ma playlist ». Les sons déjà téléchargés ne sont jamais refaits.</li>' +
+          '<li>Le choix <strong>⚙️ Réglages</strong> règle les formats (WAV, AIFF, MP3), les versions (Extended, Radio), les noms de fichiers et les zips.</li>' +
           '<li>Tu peux aussi écrire : « retire #12 de la liste », « garde aussi les versions radio », « montre le bilan ».</li></ul>',
-          '<p>From now on it\'s always the same: click <strong>🎧 Download my new likes</strong> above the box where you type.</p>' +
+          '<p>From now on it\'s always the same: new task, your two folders with <strong>+</strong>, <strong>Auto</strong> mode, then type “download my new likes”.</p>' +
           '<ul><li><strong>Tip:</strong> create a “To download” playlist on SoundCloud. Add tracks to it while you dig, then type “download my playlist”. Tracks already downloaded are never done twice.</li>' +
+          '<li>The <strong>⚙️ Settings</strong> choice sets formats (WAV, AIFF, MP3), versions (Extended, Radio), file names and zips.</li>' +
           '<li>You can also type: “remove #12 from the list”, “keep the radio versions too”, “show the report”.</li></ul>');
       },
       answers: [
