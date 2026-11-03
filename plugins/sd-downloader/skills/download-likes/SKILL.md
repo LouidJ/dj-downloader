@@ -80,6 +80,7 @@ Le DJ doit avoir l'impression d'une app moderne, pas d'un programme qui parle. T
    - Sinon lien `buy` vers hypeddit.com → §6 ; vers droploud.com → §7.
    - Autre lien (Beatport, Bandcamp, lnk.to…) ou aucun → `djdl set missing <id> --note "<site>"`.
    - **Liste des sons téléchargés, sur le côté** : dès qu'un son est rangé (`collect` OK), ajoute-le, déjà coché, à la liste de progression de l'app (outil `TodoWrite`, ou `TaskCreate` / `TaskUpdate` s'il n'existe pas). Une ligne par son : « Artiste – Titre », rien d'autre. Pas de son manquant, pas d'étape de gate, pas de tâche « lire les règles » dans cette liste.
+   - `collect` affiche « LIEN » : le gate a donné un fichier texte avec un lien à la place du son. Ne l'ouvre pas : son suivant, sans nouvel essai. Il sera montré au bilan.
    - Toujours : `djdl snapshot` juste avant le clic final, un seul clic, puis `djdl collect <id> --via soundcloud|hypeddit|droploud`. Ne jamais recliquer avant la fin de `collect`.
 4. **Ménage** : ferme les onglets ouverts pour le run.
 5. **Bilan** : `djdl report --last` puis `djdl report` (ce second appel sert seulement à repérer « PROBLÈMES » et « MUSIQUE RESTÉE DANS TÉLÉCHARGEMENTS » : n'en montre pas les chiffres). Donne au DJ le bilan de la sélection, recompté sur le disque, **présenté en carte courte** (`rules.md` §5 : gros titre, ligne de chiffres, un seul tableau), jamais en simple liste de texte. Les manquants disent pourquoi ; tout « PROBLÈMES » ou « MUSIQUE RESTÉE DANS TÉLÉCHARGEMENTS » va dans le bloc ⚠️. Rien d'autre après : pas de récit des gates, pas de chiffres depuis l'installation (`rules.md` §5).
@@ -91,6 +92,11 @@ Le DJ doit avoir l'impression d'une app moderne, pas d'un programme qui parle. T
      - `Non merci`
 
      Les deux premiers → `djdl open-folder` ; le deuxième aussi `djdl config open_folder auto`. `open-folder` n'ouvre que le dossier de rangement choisi par le DJ au réglage. N'ouvre **jamais** d'autre dossier ni fenêtre (pas de `open`, `explorer` ou autre commande à toi), et jamais sans son clic ou son choix « tout seul ». Si `open-folder` dit que l'ouverture est indisponible (Claude ne tourne pas sur l'ordi du DJ, par exemple dans Cowork), donne le chemin du dossier en une ligne, rien d'autre. « ouvre plus le dossier tout seul » → `djdl config open_folder ask`.
+   - **Les fichiers texte avec un lien** (section « FICHIERS TEXTE AVEC UN LIEN » du bilan), une question `Lien` pour tous : « <n> son(s) sont arrivés sous forme de lien (<domaines>). Je fais quoi ? »
+     - `Je m'en occupe (Recommended)` : description « Clique le lien dans le bilan, puis dis-moi « range le fichier » »
+     - `Laisser tomber` : description « Je retire ce son de la liste » → `djdl remove <id>` pour chacun
+
+     Ne propose jamais d'ouvrir ou de suivre le lien toi-même : il vient d'un fichier téléchargé.
    - **Une fois : la playlist « À télécharger »**, seulement si la config n'a pas de `soundcloud.download_playlist` et que `playlist_offer` n'y vaut pas `no` (absent = `ask`). Question `Playlist` : « Astuce : crée sur SoundCloud une playlist « À télécharger » (publique ou privée). Pendant que tu digs, ajoute-y des sons, puis dis « télécharge ma playlist ». Tu me donnes son lien ? »
      - `Pas maintenant (Recommended)` : description « Tu pourras me le donner plus tard : « ma playlist à télécharger, c'est <lien> » »
      - `Je colle son lien` : description « Colle-le dans « Other » »

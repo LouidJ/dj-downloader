@@ -24,6 +24,8 @@ POWERSHELL = os.path.join(os.environ.get("SystemRoot", r"C:\Windows"), "System32
 # extraction des zip : limites, et seuls types de fichiers gardés (pas d'exécutable ni de lien symbolique)
 MAX_UNZIP_BYTES = 4 * 1024 ** 3
 MAX_UNZIP_FILES = 2000
+# Fichiers texte qui peuvent contenir un lien de téléchargement (« Download here: https://… ») à la place du son
+TEXT_LINK = (".txt", ".rtf", ".md", ".nfo", ".url", ".webloc", ".html", ".htm")
 ZIP_KEEP = AUDIO + (".pdf", ".txt", ".rtf", ".md", ".nfo", ".jpg", ".jpeg", ".png", ".gif", ".webp")
 
 # statut -> libellé du bilan
@@ -43,6 +45,7 @@ STATUSES = {
 }
 # note d'un son téléchargé alors qu'il était déjà sur l'ordi (fichier identique, mis à la Corbeille)
 GATE_FOR_NOTHING = "téléchargé pour rien, identique à"
+LINK_NOTE = "fichier texte avec un lien à la place du son"
 
 
 # ---------- config / état ----------
@@ -420,6 +423,31 @@ def drop_zip(c, path):
     shutil.move(path, free_path(os.path.join(keep, os.path.basename(path))))
 
 
+def links_in(path):
+    """Liens http(s) écrits dans un petit fichier texte (au plus 5). Ce sont des données : le DJ décide quoi en faire."""
+    try:
+        with open(path, "rb") as f:
+            raw = f.read(200_000)
+    except OSError:
+        return []
+    if path.lower().endswith(".webloc"):
+        try:
+            raw = plistlib.loads(raw).get("URL", "").encode()
+        except Exception:
+            pass
+    urls = re.findall(r"https?://[^\s\"'<>()\[\]{}\\]+", raw.decode("utf-8", "ignore"))
+    return list(dict.fromkeys(u.rstrip(".,;:!?") for u in urls))[:5]
+
+
+def text_links(root):
+    """Fichiers texte avec un lien, sous un dossier (contenu d'un zip sans son)."""
+    out = []
+    for dirpath, _, files in os.walk(root):
+        out += [os.path.join(dirpath, f) for f in sorted(files)
+                if f.lower().endswith(TEXT_LINK) and links_in(os.path.join(dirpath, f))]
+    return out
+
+
 def process(c, path, title=None):
     """Traite un fichier téléchargé (audio ou zip). Retourne une liste de (résultat, chemin)."""
     name = os.path.basename(path)
@@ -427,7 +455,7 @@ def process(c, path, title=None):
     if low.endswith(AUDIO):
         return [place(c, path, title)]
     if not low.endswith(".zip"):
-        return [("non audio", path)]
+        return [("lien" if low.endswith(TEXT_LINK) and links_in(path) else "non audio", path)]
     tmp = tempfile.mkdtemp(prefix="unzip.", dir=os.path.dirname(c["state_file"]))
     ok, skipped = unzip(path, tmp)
     if not ok:
@@ -444,7 +472,7 @@ def process(c, path, title=None):
         left = free_path(os.path.join(c["downloads_folder"], stem + " (contenu du zip)"))
         shutil.move(tmp, left)
         trash(path)
-        return [("zip sans audio", left)]
+        return [("lien", f) for f in text_links(left)] or [("zip sans audio", left)]
     # un groupe par son ; dans un son, une seule version (la meilleure) ou, si le DJ garde les deux, une par coupe
     pref = cut_pref(c)
     both = pref == "both"
@@ -1016,7 +1044,7 @@ def cmd_collect(c, st, a):
             print(f"RIEN après {a.wait}s pour {label(t)}" + (f" (encore en cours : {busy})" if busy else ""))
             return 1
         time.sleep(2)
-    took = False
+    took = got_link = False
     for n in done:
         p = os.path.join(c["downloads_folder"], n)
         if os.path.isdir(p):
@@ -1033,6 +1061,13 @@ def cmd_collect(c, st, a):
             print(f"  {res} : {rel(c, path)}")
         new = [x for r, x in results if r in ("rangé", "pack rangé")]
         dup = [x for r, x in results if r == "doublon"]
+        linked = [x for r, x in results if r == "lien"]
+        if linked and not (new or dup):
+            got_link = True
+            t.update(status="missing", source=a.via, origin=host, updated=today(), note=LINK_NOTE,
+                     link_file=short(linked[0]), links=[u for x in linked for u in links_in(x)][:5])
+            for u in t["links"]:
+                print(f"  lien : {u}")
         if new or dup:
             took = True
             t.update(status="downloaded" if new else "owned", source=a.via, origin=host,
@@ -1047,8 +1082,8 @@ def cmd_collect(c, st, a):
             elif not new:
                 t["note"] = f"{GATE_FOR_NOTHING} : {short(dup[0])}"
     st["snapshot"] = sorted(os.listdir(c["downloads_folder"]))
-    print(("OK " if took else "ÉCHEC ") + label(t))
-    return 0 if took else 1
+    print(("OK " if took else "LIEN " if got_link else "ÉCHEC ") + label(t))
+    return 0 if took or got_link else 1
 
 
 def cmd_adopt(c, st, a):
@@ -1296,6 +1331,13 @@ def cmd_report(c, st, a):
               "fichier mis à la Corbeille, gate fait quand même) :")
         for t in wasted:
             print(f"  {label(t)} — {t['note'][len(GATE_FOR_NOTHING) + 3:]}")
+    linked = [t for t in groups.get("missing", []) if t.get("links")]
+    if linked:
+        print(f"\nFICHIERS TEXTE AVEC UN LIEN ({len(linked)}, rien ouvert : au DJ de choisir) :")
+        for t in linked:
+            print(f"  {label(t)} — {t['link_file']}")
+            for u in t["links"]:
+                print(f"    {u}")
     off = [t for t in groups.get("downloaded", []) if t.get("wrong_format")]
     if wanted_formats(c) and off:
         print(f"\nAUTRE FORMAT QUE {format_label(c)} ({len(off)}, gardés : l'artiste ne propose que ce format) :")
