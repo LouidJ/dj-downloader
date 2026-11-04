@@ -24,7 +24,8 @@ const LABELS: Record<string, Labels> = {
 const UNKNOWN: Labels = { setup: '🎧 SD Downloader : installer / set up', download: '🎧 SD Downloader', ask: 'new likes', settings: '⚙️ Settings', hide: '✕',
   done: n => `✅ SD Downloader : ${n}` }
 
-const DJDL = /djdl\.py/
+// Seulement le djdl de ce plugin : l'édition perso (dj-downloader-perso) a son propre son de fin
+const DJDL = /^(?![\s\S]*dj-downloader-perso)[\s\S]*djdl\.py/
 
 export const register: Register = on => {
   on('session.start', async ($, e, next) => {
