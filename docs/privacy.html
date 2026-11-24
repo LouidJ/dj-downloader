@@ -1,0 +1,471 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SD Downloader · Confidentialité / Privacy</title>
+<!-- Copie en ligne de extension/privacy.html (styles de popup.css inclus). -->
+<style>
+:root {
+  --bg: #0d0e0c;
+  --panel: #151614;
+  --card: #1b1c1a;
+  --card-2: #232421;
+  --line: #2e302c;
+  --text: #f3f4ee;
+  --muted: #a2a59b;
+  --faint: #6f7269;
+  --accent: #ff5a2c;
+  --accent-ink: #1c0700;
+  --accent-soft: rgba(255, 90, 44, 0.12);
+  --red: #ff7a6b;
+  --amber: #ffc857;
+  --green: #34c759;
+  --radius: 18px;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--bg); color: var(--text); }
+body {
+  width: 380px;
+  font: 14px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+body.page { width: auto; min-height: 100vh; display: grid; place-items: start center; padding: 32px 16px; }
+body.page .shell { width: 400px; max-width: 100%; border: 1px solid var(--line); border-radius: 24px; }
+/* Guide (ou extension) ouvert dans un onglet : agrandi pour se lire confortablement sur un ordinateur. */
+/* Un peu plus petit que le popup, agrandi sur les grands écrans ; l'écran le plus haut tient dans la fenêtre. */
+body.page .shell { zoom: 0.95; }
+@media (min-width: 1500px) and (min-height: 1100px) { body.page .shell { zoom: 1.06; } }
+@media (min-width: 1900px) and (min-height: 1300px) { body.page .shell { zoom: 1.26; } }
+[hidden] { display: none !important; }
+button, input, select { font: inherit; color: inherit; }
+
+.shell {
+  background: radial-gradient(120% 60% at 100% 0%, rgba(255, 90, 44, 0.07), transparent 60%), var(--panel);
+  padding: 18px 16px 12px;
+}
+
+/* En-tête */
+.top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.kicker { margin: 0 0 4px; font-size: 10px; font-weight: 800; letter-spacing: 0.14em; color: var(--muted); text-transform: uppercase; }
+h1 { margin: 0; font-size: 28px; line-height: 1; font-weight: 900; letter-spacing: -0.03em; }
+h1 span { color: var(--muted); font-weight: 800; }
+.sub { margin: 8px 0 0; font-size: 11px; font-weight: 800; letter-spacing: 0.06em; color: var(--text); display: flex; align-items: center; gap: 8px; }
+.ver { border: 1px solid var(--line); border-radius: 6px; padding: 1px 6px; font-size: 10px; color: var(--muted); }
+.logo { width: 52px; height: 52px; flex: none; filter: drop-shadow(0 6px 18px rgba(255, 90, 44, 0.25)); }
+/* Croix qui ferme le popup (v0.4.16), à côté du logo ; cachée quand l'extension est ouverte dans un onglet. */
+.popx { flex: none; width: 26px; height: 26px; margin: -6px -8px 0 -6px; border: 0; border-radius: 999px; background: transparent; color: var(--faint); font-size: 0; cursor: pointer; }
+.popx::before { content: '✕'; font-size: 14px; font-weight: 700; }
+.popx:hover { background: var(--card-2); color: var(--text); }
+.popx:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+body.page .popx { display: none; }
+
+/* Onglets */
+.tabs {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px;
+  margin: 16px 0 12px; padding: 4px; background: var(--bg); border: 1px solid var(--line); border-radius: 14px;
+}
+.tabs button {
+  border: 0; background: none; padding: 9px 0; border-radius: 10px; font-weight: 700; color: var(--muted); cursor: pointer;
+}
+.tabs button[aria-selected="true"] { background: var(--card-2); color: var(--text); box-shadow: inset 0 0 0 1px var(--line); }
+.tabs button:focus-visible, .btn:focus-visible, .link:focus-visible, .field:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* Cartes */
+.card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px; margin-bottom: 10px; }
+.card h2 { margin: 0 0 10px; font-size: 15px; font-weight: 800; }
+.row { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 12px; }
+.row.head h2 { margin: 0; }
+.label { display: block; margin: 0 0 6px; font-weight: 700; font-size: 13px; }
+.hint { margin: 2px 0 0; font-size: 12px; color: var(--muted); }
+.hint.center { text-align: center; min-height: 16px; }
+.field {
+  width: 100%; margin-bottom: 10px; padding: 10px 12px; background: var(--bg); border: 1px solid var(--line); border-radius: 12px;
+  font-weight: 600;
+}
+.field::placeholder { color: var(--faint); font-weight: 500; }
+textarea.field.area { display: block; resize: vertical; min-height: 96px; line-height: 1.45; font: inherit; font-weight: 600; color: inherit; margin-bottom: 4px; }
+.field.bad { border-color: var(--red); }
+.hint.bad { color: var(--red); margin: -4px 0 10px; }
+.field.drop { border-color: var(--accent); background: var(--accent-soft); }
+select.field { appearance: none; background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%), linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+  background-position: calc(100% - 16px) 50%, calc(100% - 11px) 50%; background-size: 5px 5px; background-repeat: no-repeat; }
+.card .field:last-child { margin-bottom: 0; }
+
+.pill { font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); white-space: nowrap; }
+.pill::before { content: "●"; margin-right: 5px; font-size: 9px; vertical-align: 1px; }
+.pill.on { color: var(--accent); border-color: rgba(255, 90, 44, 0.45); background: var(--accent-soft); }
+.pill.busy { color: var(--amber); border-color: rgba(245, 196, 81, 0.45); }
+.pill.err { color: var(--red); border-color: rgba(255, 122, 107, 0.45); }
+
+/* Interrupteur */
+.switch { position: relative; width: 50px; height: 28px; flex: none; }
+.switch input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.switch span { position: absolute; inset: 0; border-radius: 999px; background: var(--card-2); border: 1px solid var(--line); transition: background 0.15s; pointer-events: none; }
+.switch span::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: var(--muted); transition: transform 0.15s, background 0.15s; }
+.switch input:checked + span { background: var(--accent); border-color: var(--accent); }
+.switch input:checked + span::after { transform: translateX(22px); background: var(--accent-ink); }
+.switch input:disabled { cursor: default; }
+.switch input:disabled + span { opacity: 0.4; }
+.switch input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.check { display: flex; gap: 10px; align-items: flex-start; font-size: 12px; color: var(--muted); margin-top: 4px; cursor: pointer; }
+.check input { accent-color: var(--accent); margin: 2px 0 0; width: 16px; height: 16px; flex: none; }
+
+/* Réglage à finir */
+.setup { border-color: rgba(255, 90, 44, 0.45); }
+.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.steps li { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+.steps li > span:nth-child(2) { flex: 1; }
+.dot { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--faint); flex: none; }
+.dot { position: relative; }
+.steps li.done .dot { background: var(--accent); border-color: var(--accent); }
+.steps li.done .dot::after { content: ""; position: absolute; left: 4px; top: 1px; width: 4px; height: 8px; border: solid var(--accent-ink); border-width: 0 2px 2px 0; transform: rotate(45deg); }
+.steps li.done > span:nth-child(2) { color: var(--muted); }
+.steps li.done .link { display: none; }
+.link { border: 0; background: none; color: var(--accent); font-weight: 700; font-size: 12px; cursor: pointer; padding: 2px 0; }
+.link:disabled { cursor: default; }
+#chime { margin: 4px 0 0 26px; }
+
+/* En cours */
+.now { border-color: rgba(245, 196, 81, 0.4); }
+.now-title { margin: 4px 0 10px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bar { height: 6px; background: var(--bg); border-radius: 999px; overflow: hidden; }
+.bar span { display: block; height: 100%; width: 0; background: var(--accent); border-radius: 999px; transition: width 0.3s; }
+
+/* Chiffres */
+.stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+.stat { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px; }
+.stat b { display: block; font-size: 30px; line-height: 1; font-weight: 900; letter-spacing: -0.02em; }
+.stat b.good { color: var(--green); }
+.stat span { display: block; margin-top: 6px; font-size: 12px; font-weight: 700; color: var(--muted); }
+
+/* Boutons */
+.actions { display: flex; gap: 10px; margin-bottom: 10px; }
+.btn {
+  flex: 1; padding: 12px 10px; border-radius: 14px; border: 1px solid var(--line); background: var(--card); font-weight: 800; cursor: pointer;
+}
+.btn:hover { background: var(--card-2); }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); box-shadow: 0 6px 20px rgba(255, 90, 44, 0.2); }
+.btn.primary:hover { filter: brightness(1.05); }
+.btn:disabled { opacity: 0.5; cursor: default; }
+.btn.small { flex: none; padding: 10px 14px; }
+/* Accueil : un lien facultatif, puis un seul bouton centré */
+.go { display: flex; flex-direction: column; align-items: center; gap: 7px; margin: 2px 0 8px; }
+.go .field { width: 100%; margin: 0; text-align: center; }
+.go .btn.primary { flex: none; min-width: 210px; padding: 14px 28px; font-size: 15px; }
+.go .hint { margin: 0; }
+.go .pause-btn { flex: none; min-width: 150px; padding: 9px 20px; }
+/* Pause au milieu de l'extension, sous Télécharger ; Arrêter juste à sa droite (v0.4.21). */
+.run-ctl { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 16px; width: 100%; }
+.run-ctl #pauseBtn { grid-column: 2; }
+.run-ctl #stop { grid-column: 3; justify-self: start; }
+.run-ctl:has(#pauseBtn[hidden]) #stop { grid-column: 2; justify-self: center; }
+.run-ctl:not(:has(> :not([hidden]))) { display: none; }
+#msg:empty { display: none; }
+/* Bandeau d'erreur : ❌ en grand, titre rouge, bouton pour régler le problème. */
+.alert { display: flex; gap: 12px; align-items: flex-start; margin: 0 0 14px; padding: 14px; border: 1.5px solid rgba(255, 122, 107, 0.65); background: rgba(255, 90, 44, 0.12); border-radius: 14px; }
+.alert[hidden] { display: none; }
+.alert-icon { font-size: 30px; line-height: 1; flex: none; }
+.alert-body { min-width: 0; }
+.alert-title { margin: 0 0 4px; font-size: 16px; font-weight: 800; line-height: 1.25; color: var(--red); }
+.alert-text { margin: 0; font-size: 13px; line-height: 1.45; color: var(--text); }
+.alert-btn { margin-top: 10px; }
+.alert.wait { border-color: rgba(255, 179, 64, 0.75); background: rgba(255, 179, 64, 0.12); }
+.alert.wait .alert-title { color: #FFB340; }
+.alert.ok { border-color: rgba(52, 199, 89, 0.7); background: rgba(52, 199, 89, 0.12); }
+.alert.ok .alert-title { color: #34C759; }
+/* « C'est fait, je reprends » (v0.4.8) : plus petit, fermé d'un clic. */
+.alert.ok { gap: 9px; align-items: center; padding: 9px 12px; margin-bottom: 10px; cursor: pointer; }
+.alert.ok:hover { background: rgba(52, 199, 89, 0.17); }
+.alert.ok .alert-icon { font-size: 20px; }
+.alert.ok .alert-title { margin-bottom: 2px; font-size: 13px; }
+.alert.ok .alert-text { font-size: 12px; line-height: 1.35; color: var(--muted); }
+
+/* Activité */
+.list { list-style: none; margin: 0 0 10px; padding: 0; display: grid; gap: 6px; overflow-x: hidden; }
+.list li { display: grid; grid-template-columns: 22px minmax(0, 1fr) auto; gap: 8px; align-items: center; background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 9px 10px; }
+.list .ico { text-align: center; }
+.list .t { font-weight: 700; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.list .n { font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.list .tag { font-size: 10px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 2px 7px; }
+.list .tag.ok { color: var(--accent); border-color: rgba(255, 90, 44, 0.4); }
+.list button.tag { background: none; cursor: pointer; color: var(--accent); }
+.list .btns { display: flex; gap: 6px; }
+/* Historique des téléchargements : flèche « › » à droite (la ligne ouvre le bilan complet). */
+.runs .n { white-space: normal; line-height: 1.35; }
+.runs .go { color: var(--muted); font-size: 20px; line-height: 1; padding: 0 2px; }
+.runs li:hover .go, .runs li:focus-visible .go { color: var(--accent); }
+/* Sons à récupérer soi-même : repliés par défaut (titre et nombre), pour laisser la place aux sons téléchargés. */
+.todo { padding: 12px; }
+.todo summary { display: flex; align-items: center; justify-content: space-between; gap: 8px; cursor: pointer; list-style: none; }
+.todo summary::-webkit-details-marker { display: none; }
+.todo summary h2 { margin: 0; }
+.todo .chev { color: var(--muted); font-size: 20px; line-height: 1; transition: transform 0.15s; }
+.todo[open] .chev { transform: rotate(180deg); }
+.todo[open] summary { margin-bottom: 10px; }
+.todo .hint { margin: 0 0 10px; }
+.todo .list { margin: 0; max-height: none; }
+/* Autres sons : même barre, dépliée à l'ouverture du popup, repliable d'un clic. */
+.todo .list li { background: rgba(255, 255, 255, 0.03); }
+.todo .retry-clear { width: 100%; margin-top: 10px; }
+
+.foot { display: flex; gap: 14px; align-items: center; padding: 10px 2px 2px; border-top: 1px solid var(--line); margin-top: 4px; font-size: 11px; font-weight: 700; }
+.foot a { color: var(--text); text-decoration: none; }
+.foot a:hover { color: var(--accent); }
+.foot span { margin-left: auto; color: var(--faint); }
+.hint + .label, .hint + .field { margin-top: 10px; }
+
+/* Avant de commencer */
+.bullets { margin: 10px 0; padding-left: 18px; display: grid; gap: 5px; font-size: 13px; }
+.bullets li::marker { color: var(--accent); }
+.consent { margin-top: 16px; }
+.consent .check { color: var(--text); font-size: 13px; margin-top: 12px; }
+p.center { text-align: center; margin: 0 0 6px; }
+
+/* Rythme */
+.range { width: 100%; margin: 4px 0 0; accent-color: var(--accent); cursor: pointer; }
+.scale { display: flex; justify-content: space-between; font-size: 10px; font-weight: 700; color: var(--faint); margin-bottom: 6px; }
+.hint.warn { color: var(--amber); margin-bottom: 6px; }
+
+/* Guide de la première installation */
+.guide, #view-finish { margin-top: 16px; }
+.gbar { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 10px; }
+.gbar span { height: 5px; border-radius: 999px; background: var(--card-2); border: 1px solid var(--line); }
+.gbar span.on { background: var(--accent); border-color: var(--accent); }
+.guide .kicker { margin-bottom: 8px; }
+.guide .card h2 { font-size: 18px; }
+.guide .card .hint { margin-bottom: 12px; }
+.guide .actions { margin: 12px 0 0; }
+.gstatus { margin: 0 0 4px; font-weight: 700; font-size: 13px; color: var(--muted); min-height: 18px; }
+.gstatus.ok { color: var(--accent); }
+.btn.wide { width: 100%; margin-top: 10px; }
+.ask { position: relative; border-color: rgba(255, 90, 44, 0.45); margin-top: 12px; }
+.ask .now-title { padding-right: 26px; }
+.ask .now-title { white-space: normal; margin-bottom: 4px; }
+.ask-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: 10px; }
+.ask-head .hint { margin: 0; }
+.ask-list { list-style: none; margin: 6px 0 0; padding: 0; border: 1px solid var(--line); border-radius: 12px; background: var(--card-2); }
+.ask-list.open { max-height: 264px; overflow-y: auto; }
+.ask-list li + li { border-top: 1px solid var(--line); }
+.ask-row { display: flex; gap: 10px; align-items: center; padding: 7px 10px; cursor: pointer; min-width: 0; }
+.ask-row input { accent-color: var(--accent); width: 16px; height: 16px; flex: none; margin: 0; }
+.ask-row .tx { flex: 1; min-width: 0; display: grid; }
+.ask-row .t { font-size: 12.5px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ask-row .a { font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ask-row .d { font-size: 11px; color: var(--faint); flex: none; font-variant-numeric: tabular-nums; }
+.ask-row .d.have { color: var(--amber); }
+.ask-row .d.blk { color: var(--red); }
+.ask-row:has(input:not(:checked)) .tx { opacity: 0.45; }
+.ask-more { display: block; margin: 6px auto 0; }
+.ask .btn.primary { margin-top: 10px; }
+.ask .center { margin: 8px 0 0; }
+
+/* Dernier passage : tous les sons (téléchargés puis bloqués), liste qui défile */
+.last.bad { border-color: rgba(255, 122, 107, 0.4); }
+.last .row.head { margin-bottom: 4px; gap: 4px; }
+.last #lastWhen { margin-left: auto; }
+.fails { list-style: none; margin: 10px 0 0; padding: 0 4px 0 0; display: grid; gap: 8px; max-height: 232px;
+  overflow-y: auto; scrollbar-width: thin; scrollbar-color: rgba(255, 255, 255, 0.28) transparent; }
+.fails li { display: grid; gap: 1px; padding-left: 20px; position: relative; min-width: 0; }
+.fails li::before { content: "❌"; position: absolute; left: 0; top: 1px; font-size: 11px; }
+.fails li.ok::before { content: "✅"; }
+.fails li.left::before { content: "⏹"; }
+.fails li.check::before { content: "🔎"; }
+.fails .t { font-weight: 700; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fails .n { font-size: 12px; color: var(--muted); }
+.last .link { margin-top: 8px; }
+.last #lastSpotify { margin-top: 10px; }
+/* Windows : la barre de défilement prend de la place, pas de défilement horizontal pour autant. */
+html { overflow-x: hidden; }
+.last .lastreport { display: block; width: 100%; margin-top: 10px; }
+#lastReportMsg:empty { display: none; }
+#lastReportMsg { margin-top: 6px; }
+.hint.typo { margin: -4px 0 10px; color: var(--text); }
+.hint.typo .link { font-size: 12px; padding: 0; }
+.last .close { margin-right: -6px; padding: 2px 6px; border: 0; border-radius: 6px; background: none;
+  color: var(--muted); font-size: 14px; line-height: 1; cursor: pointer; }
+.last .close:hover { color: var(--text); background: rgba(255, 255, 255, 0.08); }
+
+/* Message rouge éphémère (son déjà téléchargé) */
+.modal { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; padding: 16px; background: rgba(0, 0, 0, 0.62); }
+.modal[hidden] { display: none; }
+.modal-x { position: absolute; top: 8px; right: 8px; width: 30px; height: 30px; border: 0; border-radius: 999px; background: transparent; color: var(--muted); font-size: 0; cursor: pointer; }
+.modal-x::before { content: '✕'; font-size: 16px; font-weight: 700; }
+.modal-x:hover { background: var(--card-2); color: var(--text); }
+#likesBox:focus { outline: none; }
+/* v0.4.54 (Luigi) : contour des 4 choix bien visible sur le fond de la fenêtre. */
+#likesAsk .btn { background: var(--card-2); border: 1.5px solid #565a52; }
+#likesAsk .btn:hover { border-color: var(--muted); background: #2a2b28; }
+.modal-box { position: relative; width: 100%; max-width: 360px; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px 16px 14px; display: grid; gap: 8px; text-align: center; }
+.modal-icon { margin: 0; font-size: 30px; line-height: 1; }
+.modal-box h2 { margin: 0; font-size: 17px; font-weight: 800; line-height: 1.25; }
+.modal-text { margin: 0 0 6px; font-size: 13px; line-height: 1.45; color: var(--muted); }
+.toast-wrap { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; padding: 16px; background: rgba(0, 0, 0, 0); transition: background 0.2s; }
+.toast-wrap[hidden] { display: none; }
+.toast-wrap.on { background: rgba(0, 0, 0, 0.62); }
+.toast-wrap.nudge .toast { animation: toast-nudge 0.3s; }
+@keyframes toast-nudge { 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+.toast { position: relative; width: 100%; max-width: 356px; padding: 14px; border-radius: 16px;
+  display: grid; grid-template-columns: 36px minmax(0, 1fr) 24px; column-gap: 12px; align-items: start;
+  background: var(--card-2); color: var(--text); border: 1px solid rgba(255, 90, 44, 0.45); box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6);
+  opacity: 0; transform: scale(0.96); transition: opacity 0.2s, transform 0.2s; }
+.toast-wrap.on .toast { opacity: 1; transform: none; }
+.toast p { margin: 0; }
+.toast-ic { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent); font-size: 17px; font-weight: 900; }
+.toast-body { display: grid; gap: 3px; padding-top: 1px; }
+.toast-t { font-weight: 800; font-size: 14px; line-height: 1.25; }
+.toast-d { font-size: 12.5px; line-height: 1.35; color: var(--text); opacity: 0.85; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.toast-w { font-size: 12px; line-height: 1.35; color: var(--muted); }
+.toast-x { width: 24px; height: 24px; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--muted); font-size: 13px; cursor: pointer; }
+.toast-x:hover { background: var(--line); color: var(--text); }
+/* Survol : le bouton reste orange (le survol des .btn passe au gris, texte illisible). */
+.toast-btn:hover { background: var(--accent); filter: brightness(1.08); }
+.toast-btn { grid-column: 1 / -1; width: 100%; margin-top: 12px; background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 800; }
+/* Dans l'onglet du guide, pas de lien vers le guide lui-même. */
+body.page #footGuide { display: none; }
+
+/* Fenêtre « Téléchargement terminé » (v0.4.6) : par-dessus le popup, à fermer avant la suite. */
+body.sum-open { min-height: 590px; }
+#endSum { cursor: pointer; }
+#endSum .sum-box { cursor: default; }
+/* Colonne : seule la liste des bloqués défile, le bouton « Fermer » reste toujours visible. */
+.sum-box { max-width: 348px; max-height: calc(100vh - 32px); overflow: hidden; display: flex; flex-direction: column; text-align: left; gap: 8px; padding: 14px 14px 12px; }
+.sum-box > * { flex: none; }
+/* Croix en haut à droite de « Téléchargement terminé » (v0.4.27), en plus du bouton Fermer. */
+.sum-box > .sum-x { position: absolute; top: 8px; right: 8px; width: 28px; height: 28px; padding: 0; border: 0; border-radius: 8px;
+  background: none; color: var(--muted); font-size: 16px; line-height: 28px; text-align: center; cursor: pointer; }
+.sum-box > .sum-x:hover, .sum-box > .sum-x:focus-visible { color: var(--text); background: rgba(255, 255, 255, 0.08); }
+.sum-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin: 0 -4px; padding: 0 4px; }
+.sum-body > * { flex: none; }
+.sum-body .sum-list { overflow: visible; }
+.sum-ok h3 { color: var(--green); }
+.sum-hint { margin: -4px 0 8px; font-size: 11px; color: var(--muted); }
+.sum-paid > summary { font-size: 13px; font-weight: 800; color: var(--muted); cursor: pointer; list-style-position: inside; }
+.sum-paid[open] > summary { margin-bottom: 8px; }
+.sum-paid .sum-list li b { color: var(--muted); }
+.sum-list li .more { padding: 0; font-size: 12px; }
+.sum-box .modal-icon, .sum-box h2, .sum-when { text-align: center; }
+/* Icône dans le titre (« ✅ Téléchargement terminé ») : de la place pour les listes. */
+.sum-box .modal-icon { display: none; }
+.sum-box h2 { font-size: 18px; }
+.sum-when { margin: -4px 0 2px; font-size: 12px; font-weight: 700; color: var(--muted); }
+.sum-error { margin: 0; padding: 9px 11px; border-radius: 12px; background: rgba(255, 122, 107, 0.1); border: 1px solid rgba(255, 122, 107, 0.35); color: var(--red); font-weight: 700; font-size: 12px; }
+/* Chiffres du bilan (22/11, Luigi : les pastilles faisaient « moche et bordélique ») : une seule carte, les
+   téléchargés en grand, puis les autres chiffres en liste (libellé à gauche, chiffre à droite). La place reste aux listes. */
+.sum-stats { display: block; margin: 0; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 10px 14px; }
+.sum-hero { display: flex; align-items: baseline; gap: 10px; }
+.sum-hero b { font-size: 30px; line-height: 1; font-weight: 900; letter-spacing: -0.02em; color: var(--green); }
+/* Aucun son arrivé : le 0 n'est pas vert (v0.4.32). */
+.sum-hero b.zero { color: var(--muted); }
+.sum-hero span { font-size: 13px; font-weight: 700; color: var(--muted); }
+.sum-hero small { margin-left: auto; font-size: 12px; font-weight: 700; color: var(--muted); }
+.sum-rows { margin: 10px 0 0; padding-top: 8px; border-top: 1px solid var(--line); display: grid; gap: 5px; }
+.sum-rows div { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; min-width: 0; }
+.sum-rows dt { font-size: 12px; font-weight: 700; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sum-rows dd { margin: 0; font-size: 14px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.sum-rows dd.bad { color: var(--red); }
+.sum-rows dd.mid { color: var(--amber); }
+.sum-rows dd.soft { color: var(--muted); }
+.sum-sec { background: var(--card-2); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; }
+.sum-sec h3 { margin: 0 0 8px; font-size: 14px; font-weight: 800; }
+.times { margin: 0; display: grid; grid-template-columns: 1fr auto; gap: 6px 12px; }
+.times dt { color: var(--muted); font-weight: 700; font-size: 12px; }
+.times dd { margin: 0; font-weight: 800; font-size: 13px; text-align: right; }
+.sum-list { margin: 0; padding: 0; list-style: none; display: grid; align-content: start; gap: 7px; min-height: 0; flex: 1 1 auto; overflow-y: auto; }
+.sum-list li { font-size: 12px; min-width: 0; }
+.sum-list li b { display: block; font-weight: 800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sum-list li span { display: block; color: var(--muted); font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* Clic sur une ligne : le texte coupé « … » se déplie en entier (v0.4.25). */
+.list li, .fails li, .sum-list li { cursor: pointer; }
+.list li.open .t, .list li.open .n, .fails li.open .t, .sum-list li.open b, .sum-list li.open span { white-space: normal; overflow-wrap: anywhere; }
+.list li.open { grid-template-columns: 22px minmax(0, 1fr); align-items: start; }
+.list li.open > :nth-child(3) { grid-column: 2; justify-self: start; }
+
+/* Guide détaillé (v0.4.16) : éclairage de l'élément montré, flèche et bulle d'explication. */
+body.touring { min-height: 580px; }
+.tour { position: fixed; inset: 0; z-index: 70; }
+.tour.dim { background: rgba(0, 0, 0, 0.72); }
+.tour-hole { position: fixed; border-radius: 14px; pointer-events: none; box-shadow: 0 0 0 2px var(--accent), 0 0 18px 4px rgba(255, 90, 44, 0.35), 0 0 0 9999px rgba(0, 0, 0, 0.72); }
+.tour-arrow { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+#tourPath { fill: none; stroke: var(--accent); stroke-width: 2.5; stroke-linecap: round; stroke-dasharray: 220; stroke-dashoffset: 0; animation: tour-draw 0.45s ease-out; }
+@keyframes tour-draw { from { stroke-dashoffset: 220; } to { stroke-dashoffset: 0; } }
+.tour-box { position: fixed; background: var(--card); border: 1px solid rgba(255, 90, 44, 0.5); border-radius: var(--radius); padding: 14px 16px 12px; box-shadow: 0 14px 40px rgba(0, 0, 0, 0.55); }
+.tour-count { margin: 0 0 4px; font-size: 10px; font-weight: 800; letter-spacing: 0.12em; color: var(--accent); text-transform: uppercase; }
+.tour-box h2 { margin: 0 30px 6px 0; font-size: 16px; font-weight: 800; line-height: 1.25; }
+.tour-text { white-space: pre-line; margin: 0 0 12px; font-size: 13px; line-height: 1.45; color: var(--muted); }
+.tour-img { display: block; width: 100%; height: auto; border-radius: 14px; margin: 0 0 12px; }
+.tour-nav { display: flex; gap: 8px; justify-content: flex-end; }
+.tour-nav .btn { padding: 8px 14px; font-size: 13px; }
+@media (prefers-reduced-motion: reduce) { #tourPath { animation: none; } }
+
+</style>
+<style>
+  body.page .shell { width: 560px; }
+  .shell h1 { margin: 4px 0 14px; font-size: 20px; font-weight: 800; }
+  .card p, .card li { font-size: 13px; }
+  .card p { margin: 0 0 6px; }
+  .lang { margin: 22px 0 10px; font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+</style>
+</head>
+<body class="page">
+<main class="shell">
+  <!-- Règles de confidentialité de l'extension (v0.4.31), en français puis en anglais. Même texte que la page publiée pour le Chrome Web Store. -->
+  <h1>SD Downloader · Confidentialité</h1>
+  <p class="hint">Mise à jour : 24 novembre 2026. SD Downloader n'a pas de serveur : rien n'est envoyé à son auteur.</p>
+
+  <p class="lang">Français</p>
+  <div class="card">
+    <h2>Ce qui reste dans ton Chrome</h2>
+    <p>Ton prénom, ton e-mail, tes réglages (dossier, commentaires, rythme), ton profil SoundCloud (identifiant, nom, photo), l'heure de tes derniers reposts (pour respecter la limite de SoundCloud), l'historique des sons et le journal d'activité sont gardés dans le stockage de l'extension, dans ce profil Chrome. Ils ne sont jamais envoyés à l'auteur de SD Downloader ni à un service de statistiques. Pas de publicité, pas de revente.</p>
+  </div>
+  <div class="card">
+    <h2>Ce qui est envoyé, et à qui</h2>
+    <ul class="bullets">
+      <li><strong>SoundCloud</strong> : avec ton compte connecté, l'extension lit tes likes, télécharge les sons offerts et fait ce que chaque gate demande (suivre, liker, reposter, publier un commentaire tiré de ta liste). Elle lit ton jeton de connexion SoundCloud dans Chrome pour parler à SoundCloud, sans le copier ailleurs.</li>
+      <li><strong>Sites de gates</strong> (Hypeddit, Droploud, Pump Your Sound, Sick Taste, HypeLoves, Gaterush, WavinBox, Linksr, StillHype, Fangate) : ton prénom et ton e-mail, tapés dans leur formulaire pour débloquer le son. Le site et l'artiste les reçoivent et peuvent t'écrire ; leurs propres règles de confidentialité s'appliquent.</li>
+      <li><strong>Spotify</strong> : seulement si un gate le demande et que tu y es déjà connecté, l'autorisation de son application.</li>
+      <li><strong>Hébergeurs de fichiers</strong> (Dropbox, Google Drive, WeTransfer, MEGA, MediaFire, Bandcamp, Amazon S3…) : seulement pour télécharger le fichier. Le cookie Dropbox sert uniquement à lire la liste d'un dossier partagé.</li>
+      <li><strong>Raccourcisseurs de liens</strong> (bit.ly, TinyURL…) : l'adresse d'un lien raccourci trouvé sur la page d'un son, pour voir où il mène, sans tes cookies.</li>
+      <li><strong>GitHub</strong> : une fois par jour, l'extension lit une liste publique de mots qui l'aide à reconnaître les boutons à ne jamais cliquer. Rien n'y est envoyé.</li>
+    </ul>
+    <p>L'extension ne tape jamais de mot de passe, ne crée aucun compte et ne paie rien.</p>
+  </div>
+  <div class="card">
+    <h2>Changer ou effacer tes données</h2>
+    <p>Prénom, e-mail et commentaires se changent dans Réglages. Activité → « Vider » efface l'historique, le journal et les nouveaux essais prévus. Désinstaller l'extension efface tout ce qu'elle a gardé. Les e-mails déjà donnés à un gate se retirent auprès de ce site ou de l'artiste (lien de désinscription de leurs e-mails).</p>
+  </div>
+  <div class="card">
+    <h2>Contact</h2>
+    <p>Luigi Hayek, par GitHub : https://github.com/LouidJ</p>
+  </div>
+
+  <p class="lang" lang="en">English</p>
+  <div class="card" lang="en">
+    <h2>What stays in your Chrome</h2>
+    <p>Your first name, email, settings (folder, comments, pace), SoundCloud profile (id, name, picture), the time of your latest reposts (to respect SoundCloud's limit), track history and activity log are kept in the extension's storage, in this Chrome profile. They are never sent to SD Downloader's author or to any analytics service. No ads, no selling.</p>
+  </div>
+  <div class="card" lang="en">
+    <h2>What is sent, and to whom</h2>
+    <ul class="bullets">
+      <li><strong>SoundCloud</strong>: with your signed-in account, the extension reads your likes, downloads the tracks artists give away and does what each gate asks (follow, like, repost, post a comment picked from your list). It reads your SoundCloud sign-in token in Chrome to talk to SoundCloud, without copying it anywhere else.</li>
+      <li><strong>Gate sites</strong> (Hypeddit, Droploud, Pump Your Sound, Sick Taste, HypeLoves, Gaterush, WavinBox, Linksr, StillHype, Fangate): your first name and email, typed into their form to unlock the track. The site and the artist receive them and may email you; their own privacy policies apply.</li>
+      <li><strong>Spotify</strong>: only when a gate asks for it and you are already signed in, the authorization of its app.</li>
+      <li><strong>File hosts</strong> (Dropbox, Google Drive, WeTransfer, MEGA, MediaFire, Bandcamp, Amazon S3…): only to download the file. The Dropbox cookie is only used to read the list of a shared folder.</li>
+      <li><strong>Link shorteners</strong> (bit.ly, TinyURL…): the address of a short link found on a track's page, to see where it leads, without your cookies.</li>
+      <li><strong>GitHub</strong>: once a day, the extension reads a public list of words that helps it recognize buttons it must never click. Nothing is sent there.</li>
+    </ul>
+    <p>The extension never types a password, never creates an account and never pays for anything.</p>
+  </div>
+  <div class="card" lang="en">
+    <h2>Change or delete your data</h2>
+    <p>First name, email and comments can be changed in Settings. Activity → "Clear" erases the history, the log and the planned retries. Uninstalling the extension erases everything it kept. To remove an email already given to a gate, contact that site or the artist (unsubscribe link in their emails).</p>
+  </div>
+  <div class="card" lang="en">
+    <h2>Contact</h2>
+    <p>Luigi Hayek, via GitHub: https://github.com/LouidJ</p>
+  </div>
+</main>
+</body>
+</html>
