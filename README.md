@@ -2,6 +2,8 @@
 
 **🇬🇧 English: [README.en.md](README.en.md)** · Le réglage te demande ta langue : tout se fait ensuite dans ta langue.
 
+**🧩 Sans Claude : l'extension Chrome.** SD Downloader existe aussi en extension Chrome, qui fait tout dans ton navigateur, en français et en anglais : [l'installer depuis le Chrome Web Store](https://chromewebstore.google.com/detail/hbkdikhoolmadkgcnnpjiimkmpmccdla).
+
 Plugin gratuit pour Claude, pour les DJ sur Mac et Windows. Tu likes des sons sur SoundCloud, ou tu les mets dans une playlist, et Claude les télécharge pour toi :
 
 - **téléchargement SoundCloud direct** quand l'artiste l'autorise ;
